@@ -12,8 +12,8 @@ export default async function SignupPage({
     <main className="mx-auto max-w-sm px-6 py-24">
       <h1 className="font-serif text-3xl font-semibold text-ink">Create your account</h1>
       <p className="mt-2 text-muted">
-        Your case and questionnaire start automatically once you sign in. You
-        can save your progress and come back anytime.
+        Enter your details to create an account. You&apos;ll be signed in and
+        taken to the questionnaire right away.
       </p>
 
       {error && (
