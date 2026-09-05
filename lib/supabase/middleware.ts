@@ -50,8 +50,10 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user && (pathname === "/login" || pathname === "/signup")) {
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    const role = (profile as { role?: string } | null)?.role;
     const url = request.nextUrl.clone();
-    url.pathname = "/questionnaire";
+    url.pathname = role === "staff" || role === "admin" ? "/admin" : "/questionnaire";
     return NextResponse.redirect(url);
   }
 

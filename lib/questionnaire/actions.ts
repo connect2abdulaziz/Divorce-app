@@ -44,6 +44,7 @@ export async function saveSingletonSection(
 
   await touchCase(caseId, lastCompletedSection);
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/admin", "layout");
 }
 
 // Column names on `cases` that updateCaseGates is allowed to touch.
@@ -72,6 +73,7 @@ export async function updateCaseGates(
 
   await touchCase(caseId, lastCompletedSection);
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/admin", "layout");
 }
 
 // Adds one row to a repeatable-records table (vehicles, real_estate, ...).
@@ -84,6 +86,7 @@ export async function addRecord(table: string, caseId: string, values: Record<st
 
   await touchCase(caseId);
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/admin", "layout");
 }
 
 export async function updateRecord(table: string, id: string, values: Record<string, unknown>) {
@@ -94,6 +97,7 @@ export async function updateRecord(table: string, id: string, values: Record<str
   if (error) throw error;
 
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/admin", "layout");
 }
 
 export async function deleteRecord(table: string, id: string) {
@@ -104,6 +108,7 @@ export async function deleteRecord(table: string, id: string) {
   if (error) throw error;
 
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/admin", "layout");
 }
 
 // A child's residence sub-records (child_residences).
@@ -114,6 +119,7 @@ export async function addChildResidence(childId: string, caseId: string, values:
     .insert({ ...values, child_id: childId, case_id: caseId });
   if (error) throw error;
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/admin", "layout");
 }
 
 export async function deleteChildResidence(id: string) {
@@ -121,6 +127,7 @@ export async function deleteChildResidence(id: string) {
   const { error } = await supabase.from("child_residences").delete().eq("id", id);
   if (error) throw error;
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/admin", "layout");
 }
 
 export async function submitQuestionnaire(caseId: string) {
@@ -136,6 +143,7 @@ export async function submitQuestionnaire(caseId: string) {
   if (error) throw error;
 
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/admin", "layout");
   redirect("/questionnaire/submitted");
 }
 

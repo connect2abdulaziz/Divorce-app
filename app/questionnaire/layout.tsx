@@ -1,8 +1,11 @@
+import Link from "next/link";
 import { signOut } from "@/app/auth/actions";
 import { ProgressRailWithPath } from "@/components/questionnaire/ProgressRailWithPath";
+import { isStaffRole } from "@/lib/admin/current-staff";
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
 import { percentComplete, toStepInfo, visibleSteps } from "@/lib/questionnaire/steps";
+import { createClient } from "@/lib/supabase/server";
 
 function formatSavedAt(iso: string) {
   const d = new Date(iso);
@@ -17,6 +20,9 @@ function formatSavedAt(iso: string) {
 export default async function QuestionnaireLayout({ children }: { children: React.ReactNode }) {
   const { user, caseId } = await getCurrentUserAndCase();
   const { kase, gates } = await loadCaseBundle(caseId);
+  const supabase = await createClient();
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const showDashboard = isStaffRole((profile as { role?: string } | null)?.role);
 
   const steps = visibleSteps(gates).map(toStepInfo);
   const percent = percentComplete(gates, kase.last_completed_section);
@@ -29,6 +35,11 @@ export default async function QuestionnaireLayout({ children }: { children: Reac
             Divorce questionnaire
           </p>
           <div className="flex items-center gap-3 text-sm text-muted sm:gap-4">
+            {showDashboard && (
+              <Link href="/admin" className="btn-text">
+                Dashboard
+              </Link>
+            )}
             <span className="hidden max-w-[14rem] truncate sm:inline">{user.email}</span>
             <span className="hidden md:inline">Saved {formatSavedAt(kase.last_saved_at)}</span>
             <form action={signOut}>

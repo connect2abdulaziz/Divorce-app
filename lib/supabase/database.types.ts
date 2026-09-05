@@ -1,10 +1,11 @@
-// Placeholder. Generate the real types once your local Supabase instance is
-// running the migrations in supabase/migrations/:
+// Placeholder until generated types exist. `Record<string, unknown>` makes
+// every `supabase.from(...)` resolve to `never` and fails `next build`.
+// Generate the real types once local Supabase is running:
 //
 //   npm run supabase:start
 //   npm run supabase:types
 //
-// That overwrites this file with fully-typed Row/Insert/Update types for
-// every table created in the migrations (cases, party_client, children, ...).
+// That overwrites this file with fully-typed Row/Insert/Update types.
 
-export type Database = Record<string, unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Database = any;
