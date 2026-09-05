@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function login(formData: FormData) {
@@ -34,23 +35,42 @@ export async function signup(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const fullName = String(formData.get("full_name") ?? "");
 
-  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: fullName }, // read by handle_new_user() -> profiles.full_name
-      emailRedirectTo: `${origin}/auth/confirm`,
+      data: { full_name: fullName },
     },
   });
 
   if (error) {
+    const existing = await supabase.auth.signInWithPassword({ email, password });
+    if (existing.data.session) {
+      revalidatePath("/", "layout");
+      redirect("/questionnaire");
+    }
     redirect(`/signup?error=${encodeURIComponent(error.message)}`);
   }
 
-  // If email confirmation is required, there's no session yet.
-  redirect("/signup/check-email");
+  if (!data.session && data.user) {
+    try {
+      const admin = createAdminClient();
+      await admin.auth.admin.updateUserById(data.user.id, { email_confirm: true });
+    } catch {
+      // Service role not configured — password sign-in still works when
+      // confirmations are disabled in the Supabase project.
+    }
+
+    const signedIn = await supabase.auth.signInWithPassword({ email, password });
+    if (signedIn.error || !signedIn.data.session) {
+      redirect(
+        `/signup?error=${encodeURIComponent(signedIn.error?.message ?? "Could not sign you in. Try logging in.")}`
+      );
+    }
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/questionnaire");
 }
 
 export async function signOut() {
