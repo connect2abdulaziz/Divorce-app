@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
+import { Spinner } from "@/components/ui/SubmitButton";
 import { FormPanel } from "./FormPanel";
 
 export function StepFrame({
@@ -46,8 +47,21 @@ export function StepFrame({
         ) : (
           <span />
         )}
-        <button type="button" className="btn-primary" onClick={handleContinue} disabled={isPending}>
-          {isPending ? "Saving…" : continueLabel}
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={handleContinue}
+          disabled={isPending}
+          aria-busy={isPending}
+        >
+          {isPending ? (
+            <span className="inline-flex items-center gap-2">
+              <Spinner />
+              Saving…
+            </span>
+          ) : (
+            continueLabel
+          )}
         </button>
       </div>
     </FormPanel>

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { FormPanel } from "@/components/questionnaire/FormPanel";
+import { Spinner } from "@/components/ui/SubmitButton";
 import { submitQuestionnaire } from "@/lib/questionnaire/actions";
 
 export function SubmitForm({ caseId }: { caseId: string }) {
@@ -21,8 +22,8 @@ export function SubmitForm({ caseId }: { caseId: string }) {
           Submit your questionnaire
         </h2>
         <p className="mt-2 text-[15px] leading-relaxed text-ink">
-          Please review your answers carefully. The information you provide
-          will be used to prepare your divorce documents.
+          Please review your answers carefully. The information you provide will be used to prepare
+          your divorce documents.
         </p>
       </div>
 
@@ -32,10 +33,11 @@ export function SubmitForm({ caseId }: { caseId: string }) {
           className="mt-1 h-4 w-4 rounded border-line text-accent focus:ring-accent"
           checked={confirmed}
           onChange={(e) => setConfirmed(e.target.checked)}
+          disabled={isPending}
         />
         <span>
-          I have reviewed the information above and confirm that it is
-          complete and accurate to the best of my knowledge.
+          I have reviewed the information above and confirm that it is complete and accurate to the
+          best of my knowledge.
         </span>
       </label>
 
@@ -45,8 +47,16 @@ export function SubmitForm({ caseId }: { caseId: string }) {
           className="btn-primary"
           disabled={!confirmed || isPending}
           onClick={handleSubmit}
+          aria-busy={isPending}
         >
-          {isPending ? "Submitting…" : "Submit questionnaire"}
+          {isPending ? (
+            <span className="inline-flex items-center gap-2">
+              <Spinner />
+              Submitting…
+            </span>
+          ) : (
+            "Submit questionnaire"
+          )}
         </button>
       </div>
     </FormPanel>

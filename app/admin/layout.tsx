@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { signOut } from "@/app/auth/actions";
+import { SignOutButton } from "@/components/auth/SignOutButton";
 import { requireStaff } from "@/lib/admin/current-staff";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -16,11 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <span className="hidden max-w-[18rem] truncate sm:inline">
               {user.email} · {role}
             </span>
-            <form action={signOut}>
-              <button type="submit" className="btn-text">
-                Sign out
-              </button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </header>

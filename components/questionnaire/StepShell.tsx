@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
+import { Spinner } from "@/components/ui/SubmitButton";
 import { FormPanel } from "./FormPanel";
 
 export function StepShell({
@@ -49,8 +50,15 @@ export function StepShell({
           ) : (
             <span />
           )}
-          <button type="submit" className="btn-primary" disabled={isPending}>
-            {isPending ? "Saving…" : submitLabel}
+          <button type="submit" className="btn-primary" disabled={isPending} aria-busy={isPending}>
+            {isPending ? (
+              <span className="inline-flex items-center gap-2">
+                <Spinner />
+                Saving…
+              </span>
+            ) : (
+              submitLabel
+            )}
           </button>
         </div>
       </FormPanel>

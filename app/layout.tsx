@@ -1,27 +1,29 @@
-import { Source_Serif_4, IBM_Plex_Sans } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
+import "./marketing.css";
 
-const serif = Source_Serif_4({
+const serif = Fraunces({
   subsets: ["latin"],
   variable: "--font-serif",
-  weight: ["500", "600", "700"],
+  weight: ["500", "600"],
 });
 
-const sans = IBM_Plex_Sans({
+const sans = Manrope({
   subsets: ["latin"],
   variable: "--font-sans",
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata = {
-  title: "Divorce Questionnaire",
-  description: "Arizona divorce intake questionnaire",
+  title: "Legal Divorce Docs | Arizona Divorce Document Preparation",
+  description:
+    "Prepare your Arizona divorce documents online with a simple step-by-step process and support from an Arizona Certified Legal Document Preparer.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable}`}>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans antialiased">{children}</body>
     </html>
   );
 }

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { addRecord, deleteRecord, updateRecord } from "@/lib/questionnaire/actions";
 import type { RepeatableTable } from "@/lib/questionnaire/data";
+import { Spinner } from "@/components/ui/SubmitButton";
 import { CurrencyInput, NumberInput, Select, TextInput } from "./fields";
 
 export type FieldConfig =
@@ -118,8 +119,15 @@ function RecordForm({
         ))}
       </div>
       <div className="mt-4 flex gap-3">
-        <button type="submit" className="btn-primary" disabled={isPending}>
-          {isPending ? "Saving…" : submitLabel}
+        <button type="submit" className="btn-primary" disabled={isPending} aria-busy={isPending}>
+          {isPending ? (
+            <span className="inline-flex items-center gap-2">
+              <Spinner />
+              Saving…
+            </span>
+          ) : (
+            submitLabel
+          )}
         </button>
         <button type="button" className="btn-secondary" onClick={onCancel} disabled={isPending}>
           Cancel
