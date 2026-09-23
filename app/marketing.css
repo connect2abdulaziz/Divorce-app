@@ -1072,16 +1072,24 @@
 }
 
 /* Dialog */
-dialog {
+dialog.service-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
   width: min(480px, calc(100% - 36px));
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
   border: 1px solid var(--line);
   border-radius: 22px;
   padding: 40px 32px 28px;
+  background: #fff;
   color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.6;
   box-shadow: 0 30px 80px rgba(7, 38, 61, 0.28);
 }
 
-dialog::backdrop {
+dialog.service-dialog::backdrop {
   background: rgba(7, 38, 61, 0.55);
   backdrop-filter: blur(4px);
 }
@@ -1094,12 +1102,13 @@ dialog::backdrop {
   color: var(--cta);
 }
 
-dialog h2 {
+dialog.service-dialog h2 {
   font-size: 32px;
   margin: 12px 0 14px;
+  padding-right: 44px;
 }
 
-dialog p {
+dialog.service-dialog p:not(.dialog-kicker) {
   color: var(--muted);
   font-size: 15px;
   line-height: 1.7;

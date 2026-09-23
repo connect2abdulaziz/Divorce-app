@@ -84,6 +84,7 @@ export function ServiceDialog({
   return (
     <dialog
       id="service-dialog"
+      className="service-dialog"
       ref={dialogRef}
       aria-labelledby="dialog-title"
       onClose={onClose}
