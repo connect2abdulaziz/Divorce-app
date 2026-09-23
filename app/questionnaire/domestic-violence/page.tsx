@@ -1,9 +1,20 @@
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
 import { stepLinks } from "@/lib/questionnaire/steps";
-import { DomesticViolenceForm } from "./Form";
+import { DomesticViolenceForm, type DomesticViolence } from "./Form";
 
 const SLUG = "domestic-violence";
+
+const EMPTY_DV: DomesticViolence = {
+  has_domestic_violence: false,
+  order_of_protection_exists: null,
+  filed_by: null,
+  against_whom: null,
+  date_issued: null,
+  oop_city: null,
+  oop_state: null,
+  details: null,
+};
 
 export default async function DomesticViolencePage({
   searchParams,
@@ -23,7 +34,7 @@ export default async function DomesticViolencePage({
       backLabel={nav.backLabel}
       nextHref={nav.nextHref}
       submitLabel={nav.submitLabel}
-      initial={sections.domestic_violence}
+      initial={{ ...EMPTY_DV, ...(sections.domestic_violence as DomesticViolence | null) }}
     />
   );
 }

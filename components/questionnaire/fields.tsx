@@ -22,12 +22,20 @@ export function TextInput({
   type = "text",
   required,
   placeholder,
+  maxLength,
+  pattern,
+  inputMode,
+  autoComplete,
 }: {
   name: string;
   defaultValue?: string | null;
   type?: string;
   required?: boolean;
   placeholder?: string;
+  maxLength?: number;
+  pattern?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  autoComplete?: string;
 }) {
   return (
     <input
@@ -37,6 +45,10 @@ export function TextInput({
       defaultValue={defaultValue ?? ""}
       required={required}
       placeholder={placeholder}
+      maxLength={maxLength}
+      pattern={pattern}
+      inputMode={inputMode}
+      autoComplete={autoComplete}
     />
   );
 }
@@ -90,13 +102,21 @@ export function TextArea({
   name,
   defaultValue,
   rows = 3,
+  required,
 }: {
   name: string;
   defaultValue?: string | null;
   rows?: number;
+  required?: boolean;
 }) {
   return (
-    <textarea className="field-input min-h-[6rem] resize-y" name={name} defaultValue={defaultValue ?? ""} rows={rows} />
+    <textarea
+      className="field-input min-h-[6rem] resize-y"
+      name={name}
+      defaultValue={defaultValue ?? ""}
+      rows={rows}
+      required={required}
+    />
   );
 }
 
@@ -194,4 +214,36 @@ export function WhoKeepsIt({
     { value: "spouse", label: "Spouse" },
   ];
   return <Select name={name} defaultValue={defaultValue} options={opts} placeholder="Who keeps it?" />;
+}
+
+export function Checkbox({
+  name,
+  label,
+  defaultChecked,
+  checked,
+  onChange,
+}: {
+  name: string;
+  label: string;
+  defaultChecked?: boolean;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+}) {
+  const controlled =
+    checked !== undefined
+      ? { checked, onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(e.target.checked) }
+      : { defaultChecked: defaultChecked ?? false };
+
+  return (
+    <label className="flex items-start gap-3 text-sm text-ink">
+      <input
+        type="checkbox"
+        name={name}
+        value="true"
+        className="mt-0.5 h-4 w-4 rounded border-line text-accent focus:ring-accent"
+        {...controlled}
+      />
+      <span>{label}</span>
+    </label>
+  );
 }

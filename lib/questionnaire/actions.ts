@@ -44,6 +44,7 @@ export async function saveSingletonSection(
 
   await touchCase(caseId, lastCompletedSection);
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/dashboard", "layout");
   revalidatePath("/admin", "layout");
 }
 
@@ -51,6 +52,7 @@ export async function saveSingletonSection(
 type CaseGatesColumns = {
   has_common_children: boolean;
   is_spouse_pregnant: boolean;
+  has_community_property: boolean;
   has_real_estate: boolean;
   has_vehicles: boolean;
   has_retirement_accounts: boolean;
@@ -143,7 +145,8 @@ export async function submitQuestionnaire(caseId: string) {
   if (error) throw error;
 
   revalidatePath("/questionnaire", "layout");
+  revalidatePath("/dashboard", "layout");
   revalidatePath("/admin", "layout");
-  redirect("/questionnaire/submitted");
+  redirect(`/dashboard/${caseId}`);
 }
 

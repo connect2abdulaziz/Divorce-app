@@ -8,6 +8,7 @@ export type CaseGates = {
   clientEmploymentStatus: string | null;
   spouseEmploymentStatus: string | null;
   hasDomesticViolence: boolean;
+  hasCommunityProperty: boolean | null;
   hasRealEstate: boolean | null;
   hasVehicles: boolean | null;
   hasRetirementAccounts: boolean | null;
@@ -31,6 +32,8 @@ export function toStepInfo(step: Step): StepInfo {
   return { slug: step.slug, title: step.title, shortTitle: step.shortTitle };
 }
 
+const communityPropertyOpen = (g: CaseGates) => g.hasCommunityProperty === true;
+
 export const STEPS: Step[] = [
   { slug: "client-info", title: "Your Information", shortTitle: "Your info", isVisible: () => true },
   { slug: "spouse-info", title: "Spouse Information", shortTitle: "Spouse", isVisible: () => true },
@@ -44,21 +47,63 @@ export const STEPS: Step[] = [
     shortTitle: "Parenting",
     isVisible: (g) => g.hasCommonChildren === true,
   },
-  { slug: "tax-information", title: "Tax Information", shortTitle: "Taxes", isVisible: () => true },
-  { slug: "real-estate", title: "Real Estate", shortTitle: "Real estate", isVisible: () => true },
-  { slug: "vehicles", title: "Vehicles", shortTitle: "Vehicles", isVisible: () => true },
-  { slug: "retirement", title: "Retirement Accounts", shortTitle: "Retirement", isVisible: () => true },
-  { slug: "community-debts", title: "Community Debts", shortTitle: "Debts", isVisible: () => true },
-  { slug: "household-property", title: "Household Property", shortTitle: "Household", isVisible: () => true },
-  { slug: "separate-property", title: "Separate Property", shortTitle: "Separate prop.", isVisible: () => true },
-  { slug: "separate-debts", title: "Separate Debt", shortTitle: "Separate debt", isVisible: () => true },
+  {
+    slug: "tax-information",
+    title: "Tax Information",
+    shortTitle: "Taxes",
+    isVisible: (g) => g.hasCommonChildren === true,
+  },
+  {
+    slug: "community-property",
+    title: "Community Property",
+    shortTitle: "Community",
+    isVisible: () => true,
+  },
+  {
+    slug: "real-estate",
+    title: "Real Estate",
+    shortTitle: "Real estate",
+    isVisible: (g) => communityPropertyOpen(g) && g.hasRealEstate !== false,
+  },
+  {
+    slug: "vehicles",
+    title: "Vehicles",
+    shortTitle: "Vehicles",
+    isVisible: (g) => communityPropertyOpen(g) && g.hasVehicles !== false,
+  },
+  {
+    slug: "retirement",
+    title: "Retirement Accounts",
+    shortTitle: "Retirement",
+    isVisible: (g) => communityPropertyOpen(g) && g.hasRetirementAccounts !== false,
+  },
+  {
+    slug: "community-debts",
+    title: "Community Debts",
+    shortTitle: "Debts",
+    isVisible: (g) => communityPropertyOpen(g) && g.hasCommunityDebts !== false,
+  },
+  {
+    slug: "household-property",
+    title: "Household Property",
+    shortTitle: "Household",
+    isVisible: (g) => communityPropertyOpen(g) && g.hasHouseholdProperty !== false,
+  },
+  {
+    slug: "separate-property",
+    title: "Separate Property",
+    shortTitle: "Separate prop.",
+    isVisible: (g) => g.hasSeparateProperty !== false,
+  },
+  {
+    slug: "separate-debts",
+    title: "Separate Debt",
+    shortTitle: "Separate debt",
+    isVisible: (g) => g.hasSeparateDebts !== false,
+  },
   { slug: "review", title: "Review", shortTitle: "Review", isVisible: () => true },
 ];
 
-// Sections whose gate question decides whether the WHOLE section disappears
-// from the rail (as opposed to just hiding a sub-part of the same page).
-// Only "parenting" works this way today — it depends on an answer given on
-// the earlier "children" page.
 export function visibleSteps(gates: CaseGates): Step[] {
   return STEPS.filter((s) => s.isVisible(gates));
 }
@@ -90,9 +135,6 @@ export function isLaterStep(candidate: string, current: string | null): boolean 
   return nextIdx > currentIdx;
 }
 
-// True once the client has finished the last content step and reached Review.
-// Editing an earlier section should return here, not replay the rest of the
-// questionnaire.
 export function hasReachedReview(lastCompletedSlug: string | null, gates: CaseGates): boolean {
   if (!lastCompletedSlug) return false;
   if (lastCompletedSlug === "review" || lastCompletedSlug === "submit") return true;
@@ -135,11 +177,17 @@ export function stepLinks(
   };
 }
 
-// Progress still treats Review as a reachable step in the rail.
 export function percentComplete(gates: CaseGates, lastCompletedSlug: string | null): number {
   const steps = visibleSteps(gates);
-  if (!lastCompletedSlug) return 0;
-  const idx = steps.findIndex((s) => s.slug === lastCompletedSlug);
-  if (idx === -1) return 0;
-  return Math.round(((idx + 1) / steps.length) * 100);
+  if (!lastCompletedSlug || steps.length === 0) return 0;
+
+  const lastIdxInAll = STEPS.findIndex((s) => s.slug === lastCompletedSlug);
+  if (lastIdxInAll === -1) return 0;
+
+  const completedVisible = steps.filter((s) => {
+    const i = STEPS.findIndex((x) => x.slug === s.slug);
+    return i !== -1 && i <= lastIdxInAll;
+  }).length;
+
+  return Math.round((completedVisible / steps.length) * 100);
 }

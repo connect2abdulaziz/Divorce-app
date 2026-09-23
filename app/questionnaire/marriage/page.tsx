@@ -1,9 +1,24 @@
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
 import { stepLinks } from "@/lib/questionnaire/steps";
-import { MarriageForm } from "./Form";
+import { MarriageForm, type Marriage } from "./Form";
 
 const SLUG = "marriage";
+
+const EMPTY_MARRIAGE: Marriage = {
+  marriage_date: null,
+  separation_date: null,
+  marriage_location: null,
+  marriage_city: null,
+  marriage_state: null,
+  grounds: null,
+  due_date: null,
+  restore_former_name: null,
+  restored_first_name: null,
+  restored_middle_name: null,
+  restored_last_name: null,
+  spouse_is_father: null,
+};
 
 export default async function MarriagePage({
   searchParams,
@@ -23,7 +38,7 @@ export default async function MarriagePage({
       backLabel={nav.backLabel}
       nextHref={nav.nextHref}
       submitLabel={nav.submitLabel}
-      initial={sections.marriage}
+      initial={{ ...EMPTY_MARRIAGE, ...(sections.marriage as Marriage | null) }}
       initialPregnant={gates.isSpousePregnant}
     />
   );

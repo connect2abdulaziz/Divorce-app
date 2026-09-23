@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
 import { stepLinks } from "@/lib/questionnaire/steps";
@@ -13,6 +14,11 @@ export default async function TaxInformationPage({
   const { from } = await searchParams;
   const { caseId } = await getCurrentUserAndCase();
   const { sections, gates, kase } = await loadCaseBundle(caseId);
+
+  if (gates.hasCommonChildren !== true) {
+    redirect(from === "review" ? "/questionnaire/children?from=review" : "/questionnaire/children");
+  }
+
   const nav = stepLinks(SLUG, gates, kase.last_completed_section, from === "review");
 
   return (

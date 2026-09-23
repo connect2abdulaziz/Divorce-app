@@ -18,7 +18,7 @@ export const requireStaff = cache(async () => {
   const profile = data as { role?: string; full_name?: string | null } | null;
 
   if (!profile || !isStaffRole(profile.role)) {
-    redirect("/questionnaire");
+    redirect("/dashboard");
   }
 
   return { user, role: profile.role as "staff" | "admin", fullName: profile.full_name ?? null };

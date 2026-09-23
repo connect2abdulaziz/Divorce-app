@@ -94,11 +94,11 @@ export async function updateSession(request: NextRequest) {
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
       const role = (profile as { role?: string } | null)?.role;
       const url = request.nextUrl.clone();
-      url.pathname = role === "staff" || role === "admin" ? "/admin" : "/questionnaire";
+      url.pathname = role === "staff" || role === "admin" ? "/admin" : "/dashboard";
       return NextResponse.redirect(url);
     } catch {
       const url = request.nextUrl.clone();
-      url.pathname = "/questionnaire";
+      url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
   }

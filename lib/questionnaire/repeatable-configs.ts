@@ -35,6 +35,27 @@ export type RepeatableSectionConfig = {
   summary: SummaryConfig;
 };
 
+/** Client-side only — look up by slug; do not pass as RSC props. */
+export const REPEATABLE_VALIDATORS: Partial<
+  Record<RepeatableSectionSlug, (values: Record<string, unknown>) => string | null>
+> = {
+  "community-debts": (values) => {
+    const owed = Number(values.amount_owed ?? 0);
+    const clientPays = Number(values.amount_client_pays ?? 0);
+    const spousePays = Number(values.amount_spouse_pays ?? 0);
+    if (!Number.isFinite(owed) || !Number.isFinite(clientPays) || !Number.isFinite(spousePays)) {
+      return "Enter valid dollar amounts.";
+    }
+    if (owed === 0 && clientPays === 0 && spousePays === 0) return null;
+    const sum = Math.round((clientPays + spousePays) * 100) / 100;
+    const total = Math.round(owed * 100) / 100;
+    if (Math.abs(sum - total) > 0.01) {
+      return `Your share ($${clientPays.toFixed(2)}) + spouse share ($${spousePays.toFixed(2)}) = $${sum.toFixed(2)}, but total owed is $${total.toFixed(2)}. They should match.`;
+    }
+    return null;
+  },
+};
+
 export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, RepeatableSectionConfig> = {
   "real-estate": {
     slug: "real-estate",
@@ -52,14 +73,14 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
       { name: "amount_owed", label: "Amount owed (mortgage)", kind: "currency" },
       {
         name: "assigned_to",
-        label: "Who keeps it?",
+        label: "What do you want to happen to this property?",
         kind: "select",
         options: [
-          { value: "client", label: "Me" },
-          { value: "spouse", label: "Spouse" },
-          { value: "sell", label: "Sell it" },
-          { value: "joint", label: "Keep jointly" },
+          { value: "sell", label: "Sell property and divide proceeds 50/50" },
+          { value: "client", label: "I will keep the property and associated debt" },
+          { value: "spouse", label: "Spouse will keep the property and associated debt" },
         ],
+        required: true,
       },
     ],
     summary: {
@@ -68,7 +89,17 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
       details: [
         { field: "estimated_value", kind: "currency", label: "Value" },
         { field: "amount_owed", kind: "currency", label: "Owed" },
-        { field: "assigned_to", kind: "text", label: "Keeps it:" },
+        {
+          field: "assigned_to",
+          kind: "text",
+          label: "Disposition:",
+          valueLabels: {
+            sell: "Sell & split 50/50",
+            client: "I keep it",
+            spouse: "Spouse keeps it",
+            joint: "Keep jointly",
+          },
+        },
       ],
     },
   },
@@ -97,6 +128,7 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
           { value: "client", label: "Me" },
           { value: "spouse", label: "Spouse" },
         ],
+        required: true,
       },
     ],
     summary: {
@@ -130,9 +162,10 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
           { value: "client", label: "Me" },
           { value: "spouse", label: "Spouse" },
         ],
+        required: true,
       },
       { name: "approximate_value", label: "Approximate value", kind: "currency" },
-      { name: "division_method", label: "How should it be divided?", kind: "text" },
+      { name: "division_method", label: "How should it be divided?", kind: "text", required: true },
     ],
     summary: {
       titleFields: ["plan_type"],
@@ -148,7 +181,8 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
   "community-debts": {
     slug: "community-debts",
     title: "Community Debts",
-    subtitle: "The amounts you and your spouse will each pay should normally add up to the total owed.",
+    subtitle:
+      "Amount you will pay + amount spouse will pay should equal the total owed.",
     gateColumn: "has_community_debts",
     gateKey: "hasCommunityDebts",
     gateQuestion: "Do you or your spouse have debts that need to be divided?",
@@ -195,6 +229,7 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
           { value: "client", label: "Me" },
           { value: "spouse", label: "Spouse" },
         ],
+        required: true,
       },
     ],
     summary: {
@@ -228,6 +263,7 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
           { value: "client", label: "Me" },
           { value: "spouse", label: "Spouse" },
         ],
+        required: true,
       },
     ],
     summary: {

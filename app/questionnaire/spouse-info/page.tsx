@@ -1,9 +1,33 @@
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
 import { stepLinks } from "@/lib/questionnaire/steps";
-import { SpouseInfoForm } from "./Form";
+import { SpouseInfoForm, type PartySpouse } from "./Form";
 
 const SLUG = "spouse-info";
+
+const EMPTY_SPOUSE: PartySpouse = {
+  first_name: null,
+  middle_name: null,
+  last_name: null,
+  date_of_birth: null,
+  height: null,
+  weight_lbs: null,
+  az_years: null,
+  az_months: null,
+  address_line1: null,
+  address_line2: null,
+  city: null,
+  state: null,
+  zip: null,
+  home_phone: null,
+  cell_phone: null,
+  phone: null,
+  email: null,
+  ssn_last4: null,
+  address_unknown: false,
+  phone_unknown: false,
+  ssn_unknown: false,
+};
 
 export default async function SpouseInfoPage({
   searchParams,
@@ -23,7 +47,7 @@ export default async function SpouseInfoPage({
       backLabel={nav.backLabel}
       nextHref={nav.nextHref}
       submitLabel={nav.submitLabel}
-      initial={sections.party_spouse}
+      initial={{ ...EMPTY_SPOUSE, ...(sections.party_spouse as PartySpouse | null) }}
     />
   );
 }

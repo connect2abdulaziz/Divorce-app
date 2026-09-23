@@ -4,6 +4,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { updateCaseGates } from "@/lib/questionnaire/actions";
 import type { RepeatableTable } from "@/lib/questionnaire/data";
+import {
+  REPEATABLE_VALIDATORS,
+  type RepeatableSectionSlug,
+} from "@/lib/questionnaire/repeatable-configs";
 import { YesNo } from "./fields";
 import { RepeatableList, type FieldConfig, type SummaryConfig } from "./RepeatableList";
 import { StepFrame } from "./StepFrame";
@@ -58,6 +62,7 @@ export function GatedRepeatableStep({
 }) {
   const router = useRouter();
   const [gate, setGate] = useState<boolean | null>(gateValue);
+  const validate = REPEATABLE_VALIDATORS[slug as RepeatableSectionSlug];
 
   async function handleContinue() {
     await updateCaseGates(caseId, { [gateColumn]: gate ?? false }, slug);
@@ -87,6 +92,7 @@ export function GatedRepeatableStep({
           summary={summary}
           addLabel={addLabel}
           emptyLabel={emptyLabel}
+          validate={validate}
         />
       )}
     </StepFrame>

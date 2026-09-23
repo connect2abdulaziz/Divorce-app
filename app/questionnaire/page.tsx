@@ -10,7 +10,7 @@ export default async function QuestionnaireIndexPage() {
   const { kase, gates } = await loadCaseBundle(caseId);
 
   if (kase.questionnaire_status !== "in_progress") {
-    redirect("/questionnaire/submitted");
+    redirect(`/dashboard/${caseId}`);
   }
 
   if (!kase.last_completed_section) {

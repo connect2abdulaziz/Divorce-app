@@ -52,7 +52,7 @@ export async function login(formData: FormData) {
   const role = (profile as { role?: string } | null)?.role;
 
   revalidatePath("/", "layout");
-  redirect(role === "staff" || role === "admin" ? "/admin" : "/questionnaire");
+  redirect(role === "staff" || role === "admin" ? "/admin" : "/dashboard");
 }
 
 export async function signup(formData: FormData) {
@@ -89,7 +89,7 @@ export async function signup(formData: FormData) {
     const existing = await supabase.auth.signInWithPassword({ email, password });
     if (existing.data.session) {
       revalidatePath("/", "layout");
-      redirect("/questionnaire");
+      redirect("/dashboard");
     }
     redirect(`/signup?error=${encodeURIComponent(result.error.message)}`);
   }
@@ -116,7 +116,7 @@ export async function signup(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/questionnaire");
+  redirect("/dashboard");
 }
 
 export async function signOut() {

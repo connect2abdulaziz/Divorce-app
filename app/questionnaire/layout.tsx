@@ -22,7 +22,7 @@ export default async function QuestionnaireLayout({ children }: { children: Reac
   const { kase, gates } = await loadCaseBundle(caseId);
   const supabase = await createClient();
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  const showDashboard = isStaffRole((profile as { role?: string } | null)?.role);
+  const showAdmin = isStaffRole((profile as { role?: string } | null)?.role);
 
   const steps = visibleSteps(gates).map(toStepInfo);
   const percent = percentComplete(gates, kase.last_completed_section);
@@ -35,9 +35,12 @@ export default async function QuestionnaireLayout({ children }: { children: Reac
             Legal Divorce Docs
           </Link>
           <div className="flex items-center gap-3 text-sm text-muted sm:gap-4">
-            {showDashboard && (
+            <Link href="/dashboard" className="btn-text">
+              My case
+            </Link>
+            {showAdmin && (
               <Link href="/admin" className="btn-text">
-                Dashboard
+                Admin
               </Link>
             )}
             <span className="hidden max-w-[14rem] truncate sm:inline">{user.email}</span>

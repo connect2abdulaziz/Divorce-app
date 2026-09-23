@@ -8,6 +8,7 @@ import { DomesticViolenceForm } from "@/app/questionnaire/domestic-violence/Form
 import { ChildrenForm } from "@/app/questionnaire/children/Form";
 import { ParentingForm } from "@/app/questionnaire/parenting/Form";
 import { TaxInformationForm } from "@/app/questionnaire/tax-information/Form";
+import { CommunityPropertyForm } from "@/app/questionnaire/community-property/Form";
 import { requireStaff } from "@/lib/admin/current-staff";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
 import {
@@ -92,6 +93,15 @@ export default async function AdminSectionEditPage({
         return <ParentingForm caseId={caseId} slug={section} {...nav} initial={sections.parenting!} />;
       case "tax-information":
         return <TaxInformationForm caseId={caseId} slug={section} {...nav} initial={sections.tax_information!} />;
+      case "community-property":
+        return (
+          <CommunityPropertyForm
+            caseId={caseId}
+            slug={section}
+            {...nav}
+            initial={gates.hasCommunityProperty}
+          />
+        );
       default:
         return null;
     }

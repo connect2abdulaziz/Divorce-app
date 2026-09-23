@@ -10,12 +10,23 @@ export type FieldConfig =
   | { name: string; label: string; kind: "text"; required?: boolean }
   | { name: string; label: string; kind: "number"; required?: boolean }
   | { name: string; label: string; kind: "currency"; required?: boolean }
-  | { name: string; label: string; kind: "select"; options: { value: string; label: string }[]; required?: boolean };
+  | {
+      name: string;
+      label: string;
+      kind: "select";
+      options: { value: string; label: string }[];
+      required?: boolean;
+    };
 
 export type SummaryConfig = {
   titleFields: string[];
   titleFallback: string;
-  details: { field: string; kind: "currency" | "text"; label: string }[];
+  details: {
+    field: string;
+    kind: "currency" | "text";
+    label: string;
+    valueLabels?: Record<string, string>;
+  }[];
 };
 
 type Row = Record<string, unknown> & { id: string };
@@ -35,7 +46,12 @@ function summarizeRow(row: Row, config: SummaryConfig) {
     .map((part) => {
       const value = row[part.field];
       if (!hasValue(value)) return null;
-      return part.kind === "currency" ? `${part.label} $${value}` : `${part.label} ${value}`;
+      if (part.kind === "currency") return `${part.label} $${value}`;
+      const display =
+        part.valueLabels && typeof value === "string"
+          ? part.valueLabels[value] ?? value
+          : value;
+      return `${part.label} ${display}`;
     })
     .filter(Boolean)
     .join(" · ");
@@ -90,19 +106,28 @@ function RecordForm({
   onCancel,
   onSubmit,
   submitLabel,
+  validate,
 }: {
   fields: FieldConfig[];
   defaults?: Row;
   onCancel: () => void;
   onSubmit: (values: Record<string, unknown>) => Promise<void>;
   submitLabel: string;
+  validate?: (values: Record<string, unknown>) => string | null;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const values = parseFields(formData, fields);
+    const validationError = validate?.(values) ?? null;
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
     startTransition(async () => {
       await onSubmit(values);
     });
@@ -112,12 +137,13 @@ function RecordForm({
     <form onSubmit={handleSubmit} className="rounded-xl border border-line bg-[#F7F6F1] p-4 md:p-5">
       <div className="grid gap-4 sm:grid-cols-2">
         {fields.map((f) => (
-          <div key={f.name} className={f.kind === "select" ? "" : "sm:col-span-1"}>
+          <div key={f.name} className={f.kind === "select" ? "sm:col-span-2" : "sm:col-span-1"}>
             <label className="field-label">{f.label}</label>
             <FieldInput field={f} defaultValue={defaults?.[f.name]} />
           </div>
         ))}
       </div>
+      {error ? <p className="field-error mt-3">{error}</p> : null}
       <div className="mt-4 flex gap-3">
         <button type="submit" className="btn-primary" disabled={isPending} aria-busy={isPending}>
           {isPending ? (
@@ -145,6 +171,7 @@ export function RepeatableList({
   summary,
   addLabel,
   emptyLabel,
+  validate,
 }: {
   table: RepeatableTable;
   caseId: string;
@@ -153,6 +180,7 @@ export function RepeatableList({
   summary: SummaryConfig;
   addLabel: string;
   emptyLabel: string;
+  validate?: (values: Record<string, unknown>) => string | null;
 }) {
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -177,6 +205,7 @@ export function RepeatableList({
               fields={fields}
               defaults={row}
               submitLabel="Save"
+              validate={validate}
               onCancel={() => setEditingId(null)}
               onSubmit={async (values) => {
                 await updateRecord(table, row.id, values);
@@ -210,6 +239,7 @@ export function RepeatableList({
         <RecordForm
           fields={fields}
           submitLabel="Add"
+          validate={validate}
           onCancel={() => setAdding(false)}
           onSubmit={async (values) => {
             await addRecord(table, caseId, values);

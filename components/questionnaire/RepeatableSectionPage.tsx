@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { GatedRepeatableStep } from "@/components/questionnaire/GatedRepeatableStep";
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
@@ -6,6 +7,14 @@ import {
   type RepeatableSectionSlug,
 } from "@/lib/questionnaire/repeatable-configs";
 import { stepLinks } from "@/lib/questionnaire/steps";
+
+const COMMUNITY_PROPERTY_SLUGS = new Set([
+  "real-estate",
+  "vehicles",
+  "retirement",
+  "community-debts",
+  "household-property",
+]);
 
 export async function RepeatableSectionPage({
   slug,
@@ -17,8 +26,18 @@ export async function RepeatableSectionPage({
   const { from } = await searchParams;
   const { caseId } = await getCurrentUserAndCase();
   const { records, gates, kase } = await loadCaseBundle(caseId);
+
+  if (COMMUNITY_PROPERTY_SLUGS.has(slug) && gates.hasCommunityProperty !== true) {
+    redirect(
+      from === "review"
+        ? "/questionnaire/community-property?from=review"
+        : "/questionnaire/community-property"
+    );
+  }
+
   const cfg = REPEATABLE_SECTION_CONFIGS[slug];
-  const lastCompleted = (kase as { last_completed_section?: string | null }).last_completed_section ?? null;
+  const lastCompleted =
+    (kase as { last_completed_section?: string | null }).last_completed_section ?? null;
   const nav = stepLinks(cfg.slug, gates, lastCompleted, from === "review");
 
   return (

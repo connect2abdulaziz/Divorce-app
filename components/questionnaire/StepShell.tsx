@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Spinner } from "@/components/ui/SubmitButton";
 import { FormPanel } from "./FormPanel";
 
@@ -11,6 +11,7 @@ export function StepShell({
   backHref,
   backLabel = "Back",
   onSubmit,
+  onAutoSave,
   children,
   submitLabel = "Save & continue",
 }: {
@@ -19,25 +20,79 @@ export function StepShell({
   backHref: string | null;
   backLabel?: string;
   onSubmit: (formData: FormData) => Promise<void>;
+  /** Debounced background save — do not advance progress. */
+  onAutoSave?: (formData: FormData) => Promise<void>;
   children: React.ReactNode;
   submitLabel?: string;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [autoStatus, setAutoStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const formRef = useRef<HTMLFormElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const skipAutoSaveRef = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  function scheduleAutoSave() {
+    if (!onAutoSave || skipAutoSaveRef.current) return;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(async () => {
+      const form = formRef.current;
+      if (!form) return;
+      setAutoStatus("saving");
+      try {
+        await onAutoSave(new FormData(form));
+        setAutoStatus("saved");
+      } catch {
+        setAutoStatus("error");
+      }
+    }, 1200);
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (timerRef.current) clearTimeout(timerRef.current);
+    skipAutoSaveRef.current = true;
     const formData = new FormData(e.currentTarget);
     startTransition(async () => {
-      await onSubmit(formData);
+      try {
+        await onSubmit(formData);
+      } finally {
+        skipAutoSaveRef.current = false;
+      }
     });
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      onChange={scheduleAutoSave}
+      onInput={scheduleAutoSave}
+    >
       <FormPanel>
         <div className="border-b border-line/70 px-6 py-7 md:px-8">
-          <h2 className="font-serif text-[1.75rem] font-semibold leading-tight text-ink">{title}</h2>
-          {subtitle && <p className="mt-2 text-[15px] leading-relaxed text-muted">{subtitle}</p>}
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="font-serif text-[1.75rem] font-semibold leading-tight text-ink">{title}</h2>
+              {subtitle && <p className="mt-2 text-[15px] leading-relaxed text-muted">{subtitle}</p>}
+            </div>
+            {onAutoSave ? (
+              <p className="shrink-0 pt-1 text-xs text-muted" aria-live="polite">
+                {autoStatus === "saving"
+                  ? "Saving…"
+                  : autoStatus === "saved"
+                    ? "Saved"
+                    : autoStatus === "error"
+                      ? "Save failed"
+                      : null}
+              </p>
+            ) : null}
+          </div>
         </div>
 
         <div className="space-y-6 px-6 py-7 md:px-8">{children}</div>

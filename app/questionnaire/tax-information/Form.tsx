@@ -2,14 +2,32 @@
 
 import { useRouter } from "next/navigation";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
-import { Field, Select, TextArea, TextInput } from "@/components/questionnaire/fields";
+import { Field, Select, TextArea } from "@/components/questionnaire/fields";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 type TaxInformation = {
-  filing_status: string | null;
+  filing_status?: string | null;
   dependents_claimed_by: string | null;
+  claim_frequency: string | null;
   notes: string | null;
 };
+
+function emptyToNull(value: FormDataEntryValue | null) {
+  const s = String(value ?? "").trim();
+  return s === "" ? null : s;
+}
+
+function normalizeClaimedBy(value: string | null) {
+  if (value === "client" || value === "spouse") return value;
+  return null;
+}
+
+function normalizeFrequency(value: string | null, claimedBy: string | null) {
+  if (value === "every_year" || value === "alternate_years") return value;
+  // Legacy: "alternate" lived on dependents_claimed_by
+  if (claimedBy === "alternate") return "alternate_years";
+  return null;
+}
 
 export function TaxInformationForm({
   caseId,
@@ -29,34 +47,56 @@ export function TaxInformationForm({
   initial: TaxInformation;
 }) {
   const router = useRouter();
+  const claimedDefault = normalizeClaimedBy(initial.dependents_claimed_by);
+  const frequencyDefault = normalizeFrequency(initial.claim_frequency, initial.dependents_claimed_by);
+
+  function buildValues(formData: FormData) {
+    return {
+      dependents_claimed_by: emptyToNull(formData.get("dependents_claimed_by")),
+      claim_frequency: emptyToNull(formData.get("claim_frequency")),
+      notes: emptyToNull(formData.get("notes")),
+    };
+  }
 
   async function handleSubmit(formData: FormData) {
-    const values = Object.fromEntries(formData.entries());
-    await saveSingletonSection("tax_information", caseId, values, slug);
+    await saveSingletonSection("tax_information", caseId, buildValues(formData), slug);
     router.push(nextHref);
+  }
+
+  async function handleAutoSave(formData: FormData) {
+    await saveSingletonSection("tax_information", caseId, buildValues(formData));
   }
 
   return (
     <StepShell
       title="Tax Information"
+      subtitle="Who will claim the children as dependents on tax returns going forward?"
       backHref={backHref}
       backLabel={backLabel}
       submitLabel={submitLabel}
       onSubmit={handleSubmit}
+      onAutoSave={handleAutoSave}
     >
-      <Field label="Most recent filing status">
-        <TextInput name="filing_status" defaultValue={initial.filing_status} placeholder="e.g. Married filing jointly" />
-      </Field>
-      <Field label="Who will claim the dependents going forward?">
+      <Field label="Who will claim the dependents?">
         <Select
           name="dependents_claimed_by"
-          defaultValue={initial.dependents_claimed_by}
+          defaultValue={claimedDefault}
           options={[
             { value: "client", label: "Me" },
             { value: "spouse", label: "Spouse" },
-            { value: "split", label: "Split evenly" },
-            { value: "alternate", label: "Alternate by year" },
           ]}
+          required
+        />
+      </Field>
+      <Field label="How often?">
+        <Select
+          name="claim_frequency"
+          defaultValue={frequencyDefault}
+          options={[
+            { value: "every_year", label: "Every year" },
+            { value: "alternate_years", label: "Alternate years" },
+          ]}
+          required
         />
       </Field>
       <Field label="Additional notes">
