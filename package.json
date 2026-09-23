@@ -7,6 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "docs:scan-pdfs": "tsx scripts/scan-pdf-fields.ts",
+    "docs:export-woc": "tsx scripts/export-woc-fields.ts",
+    "docs:export-wc": "tsx scripts/export-wc-fields.ts",
+    "docs:scan-woc": "tsx scripts/scan-woc.ts",
+    "docs:generate-test": "tsx scripts/generate-test-docs.ts",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",
@@ -16,6 +21,7 @@
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.4",
     "next": "^14.2.5",
+    "pdf-lib": "^1.17.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -27,6 +33,7 @@
     "postcss": "^8.5.28",
     "supabase": "^1.191.3",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.23.15",
     "typescript": "^5.5.3"
   }
 }

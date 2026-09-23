@@ -1,0 +1,716 @@
+{
+  "scannedAt": "2026-09-23T18:56:27.016Z",
+  "root": "C:\\xampp\\htdocs\\azdivorce\\wp-content\\uploads\\Divorce ALL PDFS",
+  "summary": {
+    "pdfCount": 78,
+    "fillable": 0,
+    "flat": 78,
+    "errors": 0,
+    "uniqueFieldNameCount": 0
+  },
+  "templates": [
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/1st Step Divorce Without Children/1 Family Depaertment Coversheet Sensitive Data Without Children DRSDS10FA 1st step.pdf",
+      "fileName": "1 Family Depaertment Coversheet Sensitive Data Without Children DRSDS10FA 1st step.pdf",
+      "bytes": 192843,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/1st Step Divorce Without Children/2 PETITION FOR DISSOLUTION OF MARRIAGE WITHOUT CHILDREN DRDA10F.pdf",
+      "fileName": "2 PETITION FOR DISSOLUTION OF MARRIAGE WITHOUT CHILDREN DRDA10F.pdf",
+      "bytes": 108913,
+      "pageCount": 8,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/1st Step Divorce Without Children/3 Summons DR11F 1st Step.pdf",
+      "fileName": "3 Summons DR11F 1st Step.pdf",
+      "bytes": 341763,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/1st Step Divorce Without Children/4 Preliminary Injunction DR14F 1st Step.pdf",
+      "fileName": "4 Preliminary Injunction DR14F 1st Step.pdf",
+      "bytes": 88824,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/1st Step Divorce Without Children/5 Notice Regarding Insurance DRD16F 1st step.pdf",
+      "fileName": "5 Notice Regarding Insurance DRD16F 1st step.pdf",
+      "bytes": 372625,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/1st Step Divorce Without Children/6 NOTICE REGARDING CREDITORS DR16f 1st step.pdf",
+      "fileName": "6 NOTICE REGARDING CREDITORS DR16f 1st step.pdf",
+      "bytes": 62151,
+      "pageCount": 3,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/2nd Step Serving Your Spouse All Divorces/1 Acceptance of Service 2nd Step DR22F.pdf",
+      "fileName": "1 Acceptance of Service 2nd Step DR22F.pdf",
+      "bytes": 104107,
+      "pageCount": 5,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/2nd Step Serving Your Spouse All Divorces/2 AFFIDAVIT OF SERVICE WITH SIGNATURE CONFIRMATION DR24F.pdf",
+      "fileName": "2 AFFIDAVIT OF SERVICE WITH SIGNATURE CONFIRMATION DR24F.pdf",
+      "bytes": 97264,
+      "pageCount": 6,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/2nd Step Serving Your Spouse All Divorces/3 Service By Sherrif.pdf",
+      "fileName": "3 Service By Sherrif.pdf",
+      "bytes": 111532,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/2nd Step Serving Your Spouse All Divorces/4 MOTION TO SERVE BY ALTERNATIVE SERVICE OR PUBLICATION  DR28F.pdf",
+      "fileName": "4 MOTION TO SERVE BY ALTERNATIVE SERVICE OR PUBLICATION  DR28F.pdf",
+      "bytes": 83405,
+      "pageCount": 5,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/2nd Step Serving Your Spouse All Divorces/5 ORDER TO SERVE BY ALTERNATIVE SERVICE OR PUBLICATION DR29F.pdf",
+      "fileName": "5 ORDER TO SERVE BY ALTERNATIVE SERVICE OR PUBLICATION DR29F.pdf",
+      "bytes": 63208,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/2nd Step Serving Your Spouse All Divorces/6 Form For Publication DR28p.pdf",
+      "fileName": "6 Form For Publication DR28p.pdf",
+      "bytes": 40988,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/2nd Step Serving Your Spouse All Divorces/7 AFFIDAVIT OF SERVICE BY ALTERNATIVE SERVICE DR31F.pdf",
+      "fileName": "7 AFFIDAVIT OF SERVICE BY ALTERNATIVE SERVICE DR31F.pdf",
+      "bytes": 73850,
+      "pageCount": 3,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/2nd Step Serving Your Spouse All Divorces/8 DECLARATION SUPPORTING PUBLICATION DR30F.pdf",
+      "fileName": "8 DECLARATION SUPPORTING PUBLICATION DR30F.pdf",
+      "bytes": 75379,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/3rd step DEFAULT APPLICATION ALL DIVORCES/1 APPLICATION AND AFFIDAVIT OF DEFAULT DKD61F.pdf",
+      "fileName": "1 APPLICATION AND AFFIDAVIT OF DEFAULT DKD61F.pdf",
+      "bytes": 79388,
+      "pageCount": 4,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/3rd step DEFAULT APPLICATION ALL DIVORCES/OPTIONAL DEFAULT INFORMATION for SPOUSAL MAINTENANCE DRD62F.pdf",
+      "fileName": "OPTIONAL DEFAULT INFORMATION for SPOUSAL MAINTENANCE DRD62F.pdf",
+      "bytes": 372512,
+      "pageCount": 4,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/4a Step Decree Without children/1 Decree No Children DRDA81f.pdf",
+      "fileName": "1 Decree No Children DRDA81f.pdf",
+      "bytes": 133271,
+      "pageCount": 15,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/4a Step Decree Without children/OPTIONAL MOTION AND AFFIDAVIT FOR Decree Without a Hearing DRD68F0.pdf",
+      "fileName": "OPTIONAL MOTION AND AFFIDAVIT FOR Decree Without a Hearing DRD68F0.pdf",
+      "bytes": 87147,
+      "pageCount": 6,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/4b Step 2nd Choice Consent Decree/1 Cover Page Sensitive Data Sheet Repsondent Wihtout children drsds10fa.pdf",
+      "fileName": "1 Cover Page Sensitive Data Sheet Repsondent Wihtout children drsds10fa.pdf",
+      "bytes": 192762,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/4b Step 2nd Choice Consent Decree/2 Notice of Lodging DRNOL70F.pdf",
+      "fileName": "2 Notice of Lodging DRNOL70F.pdf",
+      "bytes": 52643,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/4b Step 2nd Choice Consent Decree/3 Consent Decree Without Children DRA710f.pdf",
+      "fileName": "3 Consent Decree Without Children DRA710f.pdf",
+      "bytes": 109850,
+      "pageCount": 14,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/OTIONAL 4TH STEP SUMMARY CONSENT DECREE WITHOUT CHILDREN/1 COVER SHEET SENSITIVE DATA WITHOUT CHILDREN drsds10f-annz.pdf",
+      "fileName": "1 COVER SHEET SENSITIVE DATA WITHOUT CHILDREN drsds10f-annz.pdf",
+      "bytes": 62290,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/OTIONAL 4TH STEP SUMMARY CONSENT DECREE WITHOUT CHILDREN/2 NOTICE OF INTENT TO FILE CONSENT DECREE drdsc10fz.pdf",
+      "fileName": "2 NOTICE OF INTENT TO FILE CONSENT DECREE drdsc10fz.pdf",
+      "bytes": 824689,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/OTIONAL 4TH STEP SUMMARY CONSENT DECREE WITHOUT CHILDREN/3 NOTICE OF LODGING drnol70f.pdf",
+      "fileName": "3 NOTICE OF LODGING drnol70f.pdf",
+      "bytes": 102959,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/OTIONAL 4TH STEP SUMMARY CONSENT DECREE WITHOUT CHILDREN/4 SUMMARY CONSENT PETITION AND RESPONSE drdsc11fz.pdf",
+      "fileName": "4 SUMMARY CONSENT PETITION AND RESPONSE drdsc11fz.pdf",
+      "bytes": 156787,
+      "pageCount": 5,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/OTIONAL 4TH STEP SUMMARY CONSENT DECREE WITHOUT CHILDREN/5 CONSENT DECREE WITHOUT CHILDREN dra71fz.pdf",
+      "fileName": "5 CONSENT DECREE WITHOUT CHILDREN dra71fz.pdf",
+      "bytes": 451178,
+      "pageCount": 15,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/OTIONAL 4TH STEP SUMMARY CONSENT DECREE WITHOUT CHILDREN/6 Preliminary Injunction DR14F 1st Step.pdf",
+      "fileName": "6 Preliminary Injunction DR14F 1st Step.pdf",
+      "bytes": 88824,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/OTIONAL 4TH STEP SUMMARY CONSENT DECREE WITHOUT CHILDREN/7 NOTICE REGARDING CREDITORS DR16f 1st step.pdf",
+      "fileName": "7 NOTICE REGARDING CREDITORS DR16f 1st step.pdf",
+      "bytes": 62151,
+      "pageCount": 3,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WIHTOUT CHILDREN/OTIONAL 4TH STEP SUMMARY CONSENT DECREE WITHOUT CHILDREN/8 Notice Regarding Insurance DRD16F 1st step.pdf",
+      "fileName": "8 Notice Regarding Insurance DRD16F 1st step.pdf",
+      "bytes": 372625,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/1ST STEP DIVORCE WITH CHILDREN/1 FAMILY COVER SHEET SENSITIVE DATA DRSDS10FC.pdf",
+      "fileName": "1 FAMILY COVER SHEET SENSITIVE DATA DRSDS10FC.pdf",
+      "bytes": 195624,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/1ST STEP DIVORCE WITH CHILDREN/2 PETITION FOR DISSOLUTION OF MARRIAGE WITH CHILDREN DRDCF.pdf",
+      "fileName": "2 PETITION FOR DISSOLUTION OF MARRIAGE WITH CHILDREN DRDCF.pdf",
+      "bytes": 135482,
+      "pageCount": 14,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/1ST STEP DIVORCE WITH CHILDREN/3 AFFIDAVIT REGARDING MINOR CHILDREN DRCVG13F.pdf",
+      "fileName": "3 AFFIDAVIT REGARDING MINOR CHILDREN DRCVG13F.pdf",
+      "bytes": 272565,
+      "pageCount": 3,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/1ST STEP DIVORCE WITH CHILDREN/4 Summons DR11F 1st Step.pdf",
+      "fileName": "4 Summons DR11F 1st Step.pdf",
+      "bytes": 341763,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/1ST STEP DIVORCE WITH CHILDREN/5 Preliminary Injunction DR14F 1st Step.pdf",
+      "fileName": "5 Preliminary Injunction DR14F 1st Step.pdf",
+      "bytes": 88824,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/1ST STEP DIVORCE WITH CHILDREN/6 NOTICE REGARDING CREDITORS DR16f 1st step.pdf",
+      "fileName": "6 NOTICE REGARDING CREDITORS DR16f 1st step.pdf",
+      "bytes": 62151,
+      "pageCount": 3,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/1ST STEP DIVORCE WITH CHILDREN/7 Notice Regarding Insurance DRD16F 1st step.pdf",
+      "fileName": "7 Notice Regarding Insurance DRD16F 1st step.pdf",
+      "bytes": 372625,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/1ST STEP DIVORCE WITH CHILDREN/8 ORDER AND NOTICE TO ATTEND PARENTINCG CLASS DR12F.pdf",
+      "fileName": "8 ORDER AND NOTICE TO ATTEND PARENTINCG CLASS DR12F.pdf",
+      "bytes": 121944,
+      "pageCount": 5,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/1ST STEP DIVORCE WITH CHILDREN/9 PARENTING PLAN DRCVG11F.pdf",
+      "fileName": "9 PARENTING PLAN DRCVG11F.pdf",
+      "bytes": 125175,
+      "pageCount": 11,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/2nd Step Serving Your Spouse All Divorces/1 Acceptance of Service 2nd Step DR22F.pdf",
+      "fileName": "1 Acceptance of Service 2nd Step DR22F.pdf",
+      "bytes": 104107,
+      "pageCount": 5,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/2nd Step Serving Your Spouse All Divorces/2 AFFIDAVIT OF SERVICE WITH SIGNATURE CONFIRMATION DR24F.pdf",
+      "fileName": "2 AFFIDAVIT OF SERVICE WITH SIGNATURE CONFIRMATION DR24F.pdf",
+      "bytes": 97264,
+      "pageCount": 6,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/2nd Step Serving Your Spouse All Divorces/3 Service By Sherrif.pdf",
+      "fileName": "3 Service By Sherrif.pdf",
+      "bytes": 111532,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/2nd Step Serving Your Spouse All Divorces/4 MOTION TO SERVE BY ALTERNATIVE SERVICE OR PUBLICATION  DR28F.pdf",
+      "fileName": "4 MOTION TO SERVE BY ALTERNATIVE SERVICE OR PUBLICATION  DR28F.pdf",
+      "bytes": 83405,
+      "pageCount": 5,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/2nd Step Serving Your Spouse All Divorces/5 ORDER TO SERVE BY ALTERNATIVE SERVICE OR PUBLICATION DR29F.pdf",
+      "fileName": "5 ORDER TO SERVE BY ALTERNATIVE SERVICE OR PUBLICATION DR29F.pdf",
+      "bytes": 63208,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/2nd Step Serving Your Spouse All Divorces/6 Form For Publication DR28p.pdf",
+      "fileName": "6 Form For Publication DR28p.pdf",
+      "bytes": 40988,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/2nd Step Serving Your Spouse All Divorces/7 AFFIDAVIT OF SERVICE BY ALTERNATIVE SERVICE DR31F.pdf",
+      "fileName": "7 AFFIDAVIT OF SERVICE BY ALTERNATIVE SERVICE DR31F.pdf",
+      "bytes": 73850,
+      "pageCount": 3,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/2nd Step Serving Your Spouse All Divorces/8 DECLARATION SUPPORTING PUBLICATION DR30F.pdf",
+      "fileName": "8 DECLARATION SUPPORTING PUBLICATION DR30F.pdf",
+      "bytes": 75379,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/3rd step DEFAULT APPLICATION ALL DIVORCES/1 APPLICATION AND AFFIDAVIT OF DEFAULT DKD61F.pdf",
+      "fileName": "1 APPLICATION AND AFFIDAVIT OF DEFAULT DKD61F.pdf",
+      "bytes": 79388,
+      "pageCount": 4,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/3rd step DEFAULT APPLICATION ALL DIVORCES/OPTIONAL DEFAULT INFORMATION for SPOUSAL MAINTENANCE DRD62F.pdf",
+      "fileName": "OPTIONAL DEFAULT INFORMATION for SPOUSAL MAINTENANCE DRD62F.pdf",
+      "bytes": 372512,
+      "pageCount": 4,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4a STEP 1st choice DECREE/1 Decree With Children DRDC81f.pdf",
+      "fileName": "1 Decree With Children DRDC81f.pdf",
+      "bytes": 160054,
+      "pageCount": 17,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4a STEP 1st choice DECREE/2 PARENTING PLAN DRCVG11F.pdf",
+      "fileName": "2 PARENTING PLAN DRCVG11F.pdf",
+      "bytes": 125175,
+      "pageCount": 11,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4a STEP 1st choice DECREE/3 Child Support Worksheet drs12fz.pdf",
+      "fileName": "3 Child Support Worksheet drs12fz.pdf",
+      "bytes": 184472,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4a STEP 1st choice DECREE/4 Child Support Order drs81fz.pdf",
+      "fileName": "4 Child Support Order drs81fz.pdf",
+      "bytes": 361465,
+      "pageCount": 8,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4a STEP 1st choice DECREE/5 Current Employer Information drs88fz.pdf",
+      "fileName": "5 Current Employer Information drs88fz.pdf",
+      "bytes": 34194,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4a STEP 1st choice DECREE/6a OPTION Education ORder Joint custody dreo81fz.pdf",
+      "fileName": "6a OPTION Education ORder Joint custody dreo81fz.pdf",
+      "bytes": 146349,
+      "pageCount": 4,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4a STEP 1st choice DECREE/6b OPTION Education Order Sole Custody dreo82fz.pdf",
+      "fileName": "6b OPTION Education Order Sole Custody dreo82fz.pdf",
+      "bytes": 136992,
+      "pageCount": 4,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4b STEP  2ND Choice CONSENT DECREE AL WITHOUT CHILDREN/1 Cover Sheet Sensitive Data Sheet DRSDS10f-c.pdf",
+      "fileName": "1 Cover Sheet Sensitive Data Sheet DRSDS10f-c.pdf",
+      "bytes": 195937,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4b STEP  2ND Choice CONSENT DECREE AL WITHOUT CHILDREN/2 NOTICE OF LODGING DRNOL70F.pdf",
+      "fileName": "2 NOTICE OF LODGING DRNOL70F.pdf",
+      "bytes": 52654,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4b STEP  2ND Choice CONSENT DECREE AL WITHOUT CHILDREN/3 Concent Decree With Children DRA71F.pdf",
+      "fileName": "3 Concent Decree With Children DRA71F.pdf",
+      "bytes": 176543,
+      "pageCount": 21,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4b STEP  2ND Choice CONSENT DECREE AL WITHOUT CHILDREN/4  PARENTING PLAN DRCVG11F.pdf",
+      "fileName": "4  PARENTING PLAN DRCVG11F.pdf",
+      "bytes": 125175,
+      "pageCount": 11,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4b STEP  2ND Choice CONSENT DECREE AL WITHOUT CHILDREN/5 Child Support Worksheet drs12fz.pdf",
+      "fileName": "5 Child Support Worksheet drs12fz.pdf",
+      "bytes": 184472,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4b STEP  2ND Choice CONSENT DECREE AL WITHOUT CHILDREN/6 Child Support Order drs81fz.pdf",
+      "fileName": "6 Child Support Order drs81fz.pdf",
+      "bytes": 361465,
+      "pageCount": 8,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4b STEP  2ND Choice CONSENT DECREE AL WITHOUT CHILDREN/7 Current Employer Information drs88fz.pdf",
+      "fileName": "7 Current Employer Information drs88fz.pdf",
+      "bytes": 34194,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4b STEP  2ND Choice CONSENT DECREE AL WITHOUT CHILDREN/8a Education ORder Joint custody dreo81fz.pdf",
+      "fileName": "8a Education ORder Joint custody dreo81fz.pdf",
+      "bytes": 146349,
+      "pageCount": 4,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4b STEP  2ND Choice CONSENT DECREE AL WITHOUT CHILDREN/8b Education Order Sole Custody dreo82fz.pdf",
+      "fileName": "8b Education Order Sole Custody dreo82fz.pdf",
+      "bytes": 136992,
+      "pageCount": 4,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/1 Cover Sheet Sensitive Data With Children drsds10f-cz.pdf",
+      "fileName": "1 Cover Sheet Sensitive Data With Children drsds10f-cz.pdf",
+      "bytes": 504469,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/10 ORDER AND NOTICE TO ATTEND PARENTINCG CLASS DR12F.pdf",
+      "fileName": "10 ORDER AND NOTICE TO ATTEND PARENTINCG CLASS DR12F.pdf",
+      "bytes": 121944,
+      "pageCount": 5,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/11 Child Support Worksheet drs12fz.pdf",
+      "fileName": "11 Child Support Worksheet drs12fz.pdf",
+      "bytes": 184472,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/12 Child Support Order drs81fz.pdf",
+      "fileName": "12 Child Support Order drs81fz.pdf",
+      "bytes": 361465,
+      "pageCount": 8,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/13 Current Employer Information drs88fz.pdf",
+      "fileName": "13 Current Employer Information drs88fz.pdf",
+      "bytes": 34194,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/2 NOTICE OF INTENT TO FILE CONSENT DECREE drdsc10fz.pdf",
+      "fileName": "2 NOTICE OF INTENT TO FILE CONSENT DECREE drdsc10fz.pdf",
+      "bytes": 824689,
+      "pageCount": 1,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/3 NOTICE OF LODGING drnol70f.pdf",
+      "fileName": "3 NOTICE OF LODGING drnol70f.pdf",
+      "bytes": 102959,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/4 SUMMARY CONSENT PETITION AND RESPONSE drdsc11fz.pdf",
+      "fileName": "4 SUMMARY CONSENT PETITION AND RESPONSE drdsc11fz.pdf",
+      "bytes": 156787,
+      "pageCount": 5,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/5 AFFIDAVIT REGARDING MINOR CHILDREN DRCVG13F.pdf",
+      "fileName": "5 AFFIDAVIT REGARDING MINOR CHILDREN DRCVG13F.pdf",
+      "bytes": 272565,
+      "pageCount": 3,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/6 CONSENT DECREE WITH CHILDREN dr71fz.pdf",
+      "fileName": "6 CONSENT DECREE WITH CHILDREN dr71fz.pdf",
+      "bytes": 627279,
+      "pageCount": 21,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/7 PARENTING PLAN DRCVG11F.pdf",
+      "fileName": "7 PARENTING PLAN DRCVG11F.pdf",
+      "bytes": 125175,
+      "pageCount": 11,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/8 Preliminary Injunction DR14F 1st Step.pdf",
+      "fileName": "8 Preliminary Injunction DR14F 1st Step.pdf",
+      "bytes": 88824,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/9 NOTICE REGARDING CREDITORS DR16f 1st step.pdf",
+      "fileName": "9 NOTICE REGARDING CREDITORS DR16f 1st step.pdf",
+      "bytes": 62151,
+      "pageCount": 3,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    },
+    {
+      "relativePath": "DIVORCE WITH CHILDREN/4c oPTIONAL 4TH STEP OR SUMMARY CONSENT DECREE WITH CHILDREN/9 Notice Regarding Insurance DRD16F 1st step.pdf",
+      "fileName": "9 Notice Regarding Insurance DRD16F 1st step.pdf",
+      "bytes": 372625,
+      "pageCount": 2,
+      "isFillable": false,
+      "fieldCount": 0,
+      "fields": []
+    }
+  ],
+  "allFieldNames": []
+}

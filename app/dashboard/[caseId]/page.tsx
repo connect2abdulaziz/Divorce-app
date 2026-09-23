@@ -8,6 +8,7 @@ import { getCurrentUser } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
 import { percentComplete } from "@/lib/questionnaire/steps";
 import { notFound } from "next/navigation";
+import { GenerateDocumentsButton } from "@/components/documents/GenerateDocumentsButton";
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
@@ -89,20 +90,17 @@ export default async function CaseDetailPage({
                 </SubmitButton>
               </form>
             ) : null}
-            <button
-              type="button"
-              disabled
-              className="btn-secondary cursor-not-allowed opacity-55"
-              title="Document generation is not available yet"
-            >
-              Generate documents
-            </button>
+            <GenerateDocumentsButton
+              caseId={owned.id}
+              className="btn-secondary"
+              label="Generate documents"
+            />
           </div>
         </div>
         {!inProgress ? (
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
             This questionnaire is locked after submission. Contact us if something needs to change.
-            Document generation will appear here when it is available.
+            You can download a filled filing packet below.
           </p>
         ) : null}
       </div>

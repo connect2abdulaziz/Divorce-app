@@ -5,6 +5,8 @@ import { requireStaff } from "@/lib/admin/current-staff";
 import { markCaseCompleted, reopenCase } from "@/lib/admin/actions";
 import { createClient } from "@/lib/supabase/server";
 import { DeleteCaseButton, PrintButton } from "./controls";
+import { DocumentPackPreview } from "@/components/admin/DocumentPackPreview";
+import { GenerateDocumentsButton } from "@/components/documents/GenerateDocumentsButton";
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
@@ -60,14 +62,13 @@ export default async function AdminCaseDetailPage({
         </div>
         <div className="flex flex-wrap gap-3">
           <PrintButton />
-          <button
-            type="button"
-            className="btn-secondary cursor-not-allowed opacity-50"
-            disabled
-            title="Coming in the document generation phase"
-          >
-            Generate documents
-          </button>
+          <GenerateDocumentsButton caseId={kase.id} label="Generate filing packet" />
+          <GenerateDocumentsButton
+            caseId={kase.id}
+            className="btn-secondary"
+            label="Generate full pack"
+            steps="full"
+          />
           <DeleteCaseButton caseId={kase.id} />
         </div>
       </div>
@@ -101,6 +102,10 @@ export default async function AdminCaseDetailPage({
             </button>
           </form>
         )}
+      </div>
+
+      <div className="mt-8 print:hidden">
+        <DocumentPackPreview caseId={kase.id} />
       </div>
 
       <div className="mt-8 print:mt-0">

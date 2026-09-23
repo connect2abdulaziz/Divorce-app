@@ -1,4 +1,5 @@
 import { continueCase, openCase, startNewQuestionnaire } from "@/app/dashboard/actions";
+import { GenerateDocumentsButton } from "@/components/documents/GenerateDocumentsButton";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { caseDisplayName, listClientCases, type CaseListItem } from "@/lib/cases";
 import { getCurrentUser } from "@/lib/questionnaire/current-case";
@@ -128,14 +129,11 @@ export default async function ClientDashboardPage() {
                         </SubmitButton>
                       </form>
                     ) : (
-                      <button
-                        type="button"
-                        disabled
-                        className="btn-secondary cursor-not-allowed opacity-55"
-                        title="Document generation is not available yet"
-                      >
-                        Generate documents
-                      </button>
+                      <GenerateDocumentsButton
+                        caseId={c.id}
+                        className="btn-secondary"
+                        label="Generate documents"
+                      />
                     )}
                   </div>
                 </div>
