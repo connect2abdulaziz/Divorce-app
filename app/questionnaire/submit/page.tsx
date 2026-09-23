@@ -1,7 +1,6 @@
-import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
-import { SubmitForm } from "./Form";
+import { redirect } from "next/navigation";
 
-export default async function SubmitPage() {
-  const { caseId } = await getCurrentUserAndCase();
-  return <SubmitForm caseId={caseId} />;
+/** Submit is now part of the Review page so users confirm while seeing their answers. */
+export default function SubmitPage() {
+  redirect("/questionnaire/review");
 }

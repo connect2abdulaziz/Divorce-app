@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { FormPanel } from "@/components/questionnaire/FormPanel";
 import { Spinner } from "@/components/ui/SubmitButton";
 import { submitQuestionnaire } from "@/lib/questionnaire/actions";
 
-export function SubmitForm({ caseId }: { caseId: string }) {
+export function ReviewSubmitFooter({ caseId }: { caseId: string }) {
   const [confirmed, setConfirmed] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -16,18 +15,8 @@ export function SubmitForm({ caseId }: { caseId: string }) {
   }
 
   return (
-    <FormPanel>
-      <div className="border-b border-line/70 px-6 py-7 md:px-8">
-        <h2 className="font-serif text-[1.75rem] font-semibold leading-tight text-ink">
-          Submit your questionnaire
-        </h2>
-        <p className="mt-2 text-[15px] leading-relaxed text-ink">
-          Please review your answers carefully. The information you provide will be used to prepare
-          your divorce documents.
-        </p>
-      </div>
-
-      <label className="flex items-start gap-3 px-6 py-7 text-ink md:px-8">
+    <>
+      <label className="flex items-start gap-3 border-t border-line/70 px-6 py-7 text-ink md:px-8">
         <input
           type="checkbox"
           className="mt-1 h-4 w-4 rounded border-line text-accent focus:ring-accent"
@@ -59,6 +48,6 @@ export function SubmitForm({ caseId }: { caseId: string }) {
           )}
         </button>
       </div>
-    </FormPanel>
+    </>
   );
 }

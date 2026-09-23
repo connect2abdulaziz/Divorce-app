@@ -20,9 +20,25 @@ function getSupabaseEnv() {
 // Refreshes the Supabase auth session cookie on every request so it never
 // silently expires mid-questionnaire, and gates access to everything except
 // the public auth paths above. Called from the root middleware.ts.
+function hasAuthCookie(request: NextRequest) {
+  return request.cookies.getAll().some(({ name }) => name.startsWith("sb-") && name.includes("-auth-token"));
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
   const { pathname } = request.nextUrl;
+
+  // The marketing page never reads the session, so skip the auth round trip.
+  if (pathname === "/") return supabaseResponse;
+
+  // No session cookie means no user and nothing to refresh — avoid the network call.
+  if (!hasAuthCookie(request)) {
+    if (isPublicPath(pathname)) return supabaseResponse;
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+
   const env = getSupabaseEnv();
 
   // Missing or unreachable auth config — keep public pages working and

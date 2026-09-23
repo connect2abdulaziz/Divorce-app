@@ -5,13 +5,15 @@ import "./marketing.css";
 const serif = Fraunces({
   subsets: ["latin"],
   variable: "--font-serif",
-  weight: ["500", "600"],
+  axes: ["opsz"],
+  display: "swap",
 });
 
 const sans = Manrope({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata = {

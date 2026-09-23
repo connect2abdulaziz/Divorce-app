@@ -1,6 +1,4 @@
-﻿@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..600&family=Manrope:wght@400;500;600;700&display=swap");
-
-:root {
+﻿:root {
   --navy: #0b3a5c;
   --navy-deep: #07263d;
   --navy-soft: #4f6a7a;
@@ -12,8 +10,8 @@
   --paper: #f5f8fb;
   --white: #ffffff;
   --card: #ffffff;
-  --serif: "Fraunces", Georgia, serif;
-  --sans: "Manrope", "Segoe UI", sans-serif;
+  --serif: var(--font-serif), Georgia, serif;
+  --sans: var(--font-sans), "Segoe UI", sans-serif;
   --radius: 18px;
   --shadow: 0 18px 40px rgba(7, 38, 61, 0.08);
 }

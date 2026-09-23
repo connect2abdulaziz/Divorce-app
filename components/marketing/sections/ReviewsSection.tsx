@@ -12,10 +12,7 @@ export function ReviewsSection() {
       </div>
 
       <div className="reviews-placeholder reveal">
-        <p>
-          If you have a Google Business Profile with reviews, connect it here before launch so
-          visitors can see verified feedback according to Google&apos;s policies.
-        </p>
+        <p>Customer reviews coming soon.</p>
       </div>
     </section>
   );

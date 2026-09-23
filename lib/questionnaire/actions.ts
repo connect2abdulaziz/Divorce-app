@@ -137,7 +137,7 @@ export async function submitQuestionnaire(caseId: string) {
     .update({
       questionnaire_status: "submitted",
       submitted_at: new Date().toISOString(),
-      last_completed_section: "submit",
+      last_completed_section: "review",
     })
     .eq("id", caseId);
   if (error) throw error;

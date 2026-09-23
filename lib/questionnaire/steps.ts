@@ -53,7 +53,6 @@ export const STEPS: Step[] = [
   { slug: "separate-property", title: "Separate Property", shortTitle: "Separate prop.", isVisible: () => true },
   { slug: "separate-debts", title: "Separate Debt", shortTitle: "Separate debt", isVisible: () => true },
   { slug: "review", title: "Review", shortTitle: "Review", isVisible: () => true },
-  { slug: "submit", title: "Submit", shortTitle: "Submit", isVisible: () => true },
 ];
 
 // Sections whose gate question decides whether the WHOLE section disappears
@@ -91,9 +90,9 @@ export function isLaterStep(candidate: string, current: string | null): boolean 
   return nextIdx > currentIdx;
 }
 
-// True once the client has finished the last content step and reached Review
-// (or Submit). Editing an earlier section should return here, not replay the
-// rest of the questionnaire.
+// True once the client has finished the last content step and reached Review.
+// Editing an earlier section should return here, not replay the rest of the
+// questionnaire.
 export function hasReachedReview(lastCompletedSlug: string | null, gates: CaseGates): boolean {
   if (!lastCompletedSlug) return false;
   if (lastCompletedSlug === "review" || lastCompletedSlug === "submit") return true;
@@ -136,10 +135,7 @@ export function stepLinks(
   };
 }
 
-// Progress excludes the Review and Submit steps themselves from the
-// denominator's "content" framing but still counts as reachable — simplest
-// correct behavior: percent = (steps before/at last_completed_section) /
-// (total visible steps), computed by the caller once it has last_completed_section.
+// Progress still treats Review as a reachable step in the rail.
 export function percentComplete(gates: CaseGates, lastCompletedSlug: string | null): number {
   const steps = visibleSteps(gates);
   if (!lastCompletedSlug) return 0;

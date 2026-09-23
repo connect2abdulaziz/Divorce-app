@@ -21,7 +21,7 @@ export function ProcessSection({ onStart }: { onStart: () => void }) {
             </div>
             {index < PROCESS_STEPS.length - 1 ? (
               <span className="process-arrow" aria-hidden="true">
-                â†’
+                {"\u2192"}
               </span>
             ) : null}
           </li>
