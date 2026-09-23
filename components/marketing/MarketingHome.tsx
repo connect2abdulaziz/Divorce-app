@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Footer } from "@/components/marketing/layout/Footer";
 import { Header } from "@/components/marketing/layout/Header";
 import { MobileNav } from "@/components/marketing/layout/MobileNav";
@@ -16,48 +15,43 @@ import { ProcessSection } from "@/components/marketing/sections/ProcessSection";
 import { QualificationSection } from "@/components/marketing/sections/QualificationSection";
 import { ReviewsSection } from "@/components/marketing/sections/ReviewsSection";
 import { WhySection } from "@/components/marketing/sections/WhySection";
+import { ServiceDialog } from "@/components/marketing/ui/ServiceDialog";
 import { usePageMotion } from "@/components/marketing/hooks/usePageMotion";
 
+type DialogKey = "start" | "portal" | "quote" | null;
+type Qualification = {
+  children: string | null;
+  property: string | null;
+  help: string | null;
+};
+
 export function MarketingHome() {
-  const router = useRouter();
   const [navOpen, setNavOpen] = useState(false);
+  const [dialogKey, setDialogKey] = useState<DialogKey>(null);
+  const [qualification, setQualification] = useState<Qualification | null>(null);
   const [presetHelp, setPresetHelp] = useState<string | null>(null);
-  const [authLoading, setAuthLoading] = useState(false);
 
   usePageMotion();
 
   const closeNavigation = useCallback(() => setNavOpen(false), []);
 
-  const goAuth = useCallback(() => {
+  const openDialog = useCallback((key: Exclude<DialogKey, null>) => {
     setNavOpen(false);
-    setAuthLoading(true);
-    router.push("/login");
-  }, [router]);
+    setDialogKey(key);
+  }, []);
 
-  const startDivorce = useCallback(
-    (helpPreference: string | null = null) => {
-      setNavOpen(false);
-      if (typeof helpPreference === "string") {
-        setPresetHelp(helpPreference);
-        document.getElementById("qualify")?.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
-      setAuthLoading(true);
-      router.push("/login");
-    },
-    [router]
-  );
+  const startDivorce = useCallback((helpPreference: string | null = null) => {
+    setNavOpen(false);
+    if (typeof helpPreference === "string") setPresetHelp(helpPreference);
+    document.getElementById("qualify")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   const handleQualificationComplete = useCallback(
-    (answers: { children: string | null; property: string | null; help: string | null }) => {
-      const params = new URLSearchParams();
-      if (answers.children) params.set("children", answers.children);
-      if (answers.property) params.set("property", answers.property);
-      if (answers.help) params.set("help", answers.help);
-      setAuthLoading(true);
-      router.push(`/signup?${params.toString()}`);
+    (answers: Qualification) => {
+      setQualification(answers);
+      openDialog(answers.help === "guided" ? "quote" : "start");
     },
-    [router]
+    [openDialog]
   );
 
   useEffect(() => {
@@ -81,34 +75,36 @@ export function MarketingHome() {
       <Header
         navOpen={navOpen}
         onToggleNav={() => setNavOpen((open) => !open)}
-        onStart={() => startDivorce()}
-        onSignIn={goAuth}
-        loading={authLoading}
+        onStart={startDivorce}
+        onSignIn={() => openDialog("portal")}
       />
       <MobileNav
         open={navOpen}
         onClose={closeNavigation}
-        onStart={() => startDivorce()}
-        onSignIn={goAuth}
-        loading={authLoading}
+        onStart={startDivorce}
+        onSignIn={() => {
+          closeNavigation();
+          openDialog("portal");
+        }}
       />
       <main id="main">
-        <HeroSection onStart={() => startDivorce()} loading={authLoading} />
-        <QualificationSection
-          presetHelp={presetHelp}
-          onComplete={handleQualificationComplete}
-          loading={authLoading}
-        />
-        <WhySection onStart={() => startDivorce()} loading={authLoading} />
-        <ProcessSection onStart={() => startDivorce()} loading={authLoading} />
-        <PricingSection onStart={startDivorce} loading={authLoading} />
-        <ArizonaSection onStart={() => startDivorce()} loading={authLoading} />
-        <ComparisonSection onStart={() => startDivorce()} loading={authLoading} />
+        <HeroSection onStart={startDivorce} />
+        <QualificationSection presetHelp={presetHelp} onComplete={handleQualificationComplete} />
+        <WhySection onStart={() => startDivorce()} />
+        <ProcessSection onStart={() => startDivorce()} />
+        <PricingSection onStart={startDivorce} />
+        <ArizonaSection onStart={() => startDivorce()} />
+        <ComparisonSection onStart={() => startDivorce()} />
         <ReviewsSection />
         <FaqSection />
-        <ClosingSection onStart={() => startDivorce()} loading={authLoading} />
+        <ClosingSection onStart={startDivorce} />
       </main>
-      <Footer onSignIn={goAuth} />
+      <Footer onSignIn={() => openDialog("portal")} />
+      <ServiceDialog
+        dialogKey={dialogKey}
+        qualification={qualification}
+        onClose={() => setDialogKey(null)}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 // @ts-nocheck
 
 import { COMPARISON_ROWS } from '@/lib/marketing/content';
@@ -10,7 +10,7 @@ function Cell({ value }: { value: boolean | string }) {
   return <span>{value}</span>;
 }
 
-export function ComparisonSection({ onStart, loading = false }: { onStart: () => void; loading?: boolean }) {
+export function ComparisonSection({ onStart }: { onStart: () => void }) {
   return (
     <section className="section comparison" id="comparison" aria-labelledby="comparison-heading">
       <div className="section-intro reveal">
@@ -49,12 +49,7 @@ export function ComparisonSection({ onStart, loading = false }: { onStart: () =>
       </p>
 
       <div className="section-cta reveal">
-        <PrimaryButton
-          className="cta-strong"
-          onClick={onStart}
-          loading={loading}
-          loadingLabel="Continuing…"
-        >
+        <PrimaryButton className="cta-strong" onClick={onStart}>
           See Which Option Fits My Case
         </PrimaryButton>
       </div>

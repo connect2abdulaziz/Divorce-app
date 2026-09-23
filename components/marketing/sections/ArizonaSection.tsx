@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 // @ts-nocheck
 
 import { ARIZONA_POINTS } from '@/lib/marketing/content';
 import { Icon } from '../ui/Icon';
 import { PrimaryButton } from '../ui/PrimaryButton';
 
-export function ArizonaSection({ onStart, loading = false }: { onStart: () => void; loading?: boolean }) {
+export function ArizonaSection({ onStart }: { onStart: () => void }) {
   return (
     <section className="section arizona" id="arizona" aria-labelledby="arizona-heading">
       <div className="arizona-panel reveal">
@@ -17,12 +17,7 @@ export function ArizonaSection({ onStart, loading = false }: { onStart: () => vo
             designed to collect the information needed for Arizona divorce documents and guide
             customers through the document preparation process.
           </p>
-          <PrimaryButton
-            className="cta-strong"
-            onClick={onStart}
-            loading={loading}
-            loadingLabel="Continuing…"
-          >
+          <PrimaryButton className="cta-strong" onClick={onStart}>
             Start My Arizona Divorce
           </PrimaryButton>
         </div>

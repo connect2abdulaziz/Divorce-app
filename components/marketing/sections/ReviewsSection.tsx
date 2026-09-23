@@ -1,4 +1,5 @@
-// @ts-nocheck
+﻿"use client";
+
 export function ReviewsSection() {
   return (
     <section className="section reviews" id="reviews" aria-labelledby="reviews-heading">

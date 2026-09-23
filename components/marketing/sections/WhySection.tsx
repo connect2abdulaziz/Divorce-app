@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 // @ts-nocheck
 
 import { WHY_CARDS } from '@/lib/marketing/content';
 import { IconWell } from '../ui/Icon';
 import { PrimaryButton } from '../ui/PrimaryButton';
 
-export function WhySection({ onStart, loading = false }: { onStart: () => void; loading?: boolean }) {
+export function WhySection({ onStart }: { onStart: () => void }) {
   return (
     <section className="section why" id="why" aria-labelledby="why-heading">
       <div className="section-intro reveal">
@@ -24,12 +24,7 @@ export function WhySection({ onStart, loading = false }: { onStart: () => void; 
       </div>
 
       <div className="section-cta reveal">
-        <PrimaryButton
-          className="cta-strong"
-          onClick={onStart}
-          loading={loading}
-          loadingLabel="Continuing…"
-        >
+        <PrimaryButton className="cta-strong" onClick={onStart}>
           Start My Divorce
         </PrimaryButton>
       </div>

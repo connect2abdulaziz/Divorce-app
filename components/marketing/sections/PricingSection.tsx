@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 // @ts-nocheck
 
 import { PRICING_PACKAGES } from '@/lib/marketing/content';
@@ -7,10 +7,8 @@ import { PrimaryButton } from '../ui/PrimaryButton';
 
 export function PricingSection({
   onStart,
-  loading = false,
 }: {
   onStart: (helpPreference?: string | null) => void;
-  loading?: boolean;
 }) {
   return (
     <section className="section pricing" id="pricing" aria-labelledby="pricing-heading">
@@ -40,8 +38,6 @@ export function PricingSection({
             <PrimaryButton
               className="cta-strong"
               onClick={() => onStart(pkg.id === 'guided' ? 'guided' : 'online')}
-              loading={loading}
-              loadingLabel="Continuing…"
             >
               {pkg.cta}
             </PrimaryButton>

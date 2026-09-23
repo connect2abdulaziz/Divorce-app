@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 // @ts-nocheck
 
 import { PROCESS_STEPS } from '@/lib/marketing/content';
 import { PrimaryButton } from '../ui/PrimaryButton';
 
-export function ProcessSection({ onStart, loading = false }: { onStart: () => void; loading?: boolean }) {
+export function ProcessSection({ onStart }: { onStart: () => void }) {
   return (
     <section className="section process" id="how-it-works" aria-labelledby="process-heading">
       <div className="section-intro reveal">
@@ -21,7 +21,7 @@ export function ProcessSection({ onStart, loading = false }: { onStart: () => vo
             </div>
             {index < PROCESS_STEPS.length - 1 ? (
               <span className="process-arrow" aria-hidden="true">
-                →
+                â†’
               </span>
             ) : null}
           </li>
@@ -29,12 +29,7 @@ export function ProcessSection({ onStart, loading = false }: { onStart: () => vo
       </ol>
 
       <div className="section-cta reveal">
-        <PrimaryButton
-          className="cta-strong"
-          onClick={onStart}
-          loading={loading}
-          loadingLabel="Continuing…"
-        >
+        <PrimaryButton className="cta-strong" onClick={onStart}>
           Get Started
         </PrimaryButton>
       </div>

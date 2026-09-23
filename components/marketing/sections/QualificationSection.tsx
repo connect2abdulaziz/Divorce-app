@@ -1,15 +1,16 @@
-"use client";
-// @ts-nocheck
+﻿"use client";
 
-import { useEffect, useState } from 'react';
-import { HELP_OPTIONS } from '@/lib/marketing/content';
-import { PrimaryButton } from '../ui/PrimaryButton';
+import { useEffect, useState } from "react";
+import { HELP_OPTIONS } from "@/lib/marketing/content";
+import { PrimaryButton } from "../ui/PrimaryButton";
 
-const initialAnswers: {
+type Answers = {
   children: string | null;
   property: string | null;
   help: string | null;
-} = {
+};
+
+const initialAnswers: Answers = {
   children: null,
   property: null,
   help: null,
@@ -18,13 +19,11 @@ const initialAnswers: {
 export function QualificationSection({
   onComplete,
   presetHelp = null,
-  loading = false,
 }: {
-  onComplete: (answers: { children: string | null; property: string | null; help: string | null }) => void;
+  onComplete: (answers: Answers) => void;
   presetHelp?: string | null;
-  loading?: boolean;
 }) {
-  const [answers, setAnswers] = useState(initialAnswers);
+  const [answers, setAnswers] = useState<Answers>(initialAnswers);
 
   useEffect(() => {
     if (!presetHelp) return;
@@ -34,7 +33,7 @@ export function QualificationSection({
   const ready =
     answers.children !== null && answers.property !== null && answers.help !== null;
 
-  const setAnswer = (key: "children" | "property" | "help", value: string) => {
+  const setAnswer = (key: keyof Answers, value: string) => {
     setAnswers((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -56,15 +55,15 @@ export function QualificationSection({
         <fieldset className="qualify-step">
           <legend>Do you have children under 18 with your spouse?</legend>
           <div className="choice-row" role="group">
-            {['yes', 'no'].map((value) => (
+            {["yes", "no"].map((value) => (
               <button
                 key={value}
                 type="button"
-                className={answers.children === value ? 'choice active' : 'choice'}
+                className={answers.children === value ? "choice active" : "choice"}
                 aria-pressed={answers.children === value}
-                onClick={() => setAnswer('children', value)}
+                onClick={() => setAnswer("children", value)}
               >
-                {value === 'yes' ? 'Yes' : 'No'}
+                {value === "yes" ? "Yes" : "No"}
               </button>
             ))}
           </div>
@@ -73,15 +72,15 @@ export function QualificationSection({
         <fieldset className="qualify-step">
           <legend>Do you and your spouse have property or debts to divide?</legend>
           <div className="choice-row" role="group">
-            {['yes', 'no'].map((value) => (
+            {["yes", "no"].map((value) => (
               <button
                 key={value}
                 type="button"
-                className={answers.property === value ? 'choice active' : 'choice'}
+                className={answers.property === value ? "choice active" : "choice"}
                 aria-pressed={answers.property === value}
-                onClick={() => setAnswer('property', value)}
+                onClick={() => setAnswer("property", value)}
               >
-                {value === 'yes' ? 'Yes' : 'No'}
+                {value === "yes" ? "Yes" : "No"}
               </button>
             ))}
           </div>
@@ -94,9 +93,9 @@ export function QualificationSection({
               <button
                 key={option.id}
                 type="button"
-                className={answers.help === option.id ? 'help-option active' : 'help-option'}
+                className={answers.help === option.id ? "help-option active" : "help-option"}
                 aria-pressed={answers.help === option.id}
-                onClick={() => setAnswer('help', option.id)}
+                onClick={() => setAnswer("help", option.id)}
               >
                 <strong>{option.title}</strong>
                 <span>{option.body}</span>
@@ -105,13 +104,7 @@ export function QualificationSection({
           </div>
         </fieldset>
 
-        <PrimaryButton
-          className="cta-strong"
-          type="submit"
-          disabled={!ready}
-          loading={loading}
-          loadingLabel="Continuing…"
-        >
+        <PrimaryButton className="cta-strong" type="submit" disabled={!ready}>
           See My Options
         </PrimaryButton>
         <p className="qualify-note">No payment required to answer these questions.</p>

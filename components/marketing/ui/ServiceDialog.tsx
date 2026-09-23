@@ -67,7 +67,7 @@ export function ServiceDialog({
     if (clickedOutside) onClose();
   };
 
-  const continueAction = () => {
+  const handleContinue = () => {
     onClose();
     if (dialogKey === "portal") {
       router.push("/login");
@@ -102,8 +102,8 @@ export function ServiceDialog({
           ))}
         </ul>
       ) : null}
-      <PrimaryButton className="dialog-done" onClick={continueAction}>
-        {dialogKey === "portal" ? "Go to sign in" : "Continue to sign up"}
+      <PrimaryButton className="dialog-done" onClick={handleContinue}>
+        {dialogKey === "portal" ? "Continue to sign in" : "Continue to sign up"}
       </PrimaryButton>
     </dialog>
   );
