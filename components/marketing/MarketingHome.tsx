@@ -56,7 +56,7 @@ export function MarketingHome() {
 
   useEffect(() => {
     const onResize = () => {
-      if (window.innerWidth > 900) closeNavigation();
+      if (window.innerWidth > 1100) closeNavigation();
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") closeNavigation();
@@ -70,7 +70,7 @@ export function MarketingHome() {
   }, [closeNavigation]);
 
   return (
-    <div className="marketing-site">
+    <div className={navOpen ? "marketing-site nav-open" : "marketing-site"}>
       <SkipLink />
       <Header
         navOpen={navOpen}

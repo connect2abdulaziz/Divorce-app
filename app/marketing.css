@@ -27,6 +27,12 @@
   background: var(--paper);
   font: 16px/1.6 var(--sans);
   min-height: 100vh;
+  max-width: 100%;
+}
+
+.marketing-site main {
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 /* :where() keeps these resets at element-level specificity, as in the original site,
@@ -97,6 +103,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 84px;
   padding: 12px 5%;
   background: rgba(255, 255, 255, 0.92);
@@ -107,12 +116,15 @@
 .brand {
   display: block;
   flex-shrink: 0;
+  min-width: 0;
   width: min(240px, 42vw);
 }
 
 .brand img {
+  display: block;
   height: 58px;
   width: auto;
+  max-width: 100%;
   object-fit: contain;
 }
 
@@ -306,6 +318,8 @@
   flex-direction: column;
   align-items: center;
   width: min(760px, 100%);
+  max-width: 100%;
+  min-width: 0;
   text-align: center;
 }
 
@@ -1179,7 +1193,7 @@ dialog.service-dialog p:not(.dialog-kicker) {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .header-nav,
   .header-cta {
     display: none;
@@ -1188,6 +1202,9 @@ dialog.service-dialog p:not(.dialog-kicker) {
   .mobile-toggle {
     display: grid;
   }
+}
+
+@media (max-width: 900px) {
 
   .pricing-grid {
     grid-template-columns: 1fr;
@@ -1383,5 +1400,210 @@ dialog.service-dialog p:not(.dialog-kicker) {
 .marketing-site .hero-trust,
 .marketing-site .hero-disclaimer {
   font-family: var(--sans);
+}
+
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 34;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: rgba(7, 38, 61, 0.45);
+}
+
+.mobile-nav-backdrop[hidden] {
+  display: none !important;
+}
+
+/* These follow the button resets above so the phone header actually collapses. */
+@media (max-width: 1100px) {
+  .marketing-site .header-nav,
+  .marketing-site .header-cta {
+    display: none;
+  }
+
+  .marketing-site .mobile-toggle {
+    display: grid;
+    flex: 0 0 auto;
+  }
+
+  .marketing-site .header {
+    gap: 12px;
+    min-height: 68px;
+    padding: 10px 16px;
+  }
+
+  .marketing-site .brand {
+    flex: 1 1 auto;
+    width: auto;
+    max-width: 200px;
+  }
+
+  .marketing-site .brand img {
+    height: 44px;
+  }
+
+  .marketing-site #mobile-nav {
+    position: fixed;
+    top: 68px;
+    left: 0;
+    right: 0;
+    z-index: 35;
+    max-height: calc(100dvh - 68px);
+    overflow-y: auto;
+    padding: 8px 16px 20px;
+    border-bottom: 0;
+    box-shadow: 0 18px 40px rgba(7, 38, 61, 0.16);
+  }
+
+  .marketing-site.nav-open {
+    overflow: hidden;
+    height: 100dvh;
+  }
+}
+
+@media (max-width: 640px) {
+  .marketing-site .hero {
+    min-height: auto;
+    padding: 36px 20px 48px;
+    place-items: start center;
+  }
+
+  .marketing-site .hero-inner,
+  .marketing-site .hero-brand,
+  .marketing-site .hero h1,
+  .marketing-site .hero-lead,
+  .marketing-site .hero-trust,
+  .marketing-site .hero-disclaimer,
+  .marketing-site .hero-actions {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .marketing-site .hero-brand {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+
+  .marketing-site .hero h1 {
+    font-size: clamp(28px, 8.2vw, 34px);
+    text-wrap: balance;
+  }
+
+  .marketing-site .hero-lead,
+  .marketing-site .hero-trust,
+  .marketing-site .hero-disclaimer {
+    overflow-wrap: break-word;
+  }
+
+  .marketing-site .hero-lead {
+    font-size: 16px;
+    margin-bottom: 22px;
+  }
+
+  .marketing-site .hero-trust {
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .marketing-site .hero-actions {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .marketing-site .hero-actions .primary-button,
+  .marketing-site .section-cta .primary-button,
+  .marketing-site .final-cta .primary-button {
+    width: 100%;
+    max-width: 360px;
+    white-space: normal;
+  }
+
+  .marketing-site #mobile-nav .primary-button {
+    width: 100%;
+    max-width: none;
+  }
+
+  .marketing-site .section,
+  .marketing-site .final-cta {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .marketing-site .section {
+    padding-top: 56px;
+    padding-bottom: 56px;
+  }
+
+  .marketing-site .final-cta {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+
+  .marketing-site .site-footer {
+    padding: 48px 20px 24px;
+  }
+
+  .marketing-site .qualify-card,
+  .marketing-site .info-card,
+  .marketing-site .pricing-card,
+  .marketing-site .process-step,
+  .marketing-site .faq-item,
+  .marketing-site .comparison-wrap,
+  .marketing-site .arizona-panel {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .marketing-site .qualify-card {
+    padding: 22px 16px;
+  }
+
+  .marketing-site .faq-item button {
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .marketing-site .faq-item button span {
+    flex: 0 0 auto;
+  }
+
+  .marketing-site .comparison-wrap {
+    overflow-x: auto;
+  }
+
+  .marketing-site .comparison-table {
+    min-width: 0;
+    table-layout: fixed;
+  }
+
+  .marketing-site .comparison-table thead th:first-child,
+  .marketing-site .comparison-table tbody th {
+    width: 44%;
+  }
+
+  .marketing-site .comparison-table th,
+  .marketing-site .comparison-table td {
+    padding: 12px 8px;
+    font-size: 13px;
+    overflow-wrap: break-word;
+  }
+
+  .marketing-site .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .marketing-site dialog.service-dialog {
+    width: min(480px, calc(100% - 24px));
+    padding: 36px 18px 20px;
+  }
+
+  .marketing-site dialog.service-dialog h2 {
+    font-size: 26px;
+  }
 }
 
