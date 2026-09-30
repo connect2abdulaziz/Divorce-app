@@ -37,7 +37,7 @@ export default async function AdminCaseDetailPage({
     .from("cases")
     .select("*, client:profiles(email, full_name)")
     .eq("id", caseId)
-    .single()) as unknown as {
+    .maybeSingle()) as unknown as {
     data: {
       id: string;
       questionnaire_status: string;

@@ -21,13 +21,13 @@ export function DeleteCaseButton({ caseId }: { caseId: string }) {
     if (!confirm("Delete this case and all of its data? This cannot be undone.")) return;
     setError(null);
     startTransition(async () => {
-      try {
-        await deleteCase(caseId);
-        router.push("/admin");
-        router.refresh();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Could not delete this case.");
+      const result = await deleteCase(caseId);
+      if (!result.ok) {
+        setError(result.error);
+        return;
       }
+      router.replace("/admin");
+      router.refresh();
     });
   }
 
@@ -36,7 +36,7 @@ export function DeleteCaseButton({ caseId }: { caseId: string }) {
       <button type="button" className="btn-danger-text" onClick={handleClick} disabled={isPending}>
         {isPending ? "Deleting…" : "Delete case"}
       </button>
-      {error ? <p className="mt-2 text-sm text-error">{error}</p> : null}
+      {error ? <p className="mt-2 max-w-sm text-sm text-error">{error}</p> : null}
     </div>
   );
 }
