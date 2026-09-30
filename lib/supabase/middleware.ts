@@ -4,7 +4,10 @@ import { NextResponse, type NextRequest } from "next/server";
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 // Paths that don't require a signed-in user.
-const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth", "/error"];
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth", "/error", "/about-us", "/services"];
+
+// Marketing pages never read the session — skip the auth round trip.
+const MARKETING_PATHS = new Set(["/", "/about-us", "/services"]);
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -28,8 +31,7 @@ export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
   const { pathname } = request.nextUrl;
 
-  // The marketing page never reads the session, so skip the auth round trip.
-  if (pathname === "/") return supabaseResponse;
+  if (MARKETING_PATHS.has(pathname)) return supabaseResponse;
 
   // No session cookie means no user and nothing to refresh — avoid the network call.
   if (!hasAuthCookie(request)) {

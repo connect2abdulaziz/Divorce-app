@@ -18,7 +18,7 @@ function Logo({ loading }: { loading?: "lazy" | "eager" }) {
 }
 
 export function Brand({
-  href = "#main",
+  href = "/",
   loading,
   className = "",
 }: {

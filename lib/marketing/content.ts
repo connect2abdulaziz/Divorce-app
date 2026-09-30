@@ -14,10 +14,11 @@ export const DIALOG_MESSAGES = {
 };
 
 export const NAV_LINKS = [
-  { href: '#how-it-works', label: 'How It Works' },
-  { href: '#pricing', label: 'Pricing' },
-  { href: '#arizona', label: 'Arizona Divorce' },
-  { href: '#faq', label: 'FAQ' },
+  { href: '/services', label: 'Services' },
+  { href: '/about-us', label: 'About Us' },
+  { href: '/#how-it-works', label: 'How It Works' },
+  { href: '/#pricing', label: 'Pricing' },
+  { href: '/#faq', label: 'FAQ' },
 ];
 
 export const WHY_CARDS = [
@@ -161,11 +162,65 @@ export const FAQ_ITEMS = [
 ];
 
 export const FOOTER_LINKS = [
-  { href: '#how-it-works', label: 'How It Works' },
-  { href: '#pricing', label: 'Pricing' },
-  { href: '#arizona', label: 'Arizona Divorce' },
-  { href: '#faq', label: 'FAQ' },
-  { href: '#contact', label: 'Contact' },
+  { href: '/services', label: 'Services' },
+  { href: '/about-us', label: 'About Us' },
+  { href: '/#how-it-works', label: 'How It Works' },
+  { href: '/#pricing', label: 'Pricing' },
+  { href: '/#arizona', label: 'Arizona Divorce' },
+  { href: '/#faq', label: 'FAQ' },
+  { href: '/#contact', label: 'Contact' },
+];
+
+export const ABOUT_VALUES = [
+  {
+    title: 'Arizona focused',
+    body: 'Our process is built for Arizona divorce document preparation — not a generic national form service.',
+  },
+  {
+    title: 'Clear and upfront',
+    body: 'You see what is included before you buy. Package pricing is straightforward, and court fees are called out separately.',
+  },
+  {
+    title: 'Document preparation only',
+    body: 'We prepare documents and share general procedural information. We are not a law firm and do not give legal advice.',
+  },
+  {
+    title: 'Human support available',
+    body: 'Need help finishing the paperwork path? Assistance is available from an Arizona Certified Legal Document Preparer.',
+  },
+];
+
+export const SERVICE_DETAILS = [
+  {
+    id: 'diy',
+    name: 'DIY Online Document Preparation',
+    price: '$450',
+    summary:
+      'Complete a secure questionnaire online and receive personalized Arizona divorce documents with instructions for review, signing, and filing.',
+    bestFor: 'Customers comfortable handling more of the process themselves.',
+    includes: [
+      'Online divorce questionnaire',
+      'Personalized Arizona divorce documents',
+      'Secure client account',
+      'Downloadable documents and instructions',
+      'Edits before documents are finalized',
+    ],
+  },
+  {
+    id: 'guided',
+    name: 'Fully Guided Document Preparation',
+    price: '$799',
+    summary:
+      'Everything in the online package, plus personal assistance with document preparation, completeness review, and filing support.',
+    bestFor: 'Customers who want more hands-on help through the paperwork process.',
+    includes: [
+      'Everything in the DIY Online package',
+      'Personal document preparation assistance',
+      'Document review for completeness',
+      'Filing assistance',
+      'Step-by-step procedural information',
+    ],
+  },
 ];
 
 export const FOOTER_LEGAL = [
