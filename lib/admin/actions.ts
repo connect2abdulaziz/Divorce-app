@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { requireStaff } from "@/lib/admin/current-staff";
 import { createClient } from "@/lib/supabase/server";
 
@@ -31,7 +30,6 @@ export async function deleteCase(caseId: string) {
   await requireStaff();
   const supabase = await createClient();
   const { error } = await supabase.from("cases").delete().eq("id", caseId);
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   revalidatePath("/admin", "layout");
-  redirect("/admin");
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ABOUT_VALUES, CLDP_INFO } from "@/lib/marketing/content";
+import { ABOUT_VALUES } from "@/lib/marketing/content";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { PrimaryButton } from "@/components/marketing/ui/PrimaryButton";
 import { useRouter } from "next/navigation";
@@ -23,25 +23,18 @@ export function AboutUsPage() {
       </section>
 
       <section className="section about-story" aria-labelledby="about-story-heading">
-        <div className="about-story-grid">
-          <div className="reveal">
-            <h2 id="about-story-heading">Who We Are</h2>
-            <p>
-              We are a legal document preparation service focused on Arizona divorce cases. Our goal
-              is to make the paperwork path easier to understand — with upfront pricing, a secure
-              online questionnaire, and documents prepared from the information you provide.
-            </p>
-            <p>
-              Legal Divorce Docs is not a law firm. We do not provide legal advice, legal strategy,
-              or representation in court. If you need an attorney, you should consult a licensed
-              Arizona lawyer.
-            </p>
-          </div>
-          <aside className="about-callout reveal">
-            <p className="about-callout-label">Prepared under</p>
-            <p className="about-callout-name">{CLDP_INFO.name}</p>
-            <p className="about-callout-cert">{CLDP_INFO.certification}</p>
-          </aside>
+        <div className="about-story-copy reveal">
+          <h2 id="about-story-heading">Who We Are</h2>
+          <p>
+            We are a legal document preparation service focused on Arizona divorce cases. Our goal
+            is to make the paperwork path easier to understand — with upfront pricing, a secure
+            online questionnaire, and documents prepared from the information you provide.
+          </p>
+          <p>
+            Legal Divorce Docs is not a law firm. We do not provide legal advice, legal strategy,
+            or representation in court. If you need an attorney, you should consult a licensed
+            Arizona lawyer.
+          </p>
         </div>
       </section>
 

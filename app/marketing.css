@@ -1432,58 +1432,26 @@ dialog.service-dialog p:not(.dialog-kicker) {
   margin: 0 auto;
 }
 
-.about-story-grid {
-  max-width: 1100px;
+.about-story-copy {
+  max-width: 720px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 32px;
-  align-items: start;
+  text-align: center;
 }
 
-.about-story-grid h2 {
+.about-story-copy h2 {
   font-size: clamp(28px, 3.6vw, 40px);
   margin-bottom: 16px;
 }
 
-.about-story-grid p {
+.about-story-copy p {
   color: var(--muted);
   font-size: 16px;
   line-height: 1.75;
   margin-bottom: 16px;
 }
 
-.about-callout {
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  padding: 28px 24px;
-  box-shadow: var(--shadow);
-}
-
-.about-callout-label {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--cta);
-  margin-bottom: 10px !important;
-}
-
-.about-callout-name {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--navy);
-  line-height: 1.3;
-  margin-bottom: 8px !important;
-}
-
-.about-callout-cert {
-  color: var(--navy-soft) !important;
-  font-size: 14px !important;
-  font-weight: 600;
-  margin-bottom: 0 !important;
+.about-story-copy p:last-child {
+  margin-bottom: 0;
 }
 
 .about-values {
@@ -1537,7 +1505,6 @@ dialog.service-dialog p:not(.dialog-kicker) {
 }
 
 @media (max-width: 900px) {
-  .about-story-grid,
   .about-values-grid,
   .services-detail-grid {
     grid-template-columns: 1fr;
