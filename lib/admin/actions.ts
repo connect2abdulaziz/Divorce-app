@@ -31,16 +31,31 @@ export async function deleteCase(
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   await requireStaff();
   const supabase = await createClient();
-  const { error } = await supabase.from("cases").delete().eq("id", caseId);
+
+  // Prefer the RPC that skips audit triggers during CASCADE deletes.
+  const { error } = await supabase.rpc("staff_delete_case" as never, {
+    p_case_id: caseId,
+  } as never);
+
   if (error) {
+    // Fallback for environments that have not applied 0013 yet.
+    if (error.message.includes("Could not find the function") || error.code === "PGRST202") {
+      const { error: deleteError } = await supabase.from("cases").delete().eq("id", caseId);
+      if (deleteError) {
+        return {
+          ok: false,
+          error: `${deleteError.message}${deleteError.code ? ` (${deleteError.code})` : ""}`,
+        };
+      }
+      return { ok: true };
+    }
+
     return {
       ok: false,
-      error:
-        error.message.includes("audit_log_case_id_fkey") || error.code === "23503"
-          ? "Case delete is blocked by a database audit rule. Apply migration 0012_fix_case_delete_audit.sql in Supabase, then try again."
-          : error.message,
+      error: `${error.message}${error.code ? ` (${error.code})` : ""}`,
     };
   }
+
   // Do not revalidate the admin layout here — that would re-render this
   // case page after the row is gone and crash the Server Component tree.
   return { ok: true };
