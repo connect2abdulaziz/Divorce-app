@@ -12,6 +12,7 @@ const EMPTY_PARENTING: Parenting = {
   parenting_time_schedule: null,
   visitation_wanted: null,
   visitation_denied_reason: null,
+  joint_by_agreement: null,
   notes: null,
 };
 

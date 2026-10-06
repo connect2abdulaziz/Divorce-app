@@ -12,6 +12,7 @@
     "docs:export-wc": "tsx scripts/export-wc-fields.ts",
     "docs:scan-woc": "tsx scripts/scan-woc.ts",
     "docs:generate-test": "tsx scripts/generate-test-docs.ts",
+    "docs:audit-wc": "tsx scripts/audit-generated-wc.ts",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",

@@ -67,6 +67,7 @@ export async function POST(
         "Content-Disposition": `attachment; filename="${result.fileName}"`,
         "X-Doc-Track": result.track,
         "X-Doc-Forms": String(result.forms.length),
+        "X-Doc-Warnings": String(result.warnings.length),
       },
     });
   } catch (err) {

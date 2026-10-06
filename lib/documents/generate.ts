@@ -2,9 +2,11 @@ import { promises as fs } from "fs";
 import path from "path";
 import { selectDocumentPack, type DecreePath, type PackStep } from "./catalog";
 import { buildCaseFillValues } from "./case-values";
+import { enrichCaseFillValues } from "./enrich";
 import { fieldsForTemplate } from "./fill-maps";
 import { fillAcroFormPdf, mergePdfs } from "./fill-acroform";
 import { templateRootForTrack } from "./paths";
+import { assertPacketReady, validatePacket, type PacketIssue } from "./validate-packet";
 import type { loadCaseBundle } from "@/lib/questionnaire/data";
 
 export type GenerateOptions = {
@@ -20,6 +22,7 @@ export type GenerateResult = {
   fileName: string;
   pdfBytes: Uint8Array;
   forms: { id: string; title: string; formCode: string | null; filled: number; skipped: number }[];
+  warnings: PacketIssue[];
 };
 
 export async function generateCaseDocuments(
@@ -38,10 +41,19 @@ export async function generateCaseDocuments(
   }
 
   const root = templateRootForTrack(pack.track);
-  const values = buildCaseFillValues(bundle);
+  let values = buildCaseFillValues(bundle);
+
+  // 1) Deterministic validation (block incomplete / contradictory packets)
+  const warnings = validatePacket(values).filter((i) => i.severity === "warning");
+  assertPacketReady(values);
+
+  // 2) Optional AI/heuristic enrichment (schedule split, etc.)
+  values = await enrichCaseFillValues(values);
+
   const filledParts: Uint8Array[] = [];
   const forms: GenerateResult["forms"] = [];
 
+  // 3) Deterministic field maps → AcroForm fill
   for (const tpl of pack.templates) {
     const abs = path.join(root, ...tpl.relativePath.split("/"));
     const raw = await fs.readFile(abs);
@@ -69,5 +81,6 @@ export async function generateCaseDocuments(
     fileName,
     pdfBytes,
     forms,
+    warnings,
   };
 }

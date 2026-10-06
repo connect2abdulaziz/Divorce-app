@@ -90,7 +90,23 @@ export default async function AdminSectionEditPage({
           />
         );
       case "parenting":
-        return <ParentingForm caseId={caseId} slug={section} {...nav} initial={sections.parenting!} />;
+        return (
+          <ParentingForm
+            caseId={caseId}
+            slug={section}
+            {...nav}
+            initial={{
+              custody_arrangement: null,
+              decision_making: null,
+              parenting_time_schedule: null,
+              visitation_wanted: null,
+              visitation_denied_reason: null,
+              joint_by_agreement: null,
+              notes: null,
+              ...(sections.parenting as object | null),
+            }}
+          />
+        );
       case "tax-information":
         return <TaxInformationForm caseId={caseId} slug={section} {...nav} initial={sections.tax_information!} />;
       case "community-property":

@@ -66,7 +66,9 @@ export function GenerateDocumentsButton({
           label
         )}
       </button>
-      {error ? <p className="max-w-xs text-xs text-error">{error}</p> : null}
+      {error ? (
+        <p className="max-w-sm whitespace-pre-wrap text-xs leading-relaxed text-error">{error}</p>
+      ) : null}
     </div>
   );
 }

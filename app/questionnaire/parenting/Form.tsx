@@ -12,6 +12,7 @@ export type Parenting = {
   parenting_time_schedule: string | null;
   visitation_wanted: boolean | null;
   visitation_denied_reason: string | null;
+  joint_by_agreement: boolean | null;
   notes: string | null;
 };
 
@@ -39,58 +40,51 @@ export function ParentingForm({
 }) {
   const router = useRouter();
   const [visitationWanted, setVisitationWanted] = useState<boolean | null>(initial.visitation_wanted);
-
-  async function handleSubmit(formData: FormData) {
-    const custody = emptyToNull(formData.get("custody_arrangement"));
-    const values = {
-      custody_arrangement: custody,
-      decision_making:
-        custody === "joint"
-          ? "Joint legal decision-making"
-          : custody === "sole"
-            ? "Sole legal decision-making"
-            : emptyToNull(formData.get("decision_making")),
-      parenting_time_schedule: emptyToNull(formData.get("parenting_time_schedule")),
-      visitation_wanted: visitationWanted,
-      visitation_denied_reason:
-        visitationWanted === false ? emptyToNull(formData.get("visitation_denied_reason")) : null,
-      notes: emptyToNull(formData.get("notes")),
-    };
-    await saveSingletonSection("parenting", caseId, values, slug);
-    router.push(nextHref);
-  }
-
-  async function handleAutoSave(formData: FormData) {
-    const custody = emptyToNull(formData.get("custody_arrangement"));
-    await saveSingletonSection("parenting", caseId, {
-      custody_arrangement: custody,
-      decision_making:
-        custody === "joint"
-          ? "Joint legal decision-making"
-          : custody === "sole"
-            ? "Sole legal decision-making"
-            : emptyToNull(formData.get("decision_making")),
-      parenting_time_schedule: emptyToNull(formData.get("parenting_time_schedule")),
-      visitation_wanted: visitationWanted,
-      visitation_denied_reason:
-        visitationWanted === false ? emptyToNull(formData.get("visitation_denied_reason")) : null,
-      notes: emptyToNull(formData.get("notes")),
-    });
-  }
-
-  const custodyDefault =
+  const [custody, setCustody] = useState<string>(
     initial.custody_arrangement === "joint" || initial.custody_arrangement === "sole"
       ? initial.custody_arrangement
       : initial.custody_arrangement?.toLowerCase().includes("joint")
         ? "joint"
         : initial.custody_arrangement?.toLowerCase().includes("sole")
           ? "sole"
-          : "";
+          : ""
+  );
+  const [jointByAgreement, setJointByAgreement] = useState<boolean | null>(
+    initial.joint_by_agreement
+  );
+
+  function buildValues(formData: FormData) {
+    const custodyValue = emptyToNull(formData.get("custody_arrangement")) || custody || null;
+    return {
+      custody_arrangement: custodyValue,
+      decision_making:
+        custodyValue === "joint"
+          ? "Joint legal decision-making"
+          : custodyValue === "sole"
+            ? "Sole legal decision-making"
+            : emptyToNull(formData.get("decision_making")),
+      parenting_time_schedule: emptyToNull(formData.get("parenting_time_schedule")),
+      visitation_wanted: visitationWanted,
+      visitation_denied_reason:
+        visitationWanted === false ? emptyToNull(formData.get("visitation_denied_reason")) : null,
+      joint_by_agreement: custodyValue === "joint" ? jointByAgreement : null,
+      notes: emptyToNull(formData.get("notes")),
+    };
+  }
+
+  async function handleSubmit(formData: FormData) {
+    await saveSingletonSection("parenting", caseId, buildValues(formData), slug);
+    router.push(nextHref);
+  }
+
+  async function handleAutoSave(formData: FormData) {
+    await saveSingletonSection("parenting", caseId, buildValues(formData));
+  }
 
   return (
     <StepShell
       title="Custody & Parenting"
-      subtitle="Choose the arrangement you want. You can refine details later with your document preparer."
+      subtitle="Choose the arrangement you want. Be specific about weekends, weekdays, and exchanges so the parenting plan can be filled correctly."
       backHref={backHref}
       backLabel={backLabel}
       submitLabel={submitLabel}
@@ -100,7 +94,8 @@ export function ParentingForm({
       <Field label="What custody arrangement do you want?">
         <Select
           name="custody_arrangement"
-          defaultValue={custodyDefault || null}
+          value={custody}
+          onChange={setCustody}
           options={[
             { value: "joint", label: "Joint custody" },
             { value: "sole", label: "Sole custody" },
@@ -108,6 +103,17 @@ export function ParentingForm({
           required
         />
       </Field>
+
+      {custody === "joint" ? (
+        <div>
+          <p className="field-label">Do both parents agree to joint legal decision-making?</p>
+          <YesNo name="joint_by_agreement" value={jointByAgreement} onChange={setJointByAgreement} />
+          <p className="field-hint">
+            Choose Yes only if both parents already agree. If you alone are requesting joint
+            decision-making, choose No.
+          </p>
+        </div>
+      ) : null}
 
       <div>
         <p className="field-label">Do you want your spouse to have visitation / parenting time?</p>
@@ -126,8 +132,11 @@ export function ParentingForm({
       ) : null}
 
       {visitationWanted === true ? (
-        <Field label="Proposed parenting-time schedule" hint="Optional details about the schedule you want.">
-          <TextArea name="parenting_time_schedule" defaultValue={initial.parenting_time_schedule} rows={3} />
+        <Field
+          label="Proposed parenting-time schedule"
+          hint="Specify who has which weekends, weekday evenings/overnights, start and end times, and exchange location. Example: Party A — weekdays; Party B — every other weekend Fri 6pm–Sun 6pm; exchanges at school."
+        >
+          <TextArea name="parenting_time_schedule" defaultValue={initial.parenting_time_schedule} rows={5} />
         </Field>
       ) : null}
 
