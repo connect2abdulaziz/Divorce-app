@@ -50,7 +50,6 @@ function heuristicScheduleSplit(raw: string): ParentingScheduleSplit {
     };
   }
 
-  const lower = text.toLowerCase();
   const partyAMatch = text.match(
     /(?:party\s*a|petitioner|mother|father|parent\s*a)\s*[:\-]\s*([\s\S]*?)(?=(?:party\s*b|respondent|parent\s*b)\s*[:\-]|$)/i
   );
@@ -70,13 +69,27 @@ function heuristicScheduleSplit(raw: string): ParentingScheduleSplit {
     };
   }
 
-  // Single free-text proposal: do not duplicate identical wording into both boxes.
-  if (lower.includes("every other weekend") || lower.includes("alternating")) {
+  const parts = text
+    .split(/(?<=[.!?])\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const isExchange = (part: string) => /exchange/i.test(part);
+  const isPartyA = (part: string) =>
+    !isExchange(part) &&
+    /party\s*a|petitioner/i.test(part) &&
+    !/with party\s*b|to party\s*b/i.test(part);
+  const isPartyB = (part: string) =>
+    !isExchange(part) &&
+    /party\s*b|respondent|every other weekend/i.test(part) &&
+    !isPartyA(part);
+  const partyAText = parts.filter(isPartyA).join(" ");
+  const partyBText = parts.filter(isPartyB).join(" ");
+  const exchangeText = parts.filter(isExchange).join(" ");
+  if (partyAText || partyBText) {
     return {
-      partyA: `Petitioner / Party A parenting time under the proposed plan: weekdays and alternating weekends as needed to complete a full schedule. Proposal text: ${text}`,
-      partyB: `Respondent / Party B parenting time under the proposed plan: the alternating / every-other-weekend periods (and any other Respondent periods) described here: ${text}. Exchange times/locations to be confirmed.`,
-      exchangeNotes:
-        "Specify exact weekend assignment (which parent starts), weekday overnights, and exchange time/location before filing.",
+      partyA: partyAText,
+      partyB: partyBText,
+      exchangeNotes: exchangeText,
       exchangeLocation,
       pickupTime: times.pickupTime,
       dropoffTime: times.dropoffTime,
@@ -85,9 +98,9 @@ function heuristicScheduleSplit(raw: string): ParentingScheduleSplit {
   }
 
   return {
-    partyA: `Petitioner / Party A care periods: ${text}`,
-    partyB: `Respondent / Party B care periods corresponding to the same proposal (do not leave unassigned time): ${text}`,
-    exchangeNotes: "Add exchange times and locations before filing if not already stated.",
+    partyA: text,
+    partyB: "",
+    exchangeNotes: exchangeText,
     exchangeLocation,
     pickupTime: times.pickupTime,
     dropoffTime: times.dropoffTime,
@@ -107,7 +120,7 @@ async function aiScheduleSplit(raw: string): Promise<ParentingScheduleSplit | nu
     dropoffTime?: string;
   }>({
     system:
-      "You split Arizona parenting-time proposals into Party A (petitioner) and Party B (respondent) schedules. Return JSON only with keys partyA, partyB, exchangeNotes, exchangeLocation, pickupTime, dropoffTime. Never invent days/times that are not implied by the text. If the text is vague (e.g. only 'every other weekend'), assign weekend periods to Party B and note that weekdays/exchanges still need detail. Keep each value under 500 characters.",
+      "You split Arizona parenting-time proposals into Party A (petitioner) and Party B (respondent) schedules. Return JSON only with keys partyA, partyB, exchangeNotes, exchangeLocation, pickupTime, dropoffTime. Use only days, times, and exchange places stated by the client. Do not add drafting instructions or tell anyone to specify something before filing. Keep each value under 180 characters.",
     user: `Parenting schedule text:\n${raw}`,
   });
 

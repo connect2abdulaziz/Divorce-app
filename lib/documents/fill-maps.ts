@@ -3,7 +3,7 @@ import { commonCaptionFields } from "./case-values";
 import { hasListedCommunityAssets } from "./validate-packet";
 
 function partyA(assigned: unknown) {
-  return assigned === "client" || assigned === "sell";
+  return assigned === "client";
 }
 function partyB(assigned: unknown) {
   return assigned === "spouse";
@@ -26,6 +26,86 @@ function supportPayerIsClient(v: CaseFillValues): boolean {
 
 function currentTaxYear(): number {
   return new Date().getFullYear();
+}
+
+/** Deed legal description when the case actually has one. */
+function realEstateLegal(item: Record<string, unknown>): string {
+  return String(item.legal_description ?? "").trim() || String(item.notes ?? "").trim();
+}
+
+/** Dollar column on the petition. The form already prints "$" beside the box. */
+function dollar(value: unknown): string {
+  if (value == null || value === "") return "";
+  const n = Number(value);
+  return Number.isFinite(n) ? String(n) : String(value);
+}
+
+/**
+ * Parenting-plan explain boxes are two single-line fields stacked vertically.
+ * A long description continues on the lower row instead of clipping on the first.
+ */
+function splitStackedRows(text: string, maxChars = 72): [string, string] {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (!clean) return ["", ""];
+  if (clean.length <= maxChars) return [clean, ""];
+  let cut = clean.lastIndexOf(" ", maxChars);
+  if (cut < 40) cut = maxChars;
+  return [clean.slice(0, cut).trim(), clean.slice(cut).trim()];
+}
+
+function assignStackedRows(
+  out: Record<string, string | boolean>,
+  topKey: string,
+  bottomKey: string,
+  text: string
+) {
+  const [top, bottom] = splitStackedRows(text);
+  if (top) out[topKey] = top;
+  if (bottom) out[bottomKey] = bottom;
+}
+
+/** Even Party A, Even Party B, Odd Party A, Odd Party B — top holiday to bottom. */
+const HOLIDAY_ROWS: Array<[string, string, string, string]> = [
+  ["Party A_2 DRCVG11f", "Party B_2 DRCVG11f", "Party A_17 DRCVG11f", "Party B_17 DRCVG11f"],
+  ["Party A_3 DRCVG11f", "Party B_3 DRCVG11f", "Party A_18 DRCVG11f", "Party B_18 DRCVG11f"],
+  ["Party A_4 DRCVG11f", "Party B_4 DRCVG11f", "Party A_19 DRCVG11f", "Party B_19 DRCVG11f"],
+  ["Party A_5 DRCVG11f", "Party B_5 DRCVG11f", "Party A_20 DRCVG11f", "Party B_20 DRCVG11f"],
+  ["Party A_6 DRCVG11f", "Party B_6 DRCVG11f", "Party A_21 DRCVG11f", "Party B_21 DRCVG11f"],
+  ["Party A_7 DRCVG11f", "Party B_7 DRCVG11f", "Party A_22 DRCVG11f", "Party B_22 DRCVG11f"],
+  ["Party A_8 DRCVG11f", "Party B_8 DRCVG11f", "Party A_23 DRCVG11f", "Party B_23 DRCVG11f"],
+  ["Party A_9 DRCVG11f", "Party B_9 DRCVG11f", "Party A_24 DRCVG11f", "Party B_24 DRCVG11f"],
+  ["Party A_10 DRCVG11f", "Party B_10 DRCVG11f", "Party A_25 DRCVG11f", "Party B_25 DRCVG11f"],
+  ["Party A_11 DRCVG11f", "Party B_11 DRCVG11f", "Party A_26 DRCVG11f", "Party B_26 DRCVG11f"],
+  ["Party A_12 DRCVG11f", "Party B_12 DRCVG11f", "Party A_27 DRCVG11f", "Party B_27 DRCVG11f"],
+  ["Party A_13 DRCVG11f", "Party B_13 DRCVG11f", "Party A_28 DRCVG11f", "Party B_28 DRCVG11f"],
+  ["Party A_14 DRCVG11f", "Party B_14 DRCVG11f", "Party A_29 DRCVG11f", "Party B_29 DRCVG11f"],
+  ["Party A_15 DRCVG11f", "Party B_15 DRCVG11f", "Party A_30 DRCVG11f", "Party B_30 DRCVG11f"],
+  ["Party A_16 DRCVG11f", "Party B_16 DRCVG11f", "Party A_31 DRCVG11f", "Party B_31 DRCVG11f"],
+];
+
+const MOTHERS_DAY_ROW = 13;
+const FATHERS_DAY_ROW = 14;
+
+function motherIsPartyA(v: CaseFillValues): boolean | null {
+  if (v.clientGender === "female") return true;
+  if (v.clientGender === "male") return false;
+  if (v.spouseGender === "female") return false;
+  if (v.spouseGender === "male") return true;
+  return null;
+}
+
+function assignHolidayGrid(out: Record<string, string | boolean>, v: CaseFillValues) {
+  const motherA = motherIsPartyA(v);
+  HOLIDAY_ROWS.forEach(([evenA, evenB, oddA, oddB], i) => {
+    let evenIsA = i % 2 === 0;
+    if (motherA !== null && i === MOTHERS_DAY_ROW) evenIsA = motherA;
+    if (motherA !== null && i === FATHERS_DAY_ROW) evenIsA = !motherA;
+    const sameBothYears = motherA !== null && (i === MOTHERS_DAY_ROW || i === FATHERS_DAY_ROW);
+    out[evenA] = evenIsA;
+    out[evenB] = !evenIsA;
+    out[oddA] = sameBothYears ? evenIsA : !evenIsA;
+    out[oddB] = sameBothYears ? !evenIsA : evenIsA;
+  });
 }
 
 /** Extra fields for Petition DRDA10FZ (without children) beyond the common caption. */
@@ -66,7 +146,9 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
     const r = v.realEstate[0];
     out["Real estate located DRDA10f"] = true;
     out["Real estate located at DRDA10f"] = String(r.address ?? "");
-    out["Value DRDA10f"] = r.estimated_value != null ? String(r.estimated_value) : "";
+    out["Value DRDA10f"] = dollar(r.estimated_value);
+    const legal = realEstateLegal(r);
+    if (legal) out["Legal Description 1 DRDA10f"] = legal;
     if (partyA(r.assigned_to)) out["A real estate DRDA10f"] = true;
     if (partyB(r.assigned_to)) out["B real estate DRDA10f"] = true;
   }
@@ -81,9 +163,19 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
   if (v.hasHousehold) {
     out["Household furniture DRDA10f"] = true;
     out["Household furnishings DRDA10f"] = true;
+    const furnitureValueKeys = [
+      "undefined_40 DRDA10f",
+      "undefined_41 DRDA10f",
+      "undefined_42 DRDA10f",
+      "undefined_43 DRDA10f",
+      "undefined_44 DRDA10f",
+      "undefined_45 DRDA10f",
+    ];
     v.household.slice(0, 6).forEach((item, i) => {
       const n = i + 1;
       out[`${n} DRDA10f`] = String(item.description ?? "");
+      const value = dollar(item.estimated_value);
+      if (value) out[furnitureValueKeys[i]] = value;
       if (partyA(item.assigned_to)) out[`A furniture ${n} DRDA10f`] = true;
       if (partyB(item.assigned_to)) out[`B furniture ${n} DRDA10f`] = true;
     });
@@ -96,6 +188,8 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
       out["Make DRDA10f"] = String(v0.make ?? "");
       out["Year DRDA10f"] = v0.year != null ? String(v0.year) : "";
       out["Model DRDA10f"] = String(v0.model ?? "");
+      const value0 = dollar(v0.estimated_value);
+      if (value0) out["undefined_59 DRDA10f"] = value0;
       if (partyA(v0.assigned_to)) out["A motor vehicles 1 DRDA10f"] = true;
       if (partyB(v0.assigned_to)) out["B motor vehicles 1 DRDA10f"] = true;
     }
@@ -104,6 +198,8 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
       out["Make_2 DRDA10f"] = String(v1.make ?? "");
       out["Year_2 DRDA10f"] = v1.year != null ? String(v1.year) : "";
       out["Model_2 DRDA10f"] = String(v1.model ?? "");
+      const value1 = dollar(v1.estimated_value);
+      if (value1) out["undefined_60 DRDA10f"] = value1;
       if (partyA(v1.assigned_to)) out["A motor vehicles 2 DRDA10f"] = true;
       if (partyB(v1.assigned_to)) out["B motor vehicles 2 DRDA10f"] = true;
     }
@@ -117,9 +213,16 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
     out["I do not have property DRDA10f"] = true;
   } else {
     out["I have property or separate property DRDA10f"] = true;
+    const separateValueKeys = [
+      "undefined_64 DRDA10f",
+      "undefined_67 DRDA10f",
+      "undefined_70 DRDA10f",
+    ];
     v.separateProperty.slice(0, 3).forEach((item, i) => {
       const n = i + 1;
       out[`Description of Separate Property ${n} DRDA10f`] = String(item.description ?? "");
+      const value = dollar(item.estimated_value);
+      if (value) out[separateValueKeys[i]] = value;
       if (item.owner_party === "client") out[`A SP ${n} DRDA10f`] = true;
       if (item.owner_party === "spouse") out[`B SP ${n} DRDA10f`] = true;
     });
@@ -285,6 +388,10 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
     const r = v.realEstate[0];
     out["Real estate 1 DRDC15f"] = true;
     out["Real estate located at DRDC15f"] = String(r.address ?? "");
+    const value = dollar(r.estimated_value);
+    if (value) out["undefined_9 DRDC15f"] = value;
+    const legal = realEstateLegal(r);
+    if (legal) out["1_2 DRDC15f"] = legal;
     if (partyA(r.assigned_to)) out["A real estate 1 DRDC15f"] = true;
     if (partyB(r.assigned_to)) out["B real estate 1 DRDC15f"] = true;
   }
@@ -292,6 +399,10 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
     const r = v.realEstate[1];
     out["Real estate 2 DRDC15f"] = true;
     out["Real estate located at_2 DRDC15f"] = String(r.address ?? "");
+    const value = dollar(r.estimated_value);
+    if (value) out["undefined_13 DRDC15f"] = value;
+    const legal = realEstateLegal(r);
+    if (legal) out["1_3 DRDC15f"] = legal;
     if (partyA(r.assigned_to)) out["A real estate 2 DRDC15f"] = true;
     if (partyB(r.assigned_to)) out["B real estate 2 DRDC15f"] = true;
   }
@@ -299,9 +410,18 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
   if (v.hasHousehold) {
     out["Household furniture and appliances DRDC15f"] = true;
     out["Household furnishings DRDC15f"] = true;
+    const furnitureValueKeys = [
+      "undefined_49 DRDC15f",
+      "undefined_50 DRDC15f",
+      "undefined_51 DRDC15f",
+      "undefined_52 DRDC15f",
+      "undefined_53 DRDC15f",
+    ];
     v.household.slice(0, 5).forEach((item, i) => {
       const n = i + 1;
       out[`Household furniture and appliances ${n} DRDC15f`] = String(item.description ?? "");
+      const value = dollar(item.estimated_value);
+      if (value) out[furnitureValueKeys[i]] = value;
       if (partyA(item.assigned_to)) out[`A${n} DRDC15f`] = true;
       if (partyB(item.assigned_to)) out[`B${n} DRDC15f`] = true;
     });
@@ -314,6 +434,8 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
       out["Make DRDC15f"] = String(v0.make ?? "");
       out["Year DRDC15f"] = v0.year != null ? String(v0.year) : "";
       out["Model DRDC15f"] = String(v0.model ?? "");
+      const value0 = dollar(v0.estimated_value);
+      if (value0) out["undefined_71 DRDC15f"] = value0;
       if (partyA(v0.assigned_to)) out["A20 DRDC15f"] = true;
       if (partyB(v0.assigned_to)) out["B20 DRDC15f"] = true;
     }
@@ -322,6 +444,8 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
       out["Make_2 DRDC15f"] = String(v1.make ?? "");
       out["Year_2 DRDC15f"] = v1.year != null ? String(v1.year) : "";
       out["Model_2 DRDC15f"] = String(v1.model ?? "");
+      const value1 = dollar(v1.estimated_value);
+      if (value1) out["undefined_72 DRDC15f"] = value1;
       if (partyA(v1.assigned_to)) out["A21 DRDC15f"] = true;
       if (partyB(v1.assigned_to)) out["B21 DRDC15f"] = true;
     }
@@ -345,9 +469,17 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
     out["Party B does not have separate property DRDC15f"] = true;
   } else {
     out["Party A has separate property DRDC15f"] = true;
+    const separateValueKeys = [
+      "undefined_74 DRDC15f",
+      "undefined_77 DRDC15f",
+      "undefined_80 DRDC15f",
+      "undefined_83 DRDC15f",
+    ];
     v.separateProperty.slice(0, 4).forEach((item, i) => {
       const n = i + 1;
       out[`Description of Separate Property ${n} DRDC15f`] = String(item.description ?? "");
+      const value = dollar(item.estimated_value);
+      if (value) out[separateValueKeys[i]] = value;
       if (item.owner_party === "client") out[`A sep prop ${n} DRDC15f`] = true;
       if (item.owner_party === "spouse") out[`B sep prop ${n} DRDC15f`] = true;
     });
@@ -388,11 +520,11 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
     out["For previous years DRDC15f"] = true;
   }
 
-  // Parent Information Program — at filing, default to not yet completed.
-  // Form exposes "I" / "have" checkboxes for the affirmative; leave both unchecked
-  // unless intake marks completed (then check both to form "I have").
+  // "I [ ] have  [ ] have not already completed the Parenting Information Program."
+  // Check exactly one. At filing, default to not yet completed.
   if (v.parentInfoCompleted === true) {
     out["I DRDC15f"] = true;
+  } else {
     out["have DRDC15f"] = true;
   }
 
@@ -451,22 +583,54 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
       "Party B_16 DRDC15f",
       "Party B_17 DRDC15f",
     ];
-    v.children.slice(0, 5).forEach((ch, i) => {
-      out[taxNameKeys[i]] = ch.fullName;
-      out[taxYearKeys[i]] = String(year + (i % 2));
-      if (v.taxClaimedBy === "spouse") out[partyBTax[i]] = true;
-      else if (v.taxClaimedBy === "split") {
-        if (i % 2 === 0) out[partyATax[i]] = true;
-        else out[partyBTax[i]] = true;
-      } else out[partyATax[i]] = true;
-    });
-    out["Pattern shall repeat for subsequent years DRDC15f"] = true;
+    const evenOddSplit =
+      v.taxClaimedBy === "split" &&
+      (/alternate/i.test(v.taxFrequency) || /even|odd/i.test(v.taxNotes));
+    if (evenOddSplit) {
+      // List every child for even years and again for odd years. "Pattern repeats"
+      // does not say who has the other child in the same year.
+      const spouseGetsEven = /(?:alex|spouse|party\s*b)[^.]{0,40}even/i.test(v.taxNotes);
+      const evenParty = spouseGetsEven ? "spouse" : "client";
+      const oddParty = spouseGetsEven ? "client" : "spouse";
+      const named = v.children.slice(0, 2);
+      const subjects =
+        v.children.length > 2
+          ? ["All minor children"]
+          : named.map((ch) => ch.fullName);
+      const rows = [
+        ...subjects.map((name) => ({ name, year: "even yrs", party: evenParty })),
+        ...subjects.map((name) => ({ name, year: "odd yrs", party: oddParty })),
+      ];
+      rows.slice(0, taxNameKeys.length).forEach((row, i) => {
+        out[taxNameKeys[i]] = row.name;
+        out[taxYearKeys[i]] = row.year;
+        if (row.party === "spouse") out[partyBTax[i]] = true;
+        else out[partyATax[i]] = true;
+      });
+    } else {
+      v.children.slice(0, 5).forEach((ch, i) => {
+        out[taxNameKeys[i]] = ch.fullName;
+        out[taxYearKeys[i]] = String(year + (i % 2));
+        if (v.taxClaimedBy === "spouse") out[partyBTax[i]] = true;
+        else if (v.taxClaimedBy === "split") {
+          if (i % 2 === 0) out[partyATax[i]] = true;
+          else out[partyBTax[i]] = true;
+        } else out[partyATax[i]] = true;
+      });
+      out["Pattern shall repeat for subsequent years DRDC15f"] = true;
+    }
   }
 
-  // Debt cutoff: prefer separation-date option when known (vs. service-date option).
+  // Debt cutoff uses the separation date. The date blank is misnamed as the service date.
   if (v.separationDate) {
     out["Hold harmless from debts since parties separation DRDC15f"] = true;
+    out["the date my spouse was served with the Petition for Dissolution DRDC15f"] = v.separationDate;
   }
+
+  const clientHasSeparate = v.separateProperty.some((item) => item.owner_party === "client");
+  const spouseHasSeparate = v.separateProperty.some((item) => item.owner_party === "spouse");
+  if (clientHasSeparate) out["Award As separate property to A DRDC15f"] = true;
+  if (spouseHasSeparate) out["Award Bs separate property to B DRDC15f"] = true;
 
   if (v.restoreName) {
     out["First name DRDC15f"] = v.clientFirst;
@@ -475,6 +639,28 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
     out["Restore first name DRDC15f"] = v.restoredFirst || v.clientFirst;
     out["Restore middle name DRDC15f"] = v.restoredMiddle;
     out["Restore last name DRDC15f"] = v.restoredLast || v.clientLast;
+  }
+
+  const bornBeforeMarriage = v.children.filter((ch) => ch.bornPriorToMarriage);
+  if (bornBeforeMarriage.length > 0) {
+    out["A minor child or children were born before DRDC15f"] = true;
+    out["Party A andor DRDC15f"] = true;
+    out["Party B isare the parents of that minor childthose minor DRDC15f"] = true;
+    const priorNameKeys = [
+      "children named below 1 DRDC15f",
+      "children named below 2 DRDC15f",
+      "children named below 3 DRDC15f",
+    ];
+    const priorLegalKeys = [
+      "Current Legal Name 1 DRDC15f",
+      "Current Legal Name 2 DRDC15f",
+      "Current Legal Name 3 DRDC15f",
+      "Current Legal Name 4 DRDC15f",
+    ];
+    bornBeforeMarriage.forEach((ch, i) => {
+      if (priorNameKeys[i]) out[priorNameKeys[i]] = ch.fullName;
+      if (priorLegalKeys[i]) out[priorLegalKeys[i]] = ch.fullName;
+    });
     out["Party A or_2 DRDC15f"] = true;
   }
 
@@ -515,12 +701,8 @@ export function affidavitMinorChildrenFields(v: CaseFillValues): Record<string, 
     out[resName[i]] = ch.fullName;
     out[resAddr[i]] = ch.primaryAddress;
     out[resCsz[i]] = ch.primaryCsz;
-    out[fromKeys[i]] = ch.lengthAtAddress.includes("–")
-      ? ch.lengthAtAddress.split("–")[0].trim()
-      : "";
-    out[toKeys[i]] = ch.lengthAtAddress.includes("–")
-      ? ch.lengthAtAddress.split("–")[1].trim()
-      : "present";
+    out[fromKeys[i]] = ch.livedFrom;
+    out[toKeys[i]] = ch.livedTo || "present";
     out[livedKeys[i]] = livedWithLabel(ch.livedWith);
     out[relKeys[i]] = "Parent";
   });
@@ -531,14 +713,19 @@ export function affidavitMinorChildrenFields(v: CaseFillValues): Record<string, 
 export function parentingPlanFields(v: CaseFillValues): Record<string, string | boolean> {
   const out: Record<string, string | boolean> = {
     ...commonCaptionFields(v),
-    "Domestic Violence has not occurred between the parties OR DRCVG11f": !v.hasDv,
-    "Domestic Violence has occurred between the parties but one of the following applies 1 it DRCVG11f":
-      v.hasDv,
-    "Neither party has been convicted of driving under the influence or a drug offense within the DRCVG11f":
-      true,
     // Joint-agreement periodic review (months).
     "necessary or desired changes every": v.parenting.jointReviewMonths || "12",
   };
+
+  // Part 4 is the joint legal decision-making agreement. Those statements
+  // apply only when both parents agree to joint custody.
+  if (v.parenting.jointByAgreement === true) {
+    out["Domestic Violence has not occurred between the parties OR DRCVG11f"] = !v.hasDv;
+    out["Domestic Violence has occurred between the parties but one of the following applies 1 it DRCVG11f"] =
+      v.hasDv;
+    out["Neither party has been convicted of driving under the influence or a drug offense within the DRCVG11f"] =
+      true;
+  }
 
   if (v.parenting.isSoleDecision && !v.parenting.isJointDecision) {
     out["SOLE LEGAL DECISIONMAKING DRCVG11f"] = true;
@@ -554,35 +741,31 @@ export function parentingPlanFields(v: CaseFillValues): Record<string, string | 
     }
   }
 
+  // Two columns, read left to right. "1"/"2"/"3" are the right-hand lines.
   const childNameFields = [
+    "Use additional paper if necessary 1 DRCVG11f",
     "1 DRCVG11f",
+    "Use additional paper if necessary 2 DRCVG11f",
     "2 DRCVG11f",
     "3 DRCVG11f",
-    "children 1 DRCVG11f",
-    "children 2 DRCVG11f",
-    "children 3 DRCVG11f",
-    "children 4 DRCVG11f",
-    "children 5 DRCVG11f",
   ];
-  v.children.slice(0, 5).forEach((ch, i) => {
-    if (i < 3) out[childNameFields[i]] = ch.fullName;
-    out[childNameFields[i + 3]] = ch.fullName;
+  v.children.slice(0, childNameFields.length).forEach((ch, i) => {
+    out[childNameFields[i]] = ch.fullName;
   });
 
   const partyASchedule = v.parenting.schedulePartyA;
   const partyBSchedule = v.parenting.schedulePartyB;
   if (partyASchedule) {
-    out["1_2 DRCVG11f"] = partyASchedule;
+    assignStackedRows(out, "1_2 DRCVG11f", "2_2 DRCVG11f", partyASchedule);
     out["The minor children will be in the care of Party A as follows Explain DRCVG11f"] = true;
   }
   if (partyBSchedule) {
-    out["1_3 DRCVG11f"] = partyBSchedule;
+    assignStackedRows(out, "1_3 DRCVG11f", "2_3 DRCVG11f", partyBSchedule);
     out["The minor children will be in the care of Party B as follows Explain DRCVG11f"] = true;
   }
   if (v.parenting.scheduleExchangeNotes) {
-    out["Other parenting time arrangements are as follows Explain DRCVG11f"] =
-      v.parenting.scheduleExchangeNotes;
-    out["1_4 DRCVG11f"] = v.parenting.scheduleExchangeNotes;
+    out["Other parenting time arrangements are as follows Explain DRCVG11f"] = true;
+    assignStackedRows(out, "1_4 DRCVG11f", "2_4 DRCVG11f", v.parenting.scheduleExchangeNotes);
   }
 
   // Pickup / drop-off / exchange — filled when enrichment extracts them.
@@ -604,25 +787,24 @@ export function parentingPlanFields(v: CaseFillValues): Record<string, string | 
   out["During summer months or school breaks that last longer than 4 days no changes shall be DRCVG11f"] =
     true;
   out["Each parent is entitled to a DRCVG11f"] = true;
-  out["week period of vacation time with the minor DRCVG11f"] = v.parenting.vacationWeeks || "2";
+  // "week period..." is the summer-explain line above the sentence.
+  // The week count sits in the narrow blank on the entitlement line.
+  // The notice-day count is the blank on the following line.
   out["children The parents will work out the details of the vacation at least DRCVG11f"] =
-    v.parenting.vacationNoticeDays || "30";
+    v.parenting.vacationWeeks || "2";
+  out["undefined_2 DRCVG11f"] = v.parenting.vacationNoticeDays || "30";
 
   // Travel: keep each other informed; no hard out-of-state ban by default.
   out["Should either parent travel out of the area with the minor children each parent will keep the DRCVG11f"] =
     true;
 
-  // Holidays: when notes say alternate years, use free-text holiday option rather than
-  // guessing which Party A_N / Party B_N box maps to which holiday.
+  // Holiday grid: alternate even/odd years. Mother's Day and Father's Day stay
+  // with that parent in both years when gender is known.
+  assignHolidayGrid(out, v);
   const holidayNotes = v.parenting.notes || "";
-  if (/holiday/i.test(holidayNotes) || /alternate/i.test(holidayNotes)) {
+  if (/holiday/i.test(holidayNotes)) {
     out["other holidays DRCVG11f"] = true;
-    out["Other Holidays Describe the other holidays and the arrangement DRCVG11f"] =
-      holidayNotes || "Major holidays alternate by year between the parents.";
-  } else {
-    out["other holidays DRCVG11f"] = true;
-    out["Other Holidays Describe the other holidays and the arrangement DRCVG11f"] =
-      "Major holidays alternate by calendar year between Party A and Party B.";
+    out["Other Holidays Describe the other holidays and the arrangement DRCVG11f"] = holidayNotes;
   }
   out["Each parent may have the children DRCVG11f"] = true;
   out["three day weekends which include DRCVG11f"] = true;
@@ -641,7 +823,11 @@ export function parentingPlanFields(v: CaseFillValues): Record<string, string | 
   out["Both parents agree that religious arrangements are not applicable to this plan DRCVG11f"] =
     true;
 
-  // Communication & standard additional arrangements.
+  // Communication answers belong on their own lines. Method is not a frequency.
+  const method = v.parenting.communicationMethod || "Phone and email";
+  const frequency =
+    v.parenting.communicationFrequency ||
+    "At least once a week, and promptly about school, health, and schedule changes";
   out["NOTIFY OTHER PARENT OF ADDRESS CHANGE Each parent will inform the other DRCVG11f"] = true;
   out["parent of any change of address andor phone number in advance OR within DRCVG11f"] =
     v.parenting.addressChangeNoticeDays || "30";
@@ -649,16 +835,19 @@ export function parentingPlanFields(v: CaseFillValues): Record<string, string | 
   out["TALK TO OTHER PARENT ABOUT EXTRA ACTIVITIES Each parent will consult and DRCVG11f"] = true;
   out["COMMUNICATE Each parent agrees that all communications regarding the minor DRCVG11f"] = true;
   out["METHOD OF COMMUNICATION Each parent agrees to use the following means of DRCVG11f"] = true;
-  out["Phone DRCVG11f"] = true;
-  out["Email DRCVG11f"] = true;
-  out["FREQUENCY OF COMMUNICATION Each parent agrees to communicate regarding the DRCVG11f"] = true;
-  out["and will be by the following methods DRCVG11f"] =
-    v.parenting.communicationMethod || "Phone and email";
+  out["communication DRCVG11f"] = method;
+  out["Phone DRCVG11f"] = /phone/i.test(method);
+  out["Email DRCVG11f"] = /email|e-mail/i.test(method);
+  out["FREQUENCY OF COMMUNICATION Each parent agrees to communicate regarding the DRCVG11f"] =
+    true;
+  out["and will be by the following methods DRCVG11f"] = frequency;
   out["PRAISE OTHER PARENT Each parent agrees to encourage love and respect between the DRCVG11f"] =
     true;
   out["COOPERATE AND WORK TOGETHER Both parents agree to exert their best efforts to DRCVG11f"] =
     true;
   out["NOTIFY OTHER PARENT OF PROBLEMS WITH TIMESHARING AHEAD OF TIME DRCVG11f"] = true;
+  out["PARENTING PLAN Both parents agree that if either parent moves out of the area and DRCVG11f"] =
+    true;
   out["MEDIATION If the parents are unable to reach a mutual agreement regarding a legal DRCVG11f"] =
     true;
 
@@ -721,20 +910,15 @@ export function sensitiveDataCoverSheetWcFields(
     "undefined_7 DRSDS10f-c": "",
     "No interpreter12 DRSDS10f-c": !v.interpreterNeeded,
     "Interpreter needed yes_10 DRSDS10f-c": v.interpreterNeeded,
-    // Case type must include Dissolution/Divorce for this packet.
+    // Case type: mark only Dissolution (Divorce). Legal decision-making is a
+    // separate case category and must stay unchecked on a divorce filing.
     "undefined_8 DRSDS10f-c": true,
-    "Dissolution Divorce DRSDS10f-c": true,
-    "Dissolution Divorce DRSDS10f_Ann": true,
   };
 
   if (v.clientGender === "male") out["PetitionerGenderMale DRSDS10f-c"] = true;
   if (v.clientGender === "female") out["PetitionerGenderFemale DRSDS10f-c"] = true;
   if (v.spouseGender === "male") out["RespondentGenderMale DRSDS10f-c"] = true;
   if (v.spouseGender === "female") out["RespondentGenderFemale DRSDS10f-c"] = true;
-
-  if (v.hasCommonChildren) {
-    out["Legal Decisionmaking n Order DRSDS10f-c"] = true;
-  }
 
   const nameKeys = ["Child NameRow1 DRSDS10f-c", "Child NameRow2 DRSDS10f-c", "Child NameRow3 DRSDS10f-c"];
   const dobKeys = [
@@ -781,6 +965,31 @@ export function preliminaryInjunctionFields(
   return out;
 }
 
+export function childSupportWorksheetFields(
+  v: CaseFillValues
+): Record<string, string | boolean> {
+  const out: Record<string, string | boolean> = {
+    ...commonCaptionFields(v),
+    "PetitionerParty A DRS12f": v.clientName,
+    "RespondentParty B DRS12f": v.spouseName,
+    "Total Number of Children DRS12f": String(v.children.length),
+    // Gross incomes from intake are estimates until paystubs are attached.
+    "ESTIMATED based on facts or knowledge of pay before promotion or of others in similar DRS12f":
+      true,
+  };
+  if (v.clientIncome) out["A CS income DRS12f"] = v.clientIncome;
+  if (v.spouseIncome) out["B CS income DRS12f"] = v.spouseIncome;
+  const schedule = `${v.parenting.schedulePartyA} ${v.parenting.parentingTimeSchedule}`.toLowerCase();
+  if (/equal|50\/50|week on.?week off/.test(schedule)) {
+    out["Parenting Plan equal DRS12f"] = true;
+  } else if (v.children.some((ch) => ch.livedWith === "spouse") && !v.children.some((ch) => ch.livedWith === "client")) {
+    out["Parenting Plan Party B DRS12f"] = true;
+  } else {
+    out["Parenting Plan Party A DRS12f"] = true;
+  }
+  return out;
+}
+
 export function parentInformationProgramOrderFields(
   v: CaseFillValues
 ): Record<string, string | boolean> {
@@ -788,10 +997,8 @@ export function parentInformationProgramOrderFields(
     ...commonCaptionFields(v),
     "Name of Petitioner  Party A": v.clientName,
     "Name of Respondent  Party B": v.spouseName,
-    // Dissolution of Marriage case type.
+    // Dissolution of Marriage only. Do not also mark legal decision-making.
     "CDoMr DR12f": true,
-    // Related to legal decision-making when children are involved.
-    "R2dLdM DR12f": v.hasCommonChildren || v.children.length > 0,
   };
 }
 
@@ -820,6 +1027,10 @@ export function fieldsForTemplate(
       return preliminaryInjunctionFields(values);
     case "wc-filing-parent-info":
       return parentInformationProgramOrderFields(values);
+    case "wc-filing-child-support-worksheet":
+    case "wc-decree-child-support-worksheet":
+    case "wc-consent-child-support-worksheet":
+      return childSupportWorksheetFields(values);
     default:
       return commonCaptionFields(values);
   }

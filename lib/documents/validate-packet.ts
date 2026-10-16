@@ -119,6 +119,46 @@ export function validatePacket(v: CaseFillValues): PacketIssue[] {
     }
   }
 
+  if (v.hasRealEstate) {
+    for (const property of v.realEstate) {
+      const address = String(property.address ?? "a listed property");
+      if (property.estimated_value == null || property.estimated_value === "") {
+        issues.push({
+          code: "real_estate_value_missing",
+          severity: "warning",
+          message: `Real estate at ${address} has no estimated value. Add it before filing.`,
+        });
+      }
+      const legal = String(property.legal_description ?? property.notes ?? "").trim();
+      if (!legal) {
+        issues.push({
+          code: "real_estate_legal_description_missing",
+          severity: "warning",
+          message: `Real estate at ${address} has no deed legal description. Add the description from the deed before filing.`,
+        });
+      }
+    }
+  }
+
+  if (
+    v.hasCommonChildren &&
+    v.clientAddress &&
+    v.spouseAddress &&
+    v.clientAddress !== v.spouseAddress
+  ) {
+    const bothThroughPresent = v.children.some(
+      (ch) => ch.livedWith === "both" && (!ch.livedTo || ch.livedTo === "present")
+    );
+    if (bothThroughPresent) {
+      issues.push({
+        code: "residence_both_parents_apart",
+        severity: "warning",
+        message:
+          "A child is listed as living with both parents through the present, but the parents have different addresses. Confirm each residence period and who lived with the child.",
+      });
+    }
+  }
+
   return issues;
 }
 

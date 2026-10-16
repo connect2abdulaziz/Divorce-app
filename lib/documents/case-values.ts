@@ -73,16 +73,34 @@ function moneyNumber(v: unknown): number | null {
 }
 
 function childPrimaryResidence(child: Record<string, unknown>) {
-  const residences = (child.child_residences as Array<Record<string, unknown>> | undefined) ?? [];
-  const primary =
-    residences.find((r) => r.is_primary_residence === true) ?? residences[0] ?? null;
-  if (!primary) return { address: "", csz: "", length: "", livedWith: "" };
-  const address = s(primary.street_address) || s(primary.address);
-  const csz = cityStateZip(primary.city, primary.state, primary.zip);
-  const start = s(primary.start_date);
-  const end = s(primary.end_date) || "present";
-  const length = start ? `${start} – ${end}` : "";
-  return { address, csz, length, livedWith: s(primary.lived_with) };
+  const residences = [
+    ...((child.child_residences as Array<Record<string, unknown>> | undefined) ?? []),
+  ].sort((a, b) => s(a.start_date).localeCompare(s(b.start_date)));
+  const current =
+    residences.find((r) => r.is_primary_residence === true) ??
+    residences[residences.length - 1] ??
+    null;
+  if (!current) {
+    return { address: "", csz: "", length: "", livedWith: "", livedFrom: "", livedTo: "" };
+  }
+  const addressOf = (r: Record<string, unknown>) => s(r.street_address) || s(r.address);
+  const address = addressOf(current);
+  const csz = cityStateZip(current.city, current.state, current.zip);
+  const atSameAddress = residences.filter(
+    (r) => addressOf(r).toLowerCase() === address.toLowerCase()
+  );
+  const addressStart =
+    atSameAddress.map((r) => s(r.start_date)).filter(Boolean).sort()[0] || s(current.start_date);
+  const stillThere = atSameAddress.some((r) => !s(r.end_date));
+  const addressEnd = stillThere ? "present" : s(current.end_date) || "present";
+  return {
+    address,
+    csz,
+    length: addressStart ? `${addressStart} – ${addressEnd}` : "",
+    livedWith: s(current.lived_with),
+    livedFrom: s(current.start_date),
+    livedTo: s(current.end_date) || "present",
+  };
 }
 
 /** Normalized values used to fill Arizona AcroForm captions + petition. */
@@ -126,6 +144,8 @@ export function buildCaseFillValues(bundle: CaseBundle) {
       primaryCsz: res.csz,
       lengthAtAddress: res.length,
       livedWith: res.livedWith,
+      livedFrom: res.livedFrom,
+      livedTo: res.livedTo,
       bornPriorToMarriage: bornBefore(dob, marriageDate),
     };
   });
@@ -239,6 +259,7 @@ export function buildCaseFillValues(bundle: CaseBundle) {
     hasSeparateDebts: bundle.gates.hasSeparateDebts === true,
     taxClaimedBy: s(tax.dependents_claimed_by),
     taxFrequency: s(tax.claim_frequency),
+    taxNotes: s(tax.notes),
     children,
     hasCommonChildren: bundle.gates.hasCommonChildren === true,
     parenting: {
@@ -265,6 +286,8 @@ export function buildCaseFillValues(bundle: CaseBundle) {
       addressChangeNoticeDays: "30",
       jointReviewMonths: "12",
       communicationMethod: "Phone and email",
+      communicationFrequency:
+        "At least once a week, and promptly about school, health, and schedule changes",
     },
     realEstate: bundle.records.real_estate as Array<Record<string, unknown>>,
     vehicles: bundle.records.vehicles as Array<Record<string, unknown>>,

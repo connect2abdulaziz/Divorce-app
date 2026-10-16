@@ -10,6 +10,7 @@ const EMPTY_CLIENT: PartyClient = {
   middle_name: null,
   last_name: null,
   date_of_birth: null,
+  gender: null,
   height: null,
   weight_lbs: null,
   az_years: null,

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
-import { Field, NumberInput, TextInput } from "@/components/questionnaire/fields";
+import { Field, NumberInput, Select, TextInput } from "@/components/questionnaire/fields";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type PartyClient = {
@@ -10,6 +10,7 @@ export type PartyClient = {
   middle_name: string | null;
   last_name: string | null;
   date_of_birth: string | null;
+  gender: string | null;
   height: string | null;
   weight_lbs: number | null;
   az_years: number | null;
@@ -65,6 +66,7 @@ export function ClientInfoForm({
       middle_name: emptyToNull(formData.get("middle_name")),
       last_name: emptyToNull(formData.get("last_name")),
       date_of_birth: emptyToNull(formData.get("date_of_birth")),
+      gender: emptyToNull(formData.get("gender")),
       height: emptyToNull(formData.get("height")),
       weight_lbs: numberOrNull(formData.get("weight_lbs")),
       az_years: numberOrNull(formData.get("az_years")),
@@ -92,6 +94,7 @@ export function ClientInfoForm({
       middle_name: emptyToNull(formData.get("middle_name")),
       last_name: emptyToNull(formData.get("last_name")),
       date_of_birth: emptyToNull(formData.get("date_of_birth")),
+      gender: emptyToNull(formData.get("gender")),
       height: emptyToNull(formData.get("height")),
       weight_lbs: numberOrNull(formData.get("weight_lbs")),
       az_years: numberOrNull(formData.get("az_years")),
@@ -130,9 +133,22 @@ export function ClientInfoForm({
         </Field>
       </div>
 
-      <Field label="Date of birth">
-        <TextInput name="date_of_birth" type="date" defaultValue={initial.date_of_birth} required />
-      </Field>
+      <div className="grid gap-6 sm:grid-cols-2">
+        <Field label="Date of birth">
+          <TextInput name="date_of_birth" type="date" defaultValue={initial.date_of_birth} required />
+        </Field>
+        <Field label="Gender">
+          <Select
+            name="gender"
+            defaultValue={initial.gender}
+            required
+            options={[
+              { value: "male", label: "Male" },
+              { value: "female", label: "Female" },
+            ]}
+          />
+        </Field>
+      </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label="Height" hint="Example: 5'8&quot; or 68 in.">

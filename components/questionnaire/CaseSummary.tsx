@@ -67,6 +67,7 @@ export async function CaseSummary({
           value={[c.first_name, c.middle_name, c.last_name].filter(Boolean).join(" ") as string}
         />
         <Row label="Date of birth" value={c.date_of_birth as ReactNode} />
+        <Row label="Gender" value={c.gender === "male" ? "Male" : c.gender === "female" ? "Female" : null} />
         <Row label="Height" value={c.height as ReactNode} />
         <Row label="Weight" value={c.weight_lbs != null ? `${c.weight_lbs} lbs` : null} />
         <Row
@@ -93,6 +94,7 @@ export async function CaseSummary({
           value={[s.first_name, s.middle_name, s.last_name].filter(Boolean).join(" ") as string}
         />
         <Row label="Date of birth" value={s.date_of_birth as ReactNode} />
+        <Row label="Gender" value={s.gender === "male" ? "Male" : s.gender === "female" ? "Female" : null} />
         <Row label="Height" value={s.height as ReactNode} />
         <Row label="Weight" value={s.weight_lbs != null ? `${s.weight_lbs} lbs` : null} />
         <Row

@@ -79,17 +79,17 @@ async function main() {
 
   const checks: Check[] = [];
 
-  const dissolution =
-    asBool(cover["undefined_8 DRSDS10f-c"]) === true ||
-    asBool(cover["Dissolution Divorce DRSDS10f-c"]) === true ||
-    asBool(cover["Dissolution Divorce DRSDS10f_Ann"]) === true;
+  const dissolution = asBool(cover["undefined_8 DRSDS10f-c"]) === true;
+  const legalDecisionMaking =
+    asBool(cover["Legal Decisionmaking n Order DRSDS10f-c"]) === true;
   checks.push({
     id: "p1-dissolution",
-    title: "Page 1 — Dissolution/Divorce case type checked",
-    pass: dissolution,
-    detail: dissolution
-      ? "Dissolution checkbox mapped true (plus LDM when children exist)."
-      : "Dissolution checkbox still false.",
+    title: "Page 1 — Dissolution/Divorce only (not also legal decision-making)",
+    pass: dissolution && !legalDecisionMaking,
+    detail:
+      dissolution && !legalDecisionMaking
+        ? "Dissolution checkbox only."
+        : `dissolution=${dissolution}, legalDecisionMaking=${legalDecisionMaking}`,
   });
 
   const coverChildren = Boolean(cover["Child NameRow1 DRSDS10f-c"]);
@@ -119,6 +119,21 @@ async function main() {
     detail: `emailOk=${coverEmailOk}, dobOk=${coverDobOk}, phoneOk=${coverPhoneOk}, employerOk=${coverEmployerOk}, children=${coverChildren}`,
   });
 
+  const sofaValue = String(petition["undefined_49 DRDC15f"] || "");
+  const washerValue = String(petition["undefined_50 DRDC15f"] || "");
+  const rav4Value = String(petition["undefined_71 DRDC15f"] || "");
+  const civicValue = String(petition["undefined_72 DRDC15f"] || "");
+  checks.push({
+    id: "p4-5-asset-values",
+    title: "Pages 4–5 — Household and vehicle dollar values entered",
+    pass:
+      sofaValue === "1200" &&
+      washerValue === "900" &&
+      rav4Value === "22000" &&
+      civicValue === "14000",
+    detail: `sofa=${sofaValue}, washer=${washerValue}, rav4=${rav4Value}, civic=${civicValue}`,
+  });
+
   const debtDesc = String(petition["DESCRIPTION OF DEBT 1 DRDC15f"] || "");
   const debtAmt = String(petition["undefined_86 DRDC15f"] || "");
   const retDesc = String(petition["1_4 DRDC15f"] || "");
@@ -134,6 +149,24 @@ async function main() {
       retVal === "68000" &&
       !retDesc.includes("$"),
     detail: `debtDesc=${debtDesc}, debtAmt=${debtAmt}, retDesc=${retDesc}, retVal=${retVal}`,
+  });
+
+  checks.push({
+    id: "p8-pip-not-completed",
+    title: "Page 8 — Parent Information Program marked not already completed",
+    pass:
+      asBool(petition["have DRDC15f"]) === true && asBool(petition["I DRDC15f"]) !== true,
+    detail: `haveNot=${asBool(petition["have DRDC15f"])}, haveCompleted=${asBool(petition["I DRDC15f"])}`,
+  });
+
+  checks.push({
+    id: "p-plan-children-start",
+    title: "Parenting plan — child names start on the left of the list",
+    pass:
+      parenting["Use additional paper if necessary 1 DRCVG11f"] === "Mia L Martinez" &&
+      parenting["1 DRCVG11f"] === "Noah J Martinez" &&
+      !parenting["2 DRCVG11f"],
+    detail: `left=${parenting["Use additional paper if necessary 1 DRCVG11f"]}, right=${parenting["1 DRCVG11f"]}`,
   });
 
   const noChildren = asBool(petition["There are no children DRDC15f"]) === true;
@@ -195,8 +228,25 @@ async function main() {
     detail: `agreement=${jointAgree}, requestedByOne=${jointOne}`,
   });
 
+  const part4Dv = asBool(
+    parenting["Domestic Violence has not occurred between the parties OR DRCVG11f"]
+  );
+  const part4Dui = asBool(
+    parenting[
+      "Neither party has been convicted of driving under the influence or a drug offense within the DRCVG11f"
+    ]
+  );
+  checks.push({
+    id: "p-part4-joint-only",
+    title: "Part 4 — DV and DUI statements only for a joint agreement",
+    pass: values.parenting.jointByAgreement !== true ? part4Dv !== true && part4Dui !== true : part4Dv === true && part4Dui === true,
+    detail: `jointAgreement=${values.parenting.jointByAgreement}, dvNotOccurred=${part4Dv}, neitherDui=${part4Dui}`,
+  });
+
   const schedA = String(parenting["1_2 DRCVG11f"] || "");
+  const schedA2 = String(parenting["2_2 DRCVG11f"] || "");
   const schedB = String(parenting["1_3 DRCVG11f"] || "");
+  const schedB2 = String(parenting["2_3 DRCVG11f"] || "");
   const reviewMonths = String(parenting["necessary or desired changes every"] || "");
   const summer =
     asBool(
@@ -219,11 +269,12 @@ async function main() {
     title: "Pages 36–43 — Schedule split + summer/medical/religious/review filled",
     pass:
       Boolean(schedA && schedB && schedA !== schedB) &&
+      !/before filing/i.test(`${schedA} ${schedA2} ${schedB} ${schedB2} ${parenting["1_4 DRCVG11f"] || ""}`) &&
       reviewMonths === "12" &&
       summer &&
       medical &&
       religious,
-    detail: `schedSplit=${Boolean(schedA && schedB && schedA !== schedB)}, review=${reviewMonths}, summer=${summer}, medical=${medical}, religious=${religious}`,
+    detail: `schedA=${schedA}, schedB=${schedB}, review=${reviewMonths}, summer=${summer}, medical=${medical}, religious=${religious}`,
   });
 
   const acquired = asBool(petition["Parties acquired community property DRDC15f"]) === true;
@@ -259,10 +310,100 @@ async function main() {
   });
 
   checks.push({
+    id: "p20-injunction-gender",
+    title: "Preliminary Injunction — petitioner and respondent gender checked",
+    pass:
+      asBool(injunction["Male 1 DR14f"]) === true &&
+      asBool(injunction["Female 1 DR14f"]) !== true &&
+      asBool(injunction["Female 2 DR14f"]) === true &&
+      asBool(injunction["Male 2 DR14f"]) !== true,
+    detail: `petitionerMale=${asBool(injunction["Male 1 DR14f"])}, respondentFemale=${asBool(injunction["Female 2 DR14f"])}`,
+  });
+
+  checks.push({
+    id: "p-separate-property-value",
+    title: "Separate property dollar value entered and award requested",
+    pass:
+      String(petition["undefined_74 DRDC15f"] || "") === "15000" &&
+      asBool(petition["Award As separate property to A DRDC15f"]) === true &&
+      asBool(petition["Award Bs separate property to B DRDC15f"]) !== true,
+    detail: `inheritance=${petition["undefined_74 DRDC15f"]}, awardA=${asBool(petition["Award As separate property to A DRDC15f"])}`,
+  });
+
+  checks.push({
+    id: "p12-paternity-only-if-born-before",
+    title: "Paternity for children born before marriage stays blank when none were",
+    pass:
+      asBool(petition["Party A or_2 DRDC15f"]) !== true &&
+      asBool(petition["A minor child or children were born before DRDC15f"]) !== true &&
+      !petition["children named below 1 DRDC15f"] &&
+      !petition["Current Legal Name 1 DRDC15f"],
+    detail: `declareA=${asBool(petition["Party A or_2 DRDC15f"])}, bornBefore=${asBool(petition["A minor child or children were born before DRDC15f"])}`,
+  });
+
+  checks.push({
+    id: "p15-separation-date",
+    title: "Debts-since-separation includes the separation date",
+    pass:
+      asBool(petition["Hold harmless from debts since parties separation DRDC15f"]) === true &&
+      String(petition["the date my spouse was served with the Petition for Dissolution DRDC15f"] || "") ===
+        values.separationDate,
+    detail: `date=${petition["the date my spouse was served with the Petition for Dissolution DRDC15f"]}`,
+  });
+
+  checks.push({
+    id: "p5-real-estate",
+    title: "Real estate value filled, sale not awarded to Party A, missing deed flagged",
+    pass:
+      String(petition["undefined_9 DRDC15f"] || "") === "425000" &&
+      asBool(petition["A real estate 1 DRDC15f"]) !== true &&
+      issues.some((issue) => issue.code === "real_estate_legal_description_missing"),
+    detail: `value=${petition["undefined_9 DRDC15f"]}, partyA=${asBool(petition["A real estate 1 DRDC15f"])}`,
+  });
+
+  checks.push({
+    id: "p-vacation-placement",
+    title: "Vacation weeks and notice days sit in the sentence blanks",
+    pass:
+      String(parenting["children The parents will work out the details of the vacation at least DRCVG11f"] || "") ===
+        "2" &&
+      String(parenting["undefined_2 DRCVG11f"] || "") === "30" &&
+      !parenting["week period of vacation time with the minor DRCVG11f"],
+    detail: `weeks=${parenting["children The parents will work out the details of the vacation at least DRCVG11f"]}, days=${parenting["undefined_2 DRCVG11f"]}`,
+  });
+
+  checks.push({
+    id: "p32-residence-current",
+    title: "Residence history shows the current caregiver, not both parents through today",
+    pass:
+      affidavit["Lived with"] === "Petitioner / Party A" &&
+      affidavit["Dates From"] === "2025-09-01" &&
+      affidavit["To"] === "present",
+    detail: `livedWith=${affidavit["Lived with"]}, from=${affidavit["Dates From"]}, to=${affidavit["To"]}`,
+  });
+
+  checks.push({
+    id: "p14-tax-both-children",
+    title: "Tax rows give both children to each parent in that parent's years",
+    pass:
+      petition["Name of minor child 1 DRDC15f"] === "Mia L Martinez" &&
+      petition["in Tax Year 1 DRDC15f"] === "even yrs" &&
+      asBool(petition["Party A_14 DRDC15f"]) === true &&
+      petition["Name of minor child 2 DRDC15f"] === "Noah J Martinez" &&
+      petition["in Tax Year 2 DRDC15f"] === "even yrs" &&
+      petition["Name of minor child 3 DRDC15f"] === "Mia L Martinez" &&
+      petition["in Tax Year 3 DRDC15f"] === "odd yrs" &&
+      asBool(petition["Party B_15 DRDC15f"]) === true &&
+      petition["Name of minor child 4 DRDC15f"] === "Noah J Martinez" &&
+      asBool(petition["Pattern shall repeat for subsequent years DRDC15f"]) !== true,
+    detail: `y1=${petition["in Tax Year 1 DRDC15f"]}, y2=${petition["in Tax Year 2 DRDC15f"]}, y3=${petition["in Tax Year 3 DRDC15f"]}`,
+  });
+
+  checks.push({
     id: "p26-pip-order",
     title: "Page 26 — Parent Information Program Dissolution checked",
-    pass: asBool(pipOrder["CDoMr DR12f"]) === true,
-    detail: `CDoMr=${asBool(pipOrder["CDoMr DR12f"])}`,
+    pass: asBool(pipOrder["CDoMr DR12f"]) === true && asBool(pipOrder["R2dLdM DR12f"]) !== true,
+    detail: `CDoMr=${asBool(pipOrder["CDoMr DR12f"])}, R2dLdM=${asBool(pipOrder["R2dLdM DR12f"])}`,
   });
 
   checks.push({
@@ -279,8 +420,14 @@ async function main() {
   });
   const outDir = path.join(process.cwd(), "tmp", "test-generated");
   await fs.mkdir(outDir, { recursive: true });
-  const outPath = path.join(outDir, result.fileName);
-  await fs.writeFile(outPath, result.pdfBytes);
+  let outPath = path.join(outDir, result.fileName);
+  try {
+    await fs.writeFile(outPath, result.pdfBytes);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== "EBUSY") throw err;
+    outPath = path.join(outDir, result.fileName.replace(/\.pdf$/, "-updated.pdf"));
+    await fs.writeFile(outPath, result.pdfBytes);
+  }
   console.log("Wrote:", outPath);
   console.log(
     "Forms:",

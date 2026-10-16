@@ -276,7 +276,6 @@ const WC: DocumentTemplate[] = [
     title: "Child Support Worksheet (ezCourtForms)",
     track: "with_children",
     step: "filing",
-    optional: true,
     relativePath:
       "1 Divorce WC 1st Step/Child Support Worksheet (use ezCourtForms)  drs12fz.pdf",
   },
