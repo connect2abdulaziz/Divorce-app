@@ -857,12 +857,63 @@ export function parentingPlanFields(v: CaseFillValues): Record<string, string | 
 export function sensitiveDataCoverSheetWocFields(
   v: CaseFillValues
 ): Record<string, string | boolean> {
-  return {
+  // Field names on this template are poorly exported; mapping follows the
+  // two-column Party A (left) / Party B (right) layout on DRSDS10f-ANNZ.
+  const clientSsn = v.clientSsnLast4 ? `XXX-XX-${v.clientSsnLast4}` : "";
+  const spouseSsn = v.spouseSsnLast4 ? `XXX-XX-${v.spouseSsnLast4}` : "";
+  const ssnLine =
+    clientSsn && spouseSsn
+      ? `A: ${clientSsn}   B: ${spouseSsn}`
+      : clientSsn || spouseSsn;
+
+  const out: Record<string, string | boolean> = {
     ...commonCaptionFields(v),
+    // Date of Birth
+    "Date of Birth MonthDayYear 1 DRSDS10f_An": v.clientDob,
+    "undefined_2 DRSDS10f_An": v.spouseDob,
+    // Social Security Number (single wide field on this template)
+    "Date of Birth MonthDayYear 2 DRSDS10f_An": ssnLine,
+    // Mailing Address / City State Zip / Contact Phone
+    "IF REQUESTING ADDRESS PROTECTION 1 DRSDS10f_An": v.clientAddress,
+    "1 DRSDS10f_An": v.spouseAddress,
+    "IF REQUESTING ADDRESS PROTECTION 2 DRSDS10f_An": v.clientCsz,
+    "2 DRSDS10f_An": v.spouseCsz,
+    "IF REQUESTING ADDRESS PROTECTION 3 DRSDS10f_An": v.clientPhone,
+    "3 DRSDS10f_Ann": v.spousePhone,
+    // Court text notices
+    "No texts DRSDS10f_Ann": true,
+    "No texts_2 DRSDS10f_Ann": true,
+    // Email Address
+    "contact phone number above 2 DRSDS10f_Ann": v.clientEmail,
+    "2_2 DRSDS10f_Ann": v.spouseEmail,
+    // Current Employer Name
+    "contact phone number above 3 DRSDS10f_Ann": v.clientEmployer,
+    "3_2 DRSDS10f_Ann": v.spouseEmployer,
+    // Employer Address (street)
+    "contact phone number above 4 DRSDS10f_Ann": v.clientEmployerStreet,
+    "4 DRSDS10f_Ann": v.spouseEmployerStreet,
+    // Employer City, State, Zip
+    "Employer City State Zip Code DRSDS10f_Ann": v.clientEmployerCsz,
+    "5 DRSDS10f_Ann": v.spouseEmployerCsz,
+    // Employer Telephone
+    "Employer Telephone Number 1 DRSDS10f_Ann": v.clientEmployerPhone,
+    "6 DRSDS10f_Ann": v.spouseEmployerPhone,
+    // Employer Fax left blank unless collected later
+    "Employer Telephone Number 2 DRSDS10f_Ann": "",
+    "7 DRSDS10f_Ann": "",
+    // Case type: Dissolution (Divorce) only
     "Dissolution Divorce DRSDS10f_Ann": true,
-    "Pet Social DRSDS10f_Ann": v.clientSsnLast4 ? `XXX-XX-${v.clientSsnLast4}` : "",
-    "Respondent SSN DRSDS10f_Ann": v.spouseSsnLast4 ? `XXX-XX-${v.spouseSsnLast4}` : "",
+    // Interpreter
+    "No DRSDS10f_Ann": !v.interpreterNeeded,
+    "Yes_3 DRSDS10f_Ann": v.interpreterNeeded,
   };
+
+  if (v.clientGender === "male") out["PetitionerGenderMale DRSDS10f-A"] = true;
+  if (v.clientGender === "female") out["PetitionerGenderFemale DRSDS10f-A"] = true;
+  if (v.spouseGender === "male") out["RespondentGenderMale DRSDS10f-A"] = true;
+  if (v.spouseGender === "female") out["RespondentGenderFemale DRSDS10f-A"] = true;
+
+  return out;
 }
 
 export function sensitiveDataCoverSheetWcFields(
@@ -1024,6 +1075,7 @@ export function fieldsForTemplate(
     case "wc-consent-coversheet":
       return sensitiveDataCoverSheetWcFields(values);
     case "wc-filing-injunction":
+    case "woc-filing-injunction":
       return preliminaryInjunctionFields(values);
     case "wc-filing-parent-info":
       return parentInformationProgramOrderFields(values);
