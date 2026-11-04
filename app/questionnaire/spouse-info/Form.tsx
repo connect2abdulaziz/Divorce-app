@@ -230,7 +230,7 @@ export function SpouseInfoForm({
       {!phoneUnknown ? (
         <div className="grid gap-6 sm:grid-cols-2">
           <Field label="Home phone">
-            <TextInput name="home_phone" type="tel" defaultValue={initial.home_phone ?? initial.phone} />
+            <TextInput name="home_phone" type="tel" defaultValue={initial.home_phone} />
           </Field>
           <Field label="Cell phone">
             <TextInput name="cell_phone" type="tel" defaultValue={initial.cell_phone} required />

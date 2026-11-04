@@ -194,7 +194,7 @@ export function ClientInfoForm({
           <TextInput
             name="home_phone"
             type="tel"
-            defaultValue={initial.home_phone ?? initial.phone}
+            defaultValue={initial.home_phone}
             autoComplete="tel"
           />
         </Field>

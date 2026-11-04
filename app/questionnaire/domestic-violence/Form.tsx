@@ -7,7 +7,7 @@ import { Field, Select, TextArea, TextInput, YesNo } from "@/components/question
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type DomesticViolence = {
-  has_domestic_violence: boolean;
+  has_domestic_violence: boolean | null;
   order_of_protection_exists: boolean | null;
   filed_by: string | null;
   against_whom: string | null;
@@ -40,35 +40,45 @@ export function DomesticViolenceForm({
   initial: DomesticViolence;
 }) {
   const router = useRouter();
-  const [hasDv, setHasDv] = useState<boolean | null>(initial.has_domestic_violence ?? null);
+  const [error, setError] = useState<string | null>(null);
+  const [hasDv, setHasDv] = useState<boolean | null>(
+    typeof initial.has_domestic_violence === "boolean" ? initial.has_domestic_violence : null
+  );
   const [hasOrder, setHasOrder] = useState<boolean | null>(initial.order_of_protection_exists);
 
-  async function handleSubmit(formData: FormData) {
-    const values = {
-      has_domestic_violence: hasDv ?? false,
-      order_of_protection_exists: hasDv ? hasOrder ?? false : null,
-      filed_by: hasDv && hasOrder ? emptyToNull(formData.get("filed_by")) : null,
-      against_whom: hasDv && hasOrder ? emptyToNull(formData.get("against_whom")) : null,
-      date_issued: hasDv && hasOrder ? emptyToNull(formData.get("date_issued")) : null,
-      oop_city: hasDv && hasOrder ? emptyToNull(formData.get("oop_city")) : null,
-      oop_state: hasDv && hasOrder ? emptyToNull(formData.get("oop_state")) : null,
-      details: hasDv ? emptyToNull(formData.get("details")) : null,
+  function buildValues(formData: FormData) {
+    return {
+      has_domestic_violence: hasDv,
+      order_of_protection_exists: hasDv === true ? hasOrder : null,
+      filed_by: hasDv === true && hasOrder === true ? emptyToNull(formData.get("filed_by")) : null,
+      against_whom:
+        hasDv === true && hasOrder === true ? emptyToNull(formData.get("against_whom")) : null,
+      date_issued:
+        hasDv === true && hasOrder === true ? emptyToNull(formData.get("date_issued")) : null,
+      oop_city: hasDv === true && hasOrder === true ? emptyToNull(formData.get("oop_city")) : null,
+      oop_state:
+        hasDv === true && hasOrder === true ? emptyToNull(formData.get("oop_state")) : null,
+      details: hasDv === true ? emptyToNull(formData.get("details")) : null,
     };
-    await saveSingletonSection("domestic_violence", caseId, values, slug);
+  }
+
+  async function handleSubmit(formData: FormData) {
+    if (hasDv === null) {
+      setError("Please answer whether there has been domestic violence during the marriage.");
+      return;
+    }
+    if (hasDv === true && hasOrder === null) {
+      setError("Please answer whether an Order of Protection was obtained.");
+      return;
+    }
+    setError(null);
+    await saveSingletonSection("domestic_violence", caseId, buildValues(formData), slug);
     router.push(nextHref);
   }
 
   async function handleAutoSave(formData: FormData) {
-    await saveSingletonSection("domestic_violence", caseId, {
-      has_domestic_violence: hasDv ?? false,
-      order_of_protection_exists: hasDv ? hasOrder ?? false : null,
-      filed_by: hasDv && hasOrder ? emptyToNull(formData.get("filed_by")) : null,
-      against_whom: hasDv && hasOrder ? emptyToNull(formData.get("against_whom")) : null,
-      date_issued: hasDv && hasOrder ? emptyToNull(formData.get("date_issued")) : null,
-      oop_city: hasDv && hasOrder ? emptyToNull(formData.get("oop_city")) : null,
-      oop_state: hasDv && hasOrder ? emptyToNull(formData.get("oop_state")) : null,
-      details: hasDv ? emptyToNull(formData.get("details")) : null,
-    });
+    if (hasDv === null) return;
+    await saveSingletonSection("domestic_violence", caseId, buildValues(formData));
   }
 
   return (
@@ -81,6 +91,8 @@ export function DomesticViolenceForm({
       onSubmit={handleSubmit}
       onAutoSave={handleAutoSave}
     >
+      {error ? <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</p> : null}
+
       <div>
         <p className="field-label">Has there been domestic violence during the marriage?</p>
         <YesNo name="has_domestic_violence" value={hasDv} onChange={setHasDv} />

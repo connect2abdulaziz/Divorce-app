@@ -4,7 +4,7 @@ import { ProgressRailWithPath } from "@/components/questionnaire/ProgressRailWit
 import { isStaffRole } from "@/lib/admin/current-staff";
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
-import { percentComplete, toStepInfo, visibleSteps } from "@/lib/questionnaire/steps";
+import { toStepInfo, visibleSteps } from "@/lib/questionnaire/steps";
 import { createClient } from "@/lib/supabase/server";
 
 function formatSavedAt(iso: string) {
@@ -25,7 +25,6 @@ export default async function QuestionnaireLayout({ children }: { children: Reac
   const showAdmin = isStaffRole((profile as { role?: string } | null)?.role);
 
   const steps = visibleSteps(gates).map(toStepInfo);
-  const percent = percentComplete(gates, kase.last_completed_section);
 
   return (
     <div className="min-h-screen bg-paper">
@@ -52,7 +51,6 @@ export default async function QuestionnaireLayout({ children }: { children: Reac
         <ProgressRailWithPath
           steps={steps}
           lastCompletedSlug={kase.last_completed_section}
-          percent={percent}
         />
       </header>
 

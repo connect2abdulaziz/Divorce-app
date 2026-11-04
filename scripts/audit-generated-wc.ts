@@ -247,7 +247,6 @@ async function main() {
   const schedA2 = String(parenting["2_2 DRCVG11f"] || "");
   const schedB = String(parenting["1_3 DRCVG11f"] || "");
   const schedB2 = String(parenting["2_3 DRCVG11f"] || "");
-  const reviewMonths = String(parenting["necessary or desired changes every"] || "");
   const summer =
     asBool(
       parenting[
@@ -260,21 +259,101 @@ async function main() {
         "Both parents will make major medical decisions together except for emergency situations DRCVG11f"
       ]
     ) === true;
-  const religious =
-    asBool(
-      parenting["Both parents agree that religious arrangements are not applicable to this plan DRCVG11f"]
-    ) === true;
+  const transportChecked =
+    asBool(parenting["Transportation will be provided as follows DRCVG11f"]) === true;
+  const transportShared =
+    asBool(parenting["Party A or DRCVG11f"]) === true &&
+    asBool(parenting["Party B will drop the minor children off at DRCVG11f"]) === true;
+  const noticeDays = String(
+    parenting["Parents may change their timeshare arrangements by mutual agreement with at least DRCVG11f"] ||
+      ""
+  );
+  const vacationWeeks = String(
+    parenting["children The parents will work out the details of the vacation at least DRCVG11f"] || ""
+  );
   checks.push({
-    id: "p36-43-parenting-defaults",
-    title: "Pages 36–43 — Schedule split + summer/medical/religious/review filled",
+    id: "p36-43-parenting-intake",
+    title: "Pages 36–43 — Schedule + transport/notice/summer from intake (no silent defaults)",
     pass:
       Boolean(schedA && schedB && schedA !== schedB) &&
       !/before filing/i.test(`${schedA} ${schedA2} ${schedB} ${schedB2} ${parenting["1_4 DRCVG11f"] || ""}`) &&
-      reviewMonths === "12" &&
       summer &&
       medical &&
-      religious,
-    detail: `schedA=${schedA}, schedB=${schedB}, review=${reviewMonths}, summer=${summer}, medical=${medical}, religious=${religious}`,
+      transportChecked &&
+      transportShared &&
+      noticeDays === "14" &&
+      vacationWeeks === "2",
+    detail: `schedA=${schedA}, schedB=${schedB}, summer=${summer}, medical=${medical}, transportShared=${transportShared}, notice=${noticeDays}, vacationWeeks=${vacationWeeks}`,
+  });
+
+  const payerA = asBool(petition["Party A OR_3 DRDC15f"]) === true;
+  const payerB = asBool(petition["Party B in a reasonable DRDC15f"]) === true;
+  checks.push({
+    id: "cs-payer-explicit",
+    title: "Child support payer matches intake (Party A), not income heuristic alone",
+    pass: payerA && !payerB && values.childSupportPayer === "client",
+    detail: `payerA=${payerA}, payerB=${payerB}, intake=${values.childSupportPayer}`,
+  });
+
+  const noCsOrder =
+    asBool(petition["To my knowledge there is no child support order DRDC15f"]) === true;
+  const noSpousal = asBool(petition["Neither party is entitled to spousal support DRDC15f"]) === true;
+  const noDui = asBool(petition["Neither party has been convicted DRDC15f"]) === true;
+  const covenantNo = asBool(petition["We do not have covenant marriage DRDC15f"]) === true;
+  const conciliation = asBool(petition["We have tried to resolve our problems DRDC15f"]) === true;
+  checks.push({
+    id: "explicit-eligibility-answers",
+    title: "Petition uses explicit CS-order / spousal / DUI / covenant / conciliation answers",
+    pass: noCsOrder && noSpousal && noDui && covenantNo && conciliation,
+    detail: `noCsOrder=${noCsOrder}, noSpousal=${noSpousal}, noDui=${noDui}, covenantNo=${covenantNo}, conciliation=${conciliation}`,
+  });
+
+  const legalDesc = String(petition["1_2 DRDC15f"] || "");
+  const vin1 = String(petition["VIN DRDC15f"] || "");
+  const lien1 = String(petition["Lien Holder DRDC15f"] || "");
+  const vin2 = String(petition["VIN_2 DRDC15f"] || "");
+  checks.push({
+    id: "property-legal-vin",
+    title: "Real-estate legal description and vehicle VIN/lienholder filled from intake",
+    pass:
+      legalDesc.includes("Camelback Heights") &&
+      vin1 === "2T3P1RFV5KW123456" &&
+      lien1 === "Capital One Auto Finance" &&
+      vin2 === "19XFC2F59HE654321",
+    detail: `legal=${legalDesc.slice(0, 60)}, vin1=${vin1}, lien1=${lien1}, vin2=${vin2}`,
+  });
+
+  const taxEvenName = String(petition["Name of minor child 1 DRDC15f"] || "");
+  const taxEvenYear = String(petition["in Tax Year 1 DRDC15f"] || "");
+  const taxEvenPartyA = asBool(petition["Party A_14 DRDC15f"]) === true;
+  const taxOddYear = String(petition["in Tax Year 3 DRDC15f"] || "");
+  const taxOddPartyB = asBool(petition["Party B_15 DRDC15f"]) === true;
+  checks.push({
+    id: "tax-even-odd",
+    title: "Tax allocation lists even/odd years with correct parent",
+    pass:
+      taxEvenYear === "even yrs" &&
+      taxEvenPartyA &&
+      taxOddYear === "odd yrs" &&
+      taxOddPartyB &&
+      Boolean(taxEvenName),
+    detail: `evenYear=${taxEvenYear}, evenA=${taxEvenPartyA}, oddYear=${taxOddYear}, oddB=${taxOddPartyB}, name=${taxEvenName}`,
+  });
+
+  // Phone: home omitted on spouse must not appear as a fabricated home number in captions.
+  // Contact Telephone uses cell; spouse home was null in fixture.
+  checks.push({
+    id: "phone-no-home-copy",
+    title: "Home phone left blank when omitted (fixture spouse has no home phone)",
+    pass: !values.spousePhone || values.spousePhone === "480-555-0177",
+    detail: `spousePhone=${values.spousePhone} (cell only; home was null)`,
+  });
+
+  checks.push({
+    id: "dv-answered-no",
+    title: "Domestic violence answered No (not left as silent default)",
+    pass: values.dvAnswered === true && values.hasDv === false,
+    detail: `dvAnswered=${values.dvAnswered}, hasDv=${values.hasDv}`,
   });
 
   const acquired = asBool(petition["Parties acquired community property DRDC15f"]) === true;
@@ -353,12 +432,13 @@ async function main() {
 
   checks.push({
     id: "p5-real-estate",
-    title: "Real estate value filled, sale not awarded to Party A, missing deed flagged",
+    title: "Real estate value filled, sale not awarded to Party A, legal description present",
     pass:
       String(petition["undefined_9 DRDC15f"] || "") === "425000" &&
       asBool(petition["A real estate 1 DRDC15f"]) !== true &&
-      issues.some((issue) => issue.code === "real_estate_legal_description_missing"),
-    detail: `value=${petition["undefined_9 DRDC15f"]}, partyA=${asBool(petition["A real estate 1 DRDC15f"])}`,
+      String(petition["1_2 DRDC15f"] || "").includes("Camelback Heights") &&
+      !issues.some((issue) => issue.code === "real_estate_legal_description_missing"),
+    detail: `value=${petition["undefined_9 DRDC15f"]}, partyA=${asBool(petition["A real estate 1 DRDC15f"])}, legal=${petition["1_2 DRDC15f"]}`,
   });
 
   checks.push({

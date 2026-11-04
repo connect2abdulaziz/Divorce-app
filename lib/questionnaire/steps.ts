@@ -7,7 +7,7 @@ export type CaseGates = {
   isSpousePregnant: boolean | null;
   clientEmploymentStatus: string | null;
   spouseEmploymentStatus: string | null;
-  hasDomesticViolence: boolean;
+  hasDomesticViolence: boolean | null;
   hasCommunityProperty: boolean | null;
   hasRealEstate: boolean | null;
   hasVehicles: boolean | null;
@@ -51,7 +51,8 @@ export const STEPS: Step[] = [
     slug: "tax-information",
     title: "Tax Information",
     shortTitle: "Taxes",
-    isVisible: (g) => g.hasCommonChildren === true,
+    // Visible for all cases: WOC needs filing choices; WC also asks about dependents.
+    isVisible: () => true,
   },
   {
     slug: "community-property",
@@ -63,43 +64,45 @@ export const STEPS: Step[] = [
     slug: "real-estate",
     title: "Real Estate",
     shortTitle: "Real estate",
-    isVisible: (g) => communityPropertyOpen(g) && g.hasRealEstate !== false,
+    // Keep all community-asset steps visible once community property is yes so
+    // the step total does not shrink as each gate is answered "no".
+    isVisible: (g) => communityPropertyOpen(g),
   },
   {
     slug: "vehicles",
     title: "Vehicles",
     shortTitle: "Vehicles",
-    isVisible: (g) => communityPropertyOpen(g) && g.hasVehicles !== false,
+    isVisible: (g) => communityPropertyOpen(g),
   },
   {
     slug: "retirement",
     title: "Retirement Accounts",
     shortTitle: "Retirement",
-    isVisible: (g) => communityPropertyOpen(g) && g.hasRetirementAccounts !== false,
+    isVisible: (g) => communityPropertyOpen(g),
   },
   {
     slug: "community-debts",
     title: "Community Debts",
     shortTitle: "Debts",
-    isVisible: (g) => communityPropertyOpen(g) && g.hasCommunityDebts !== false,
+    isVisible: (g) => communityPropertyOpen(g),
   },
   {
     slug: "household-property",
     title: "Household Property",
     shortTitle: "Household",
-    isVisible: (g) => communityPropertyOpen(g) && g.hasHouseholdProperty !== false,
+    isVisible: (g) => communityPropertyOpen(g),
   },
   {
     slug: "separate-property",
     title: "Separate Property",
     shortTitle: "Separate prop.",
-    isVisible: (g) => g.hasSeparateProperty !== false,
+    isVisible: () => true,
   },
   {
     slug: "separate-debts",
     title: "Separate Debt",
     shortTitle: "Separate debt",
-    isVisible: (g) => g.hasSeparateDebts !== false,
+    isVisible: () => true,
   },
   { slug: "review", title: "Review", shortTitle: "Review", isVisible: () => true },
 ];
@@ -177,17 +180,22 @@ export function stepLinks(
   };
 }
 
-export function percentComplete(gates: CaseGates, lastCompletedSlug: string | null): number {
+/** Progress bar from the current step so the % never jumps backward from gate changes. */
+export function percentComplete(
+  gates: CaseGates,
+  lastCompletedSlug: string | null,
+  currentSlug?: string | null
+): number {
   const steps = visibleSteps(gates);
-  if (!lastCompletedSlug || steps.length === 0) return 0;
+  if (steps.length === 0) return 0;
 
-  const lastIdxInAll = STEPS.findIndex((s) => s.slug === lastCompletedSlug);
-  if (lastIdxInAll === -1) return 0;
+  const currentIdx = currentSlug ? steps.findIndex((s) => s.slug === currentSlug) : -1;
+  if (currentIdx >= 0) {
+    return Math.round(((currentIdx + 1) / steps.length) * 100);
+  }
 
-  const completedVisible = steps.filter((s) => {
-    const i = STEPS.findIndex((x) => x.slug === s.slug);
-    return i !== -1 && i <= lastIdxInAll;
-  }).length;
-
-  return Math.round((completedVisible / steps.length) * 100);
+  if (!lastCompletedSlug) return 0;
+  const lastIdx = steps.findIndex((s) => s.slug === lastCompletedSlug);
+  if (lastIdx < 0) return 0;
+  return Math.round(((lastIdx + 1) / steps.length) * 100);
 }

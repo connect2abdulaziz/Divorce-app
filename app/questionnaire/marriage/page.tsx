@@ -18,6 +18,11 @@ const EMPTY_MARRIAGE: Marriage = {
   restored_middle_name: null,
   restored_last_name: null,
   spouse_is_father: null,
+  is_covenant_marriage: null,
+  conciliation_attempted: null,
+  spousal_maintenance_requested: null,
+  spousal_maintenance_for: null,
+  has_written_agreement: null,
 };
 
 export default async function MarriagePage({

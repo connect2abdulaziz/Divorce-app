@@ -102,13 +102,30 @@ export default async function AdminSectionEditPage({
               visitation_wanted: null,
               visitation_denied_reason: null,
               joint_by_agreement: null,
+              child_support_payer: null,
+              has_existing_child_support_order: null,
+              has_dui_or_drug_conviction: null,
+              transportation_provider: null,
+              advance_notice_days: null,
+              vacation_weeks: null,
+              vacation_notice_days: null,
+              summer_schedule_same: null,
+              summer_schedule_notes: null,
               notes: null,
               ...(sections.parenting as object | null),
             }}
           />
         );
       case "tax-information":
-        return <TaxInformationForm caseId={caseId} slug={section} {...nav} initial={sections.tax_information!} />;
+        return (
+          <TaxInformationForm
+            caseId={caseId}
+            slug={section}
+            {...nav}
+            initial={sections.tax_information!}
+            hasCommonChildren={gates.hasCommonChildren === true}
+          />
+        );
       case "community-property":
         return (
           <CommunityPropertyForm

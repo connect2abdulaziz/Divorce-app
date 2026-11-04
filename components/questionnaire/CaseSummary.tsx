@@ -82,7 +82,7 @@ export async function CaseSummary({
           label="Address"
           value={[c.address_line1, c.address_line2, c.city, c.state, c.zip].filter(Boolean).join(", ")}
         />
-        <Row label="Home phone" value={(c.home_phone as ReactNode) ?? (c.phone as ReactNode)} />
+        <Row label="Home phone" value={(c.home_phone as ReactNode) || "—"} />
         <Row label="Cell phone" value={c.cell_phone as ReactNode} />
         <Row label="Email" value={c.email as ReactNode} />
         <Row label="SSN (last 4)" value={c.ssn_last4 ? `•••-••-${c.ssn_last4}` : null} />
@@ -116,7 +116,7 @@ export async function CaseSummary({
         />
         <Row
           label="Home phone"
-          value={s.phone_unknown ? "Unknown" : ((s.home_phone as ReactNode) ?? (s.phone as ReactNode))}
+          value={s.phone_unknown ? "Unknown" : ((s.home_phone as ReactNode) || "—")}
         />
         <Row label="Cell phone" value={s.phone_unknown ? "Unknown" : (s.cell_phone as ReactNode)} />
         <Row label="Email" value={s.email as ReactNode} />
@@ -203,8 +203,17 @@ export async function CaseSummary({
       </Group>
 
       <Group title="Domestic Violence" editHref={edit("domestic-violence")}>
-        <Row label="History of DV" value={dv.has_domestic_violence ? "Yes" : "No"} />
-        {dv.has_domestic_violence ? (
+        <Row
+          label="History of DV"
+          value={
+            typeof dv.has_domestic_violence === "boolean"
+              ? dv.has_domestic_violence
+                ? "Yes"
+                : "No"
+              : "—"
+          }
+        />
+        {dv.has_domestic_violence === true ? (
           <>
             <Row label="Order of protection" value={dv.order_of_protection_exists ? "Yes" : "No"} />
             {dv.order_of_protection_exists ? (

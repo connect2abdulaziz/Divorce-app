@@ -6,7 +6,7 @@ import { DomesticViolenceForm, type DomesticViolence } from "./Form";
 const SLUG = "domestic-violence";
 
 const EMPTY_DV: DomesticViolence = {
-  has_domestic_violence: false,
+  has_domestic_violence: null,
   order_of_protection_exists: null,
   filed_by: null,
   against_whom: null,

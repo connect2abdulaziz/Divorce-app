@@ -69,6 +69,12 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
     emptyLabel: "No properties added yet.",
     fields: [
       { name: "address", label: "Address", kind: "text", required: true },
+      {
+        name: "legal_description",
+        label: "Legal description (from the deed)",
+        kind: "textarea",
+        required: true,
+      },
       { name: "estimated_value", label: "Estimated value", kind: "currency" },
       { name: "amount_owed", label: "Amount owed (mortgage)", kind: "currency" },
       {
@@ -87,6 +93,7 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
       titleFields: ["address"],
       titleFallback: "Property",
       details: [
+        { field: "legal_description", kind: "text", label: "Legal desc:" },
         { field: "estimated_value", kind: "currency", label: "Value" },
         { field: "amount_owed", kind: "currency", label: "Owed" },
         {
@@ -118,6 +125,8 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
       { name: "make", label: "Make", kind: "text", required: true },
       { name: "model", label: "Model", kind: "text", required: true },
       { name: "year", label: "Year", kind: "number" },
+      { name: "vin", label: "VIN", kind: "text", required: true },
+      { name: "lienholder", label: "Lienholder (if any)", kind: "text" },
       { name: "estimated_value", label: "Estimated value", kind: "currency" },
       { name: "amount_owed", label: "Amount owed", kind: "currency" },
       {
@@ -135,6 +144,8 @@ export const REPEATABLE_SECTION_CONFIGS: Record<RepeatableSectionSlug, Repeatabl
       titleFields: ["year", "make", "model"],
       titleFallback: "Vehicle",
       details: [
+        { field: "vin", kind: "text", label: "VIN:" },
+        { field: "lienholder", kind: "text", label: "Lienholder:" },
         { field: "estimated_value", kind: "currency", label: "Value" },
         { field: "amount_owed", kind: "currency", label: "Owed" },
         { field: "assigned_to", kind: "text", label: "Keeps it:" },

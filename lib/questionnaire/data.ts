@@ -85,7 +85,10 @@ export const loadCaseBundle = cache(async (caseId: string) => {
     isSpousePregnant: kase.is_spouse_pregnant,
     clientEmploymentStatus: employmentRes.data?.client_status ?? null,
     spouseEmploymentStatus: employmentRes.data?.spouse_status ?? null,
-    hasDomesticViolence: dvRes.data?.has_domestic_violence ?? false,
+    hasDomesticViolence:
+      typeof dvRes.data?.has_domestic_violence === "boolean"
+        ? dvRes.data.has_domestic_violence
+        : null,
     hasCommunityProperty: kase.has_community_property,
     hasRealEstate: kase.has_real_estate,
     hasVehicles: kase.has_vehicles,

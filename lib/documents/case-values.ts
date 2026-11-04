@@ -214,8 +214,15 @@ export function buildCaseFillValues(bundle: CaseBundle) {
     restoredMiddle: s(m.restored_middle_name),
     restoredLast: s(m.restored_last_name),
     pregnant: bundle.gates.isSpousePregnant === true,
+    pregnancyAnswered: typeof bundle.gates.isSpousePregnant === "boolean",
     dueDate: s(m.due_date),
     spouseIsFather: m.spouse_is_father === true,
+    hasWrittenAgreement:
+      m.has_written_agreement === true
+        ? true
+        : m.has_written_agreement === false
+          ? false
+          : null,
     clientEmployed: e.client_status === "employed",
     clientJobTitle: s(e.client_position),
     clientEmployer: s(e.client_employer_name),
@@ -248,7 +255,27 @@ export function buildCaseFillValues(bundle: CaseBundle) {
     spouseEmployerPhone: s(e.spouse_employer_phone),
     spouseIncome: money(e.spouse_monthly_income),
     spouseIncomeNum: moneyNumber(e.spouse_monthly_income),
-    hasDv: Boolean(dv.has_domestic_violence),
+    hasDv: dv.has_domestic_violence === true,
+    dvAnswered: typeof dv.has_domestic_violence === "boolean",
+    isCovenantMarriage:
+      m.is_covenant_marriage === true
+        ? true
+        : m.is_covenant_marriage === false
+          ? false
+          : null,
+    conciliationAttempted:
+      m.conciliation_attempted === true
+        ? true
+        : m.conciliation_attempted === false
+          ? false
+          : null,
+    spousalMaintenanceRequested:
+      m.spousal_maintenance_requested === true
+        ? true
+        : m.spousal_maintenance_requested === false
+          ? false
+          : null,
+    spousalMaintenanceFor: s(m.spousal_maintenance_for),
     hasCommunityProperty: bundle.gates.hasCommunityProperty === true,
     hasRealEstate: bundle.gates.hasRealEstate === true,
     hasVehicles: bundle.gates.hasVehicles === true,
@@ -259,15 +286,49 @@ export function buildCaseFillValues(bundle: CaseBundle) {
     hasSeparateDebts: bundle.gates.hasSeparateDebts === true,
     taxClaimedBy: s(tax.dependents_claimed_by),
     taxFrequency: s(tax.claim_frequency),
+    taxEvenYearClaimant: s(tax.even_year_claimant),
+    taxGoingForwardFiling:
+      tax.going_forward_filing === "separate" || tax.going_forward_filing === "joint"
+        ? tax.going_forward_filing
+        : tax.filing_status === "separate" || tax.filing_status === "joint"
+          ? tax.filing_status
+          : null,
+    taxPreviousYearsFiling:
+      tax.previous_years_filing === "separate" ||
+      tax.previous_years_filing === "joint" ||
+      tax.previous_years_filing === "not_applicable"
+        ? tax.previous_years_filing
+        : null,
     taxNotes: s(tax.notes),
     children,
     hasCommonChildren: bundle.gates.hasCommonChildren === true,
+    childSupportPayer:
+      parenting.child_support_payer === "client" || parenting.child_support_payer === "spouse"
+        ? parenting.child_support_payer
+        : null,
+    hasExistingChildSupportOrder:
+      parenting.has_existing_child_support_order === true
+        ? true
+        : parenting.has_existing_child_support_order === false
+          ? false
+          : null,
+    hasDuiOrDrugConviction:
+      parenting.has_dui_or_drug_conviction === true
+        ? true
+        : parenting.has_dui_or_drug_conviction === false
+          ? false
+          : null,
     parenting: {
       custodyArrangement: s(parenting.custody_arrangement),
       decisionMaking: s(parenting.decision_making),
       parentingTimeSchedule: s(parenting.parenting_time_schedule),
       notes: s(parenting.notes),
-      visitationWanted: parenting.visitation_wanted === true,
+      visitationWanted:
+        parenting.visitation_wanted === true
+          ? true
+          : parenting.visitation_wanted === false
+            ? false
+            : null,
       visitationDeniedReason: s(parenting.visitation_denied_reason),
       isJointDecision,
       isSoleDecision,
@@ -280,14 +341,28 @@ export function buildCaseFillValues(bundle: CaseBundle) {
       exchangeLocation: "",
       pickupTime: "",
       dropoffTime: "",
-      advanceNoticeDays: "14",
-      vacationWeeks: "2",
-      vacationNoticeDays: "30",
-      addressChangeNoticeDays: "30",
-      jointReviewMonths: "12",
-      communicationMethod: "Phone and email",
-      communicationFrequency:
-        "At least once a week, and promptly about school, health, and schedule changes",
+      transportationProvider:
+        parenting.transportation_provider === "client" ||
+        parenting.transportation_provider === "spouse" ||
+        parenting.transportation_provider === "shared"
+          ? parenting.transportation_provider
+          : null,
+      advanceNoticeDays:
+        parenting.advance_notice_days != null ? String(parenting.advance_notice_days) : "",
+      vacationWeeks: parenting.vacation_weeks != null ? String(parenting.vacation_weeks) : "",
+      vacationNoticeDays:
+        parenting.vacation_notice_days != null ? String(parenting.vacation_notice_days) : "",
+      summerScheduleSame:
+        parenting.summer_schedule_same === true
+          ? true
+          : parenting.summer_schedule_same === false
+            ? false
+            : null,
+      summerScheduleNotes: s(parenting.summer_schedule_notes),
+      addressChangeNoticeDays: "",
+      jointReviewMonths: "",
+      communicationMethod: "",
+      communicationFrequency: "",
     },
     realEstate: bundle.records.real_estate as Array<Record<string, unknown>>,
     vehicles: bundle.records.vehicles as Array<Record<string, unknown>>,

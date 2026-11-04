@@ -17,11 +17,10 @@ function livedWithLabel(value: string) {
   return value;
 }
 
-function supportPayerIsClient(v: CaseFillValues): boolean {
-  const a = v.clientIncomeNum;
-  const b = v.spouseIncomeNum;
-  if (a != null && b != null) return a >= b;
-  return true;
+function supportPayerIsClient(v: CaseFillValues): boolean | null {
+  if (v.childSupportPayer === "client") return true;
+  if (v.childSupportPayer === "spouse") return false;
+  return null;
 }
 
 function currentTaxYear(): number {
@@ -127,14 +126,31 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
       v.spouseAzResidency,
     "INFORMATION ABOUT MY MARRIAGE DRDA10f": v.marriageDate,
     "City and state or country where we were married DRDA10f": v.marriagePlace,
-    "We do not have a covenant marriage DRDA10f": true,
     "Our marriage is broken DRDA10f": true,
-    "Conciliation Services would not work DRDA10f": true,
     "This is the proper court DRDA10f": true,
     "I have lived in AZ for 90 days DRDA10f": true,
     "Dissolve our marriage DRDA10f": true,
     "Make fair division DRDA10f": true,
   };
+
+  if (v.isCovenantMarriage === false) {
+    out["We do not have a covenant marriage DRDA10f"] = true;
+  }
+  if (v.conciliationAttempted === true) {
+    out["Conciliation Services would not work DRDA10f"] = true;
+  }
+
+  if (v.spousalMaintenanceRequested === false) {
+    out["Neither party entitled to spousal support DRDA10f"] = true;
+  } else if (v.spousalMaintenanceRequested === true) {
+    out["Party A or B entitled to spousal support DRDA10f"] = true;
+    if (v.spousalMaintenanceFor === "client") out["Party A spousal support DRDA10f"] = true;
+    if (v.spousalMaintenanceFor === "spouse") out["Party B_12 DRDA10f"] = true;
+    out["Order spousal support to DRDA10f"] = true;
+    out["Order spousal maintenancesupport to be paid by DRDA10f"] = true;
+    // Party A_12 is the "paid by Party A" payer checkbox when Party B is the recipient.
+    if (v.spousalMaintenanceFor === "spouse") out["Party A_12 DRDA10f"] = true;
+  }
 
   if (hasListedCommunityAssets(v)) {
     out["Did acquire community property DRDA10f"] = true;
@@ -144,20 +160,51 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
 
   if (v.hasRealEstate && v.realEstate[0]) {
     const r = v.realEstate[0];
+    const address = String(r.address ?? "").trim();
     out["Real estate located DRDA10f"] = true;
-    out["Real estate located at DRDA10f"] = String(r.address ?? "");
+    // Street / full address on the location line; overflow continues on legal lines.
+    out["Real estate located at DRDA10f"] = address;
     out["Value DRDA10f"] = dollar(r.estimated_value);
+    const mortgage = dollar(r.amount_owed);
+    if (mortgage) out["undefined_5 DRDA10f"] = mortgage;
+    const legalLines: string[] = [];
+    if (r.assigned_to === "sell") {
+      legalLines.push("Sell property and divide proceeds 50/50");
+      out["A real estate DRDA10f"] = true;
+      out["B real estate DRDA10f"] = true;
+    } else {
+      if (partyA(r.assigned_to)) out["A real estate DRDA10f"] = true;
+      if (partyB(r.assigned_to)) out["B real estate DRDA10f"] = true;
+    }
     const legal = realEstateLegal(r);
-    if (legal) out["Legal Description 1 DRDA10f"] = legal;
-    if (partyA(r.assigned_to)) out["A real estate DRDA10f"] = true;
-    if (partyB(r.assigned_to)) out["B real estate DRDA10f"] = true;
+    if (legal) legalLines.push(legal);
+    else if (address.length > 40) legalLines.push(address);
+    if (legalLines[0]) out["Legal Description 1 DRDA10f"] = legalLines[0];
+    if (legalLines[1]) out["Legal Description 2 DRDA10f"] = legalLines[1];
   }
   if (v.hasRealEstate && v.realEstate[1]) {
     const r = v.realEstate[1];
+    const address = String(r.address ?? "").trim();
     out["Real estate 2 located at DRDA10f"] = true;
-    out["Real estate located at_2 DRDA10f"] = String(r.address ?? "");
-    if (partyA(r.assigned_to)) out["Party A real estate DRDA10f"] = true;
-    if (partyB(r.assigned_to)) out["Party B real estate DRDA10f"] = true;
+    out["Real estate located at_2 DRDA10f"] = address;
+    const value = dollar(r.estimated_value);
+    if (value) out["undefined_7 DRDA10f"] = value;
+    const legalLines: string[] = [];
+    if (r.assigned_to === "sell") {
+      legalLines.push("Sell property and divide proceeds 50/50");
+      out["Party A real estate DRDA10f"] = true;
+      out["Party B real estate DRDA10f"] = true;
+    } else {
+      if (partyA(r.assigned_to)) out["Party A real estate DRDA10f"] = true;
+      if (partyB(r.assigned_to)) out["Party B real estate DRDA10f"] = true;
+    }
+    const mortgage = dollar(r.amount_owed);
+    if (mortgage) legalLines.push(`Mortgage/lien owed: $${mortgage}`);
+    const legal = realEstateLegal(r);
+    if (legal) legalLines.push(legal);
+    if (legalLines[0]) out["Legal Description 1_2 DRDA10f"] = legalLines[0];
+    if (legalLines[1]) out["Legal Description 2_2 DRDA10f"] = legalLines[1];
+    if (legalLines[2]) out["Legal Description 3 DRDA10f"] = legalLines[2];
   }
 
   if (v.hasHousehold) {
@@ -188,6 +235,8 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
       out["Make DRDA10f"] = String(v0.make ?? "");
       out["Year DRDA10f"] = v0.year != null ? String(v0.year) : "";
       out["Model DRDA10f"] = String(v0.model ?? "");
+      out["VIN DRDA10f"] = String(v0.vin ?? "");
+      out["Lien Holder DRDA10f"] = String(v0.lienholder ?? "");
       const value0 = dollar(v0.estimated_value);
       if (value0) out["undefined_59 DRDA10f"] = value0;
       if (partyA(v0.assigned_to)) out["A motor vehicles 1 DRDA10f"] = true;
@@ -198,6 +247,8 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
       out["Make_2 DRDA10f"] = String(v1.make ?? "");
       out["Year_2 DRDA10f"] = v1.year != null ? String(v1.year) : "";
       out["Model_2 DRDA10f"] = String(v1.model ?? "");
+      out["VIN_2 DRDA10f"] = String(v1.vin ?? "");
+      out["Lien Holder_2 DRDA10f"] = String(v1.lienholder ?? "");
       const value1 = dollar(v1.estimated_value);
       if (value1) out["undefined_60 DRDA10f"] = value1;
       if (partyA(v1.assigned_to)) out["A motor vehicles 2 DRDA10f"] = true;
@@ -207,12 +258,37 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
 
   if (v.hasRetirement) {
     out["Pension retirement DRDA10f"] = true;
+    const descKeys = ["1_4 DRDA10f", "2_4 DRDA10f", "3_4 DRDA10f"];
+    const valueKeys = ["undefined_55 DRDA10f", "undefined_56 DRDA10f", "undefined_57 DRDA10f"];
+    v.retirement.slice(0, 3).forEach((item, i) => {
+      const n = i + 1;
+      const plan = String(item.plan_type ?? "").trim();
+      const division = String(item.division_method ?? "").trim();
+      out[descKeys[i]] = division ? `${plan} — ${division}` : plan;
+      const value = dollar(item.approximate_value);
+      if (value) out[valueKeys[i]] = value;
+      const equalSplit = /50|equal|divid/i.test(division);
+      if (equalSplit) {
+        out[`A pension ${n} DRDA10f`] = true;
+        out[`B pension ${n} DRDA10f`] = true;
+      } else if (item.owner_party === "spouse") {
+        out[`B pension ${n} DRDA10f`] = true;
+      } else {
+        out[`A pension ${n} DRDA10f`] = true;
+      }
+    });
   }
 
   if (!v.hasSeparateProperty) {
     out["I do not have property DRDA10f"] = true;
+    out["Party B does not have any property DRDA10f"] = true;
   } else {
-    out["I have property or separate property DRDA10f"] = true;
+    const clientHas = v.separateProperty.some((item) => item.owner_party === "client");
+    const spouseHas = v.separateProperty.some((item) => item.owner_party === "spouse");
+    if (clientHas) out["I have property or separate property DRDA10f"] = true;
+    else out["I do not have property DRDA10f"] = true;
+    if (spouseHas) out["Party B has property or separate property DRDA10f"] = true;
+    else out["Party B does not have any property DRDA10f"] = true;
     const separateValueKeys = [
       "undefined_64 DRDA10f",
       "undefined_67 DRDA10f",
@@ -232,16 +308,31 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
     out["No community debts DRDA10f"] = true;
   } else {
     out["Did incur community debts DRDA10f"] = true;
+    out["Order each party to pay community debts DRDA10f"] = true;
+    const debtAmountKeys = [
+      "undefined_72 DRDA10f",
+      "undefined_75 DRDA10f",
+      "undefined_78 DRDA10f",
+      "undefined_81 DRDA10f",
+      "undefined_84 DRDA10f",
+    ];
     v.communityDebts.slice(0, 5).forEach((d, i) => {
       const n = i + 1;
-      out[`Description of Debt ${n} DRDA10f`] = String(d.creditor ?? "");
-      const amountKey = `Amount of Debt ${n} DRDA10f`;
-      // Prefer dedicated amount field when present; otherwise keep description clean.
-      if (d.amount_owed != null) out[amountKey] = String(d.amount_owed);
       const clientPays = Number(d.amount_client_pays ?? 0);
       const spousePays = Number(d.amount_spouse_pays ?? 0);
-      if (clientPays >= spousePays) out[`A debt ${n} DRDA10f`] = true;
-      if (spousePays > clientPays) out[`B debt ${n} DRDA10f`] = true;
+      const creditor = String(d.creditor ?? "").trim();
+      const allocation =
+        clientPays > 0 || spousePays > 0
+          ? ` (Party A pays $${clientPays || 0}; Party B pays $${spousePays || 0})`
+          : "";
+      out[`Description of Debt ${n} DRDA10f`] = `${creditor}${allocation}`;
+      const amount = dollar(d.amount_owed);
+      if (amount) out[debtAmountKeys[i]] = amount;
+      // Check every party who is assigned a payment share.
+      if (clientPays > 0 || (clientPays === 0 && spousePays === 0)) {
+        out[`A debt ${n} DRDA10f`] = true;
+      }
+      if (spousePays > 0) out[`B debt ${n} DRDA10f`] = true;
     });
   }
 
@@ -251,17 +342,46 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
     out["I have debt or separate debt DRDA10f"] = true;
   }
 
-  // Pregnancy: choose exactly one option.
+  // Tax returns (going forward + previous years).
+  if (v.taxGoingForwardFiling === "separate") {
+    out["File separate federal and state tax returns DRDA10f"] = true;
+  }
+  if (v.taxPreviousYearsFiling === "joint" || v.taxPreviousYearsFiling === "separate") {
+    out["For previous years DRDA10f"] = true;
+    if (v.taxPreviousYearsFiling === "joint") {
+      out["The parties will file joint federal and state income tax returns For previousDRDA10f"] =
+        true;
+    } else {
+      out["The parties will file separate federal and state income tax returns For previous DRDA10f"] =
+        true;
+    }
+  }
+
+  // Pregnancy: map to the wife's party (A = petitioner, B = spouse).
+  const wifeIsPartyA = v.clientGender === "female";
+  const wifeIsPartyB = v.spouseGender === "female" || (!wifeIsPartyA && v.clientGender !== "female");
   if (v.pregnant) {
-    out["Party B IS pregnant DRDA10f"] = true;
+    if (wifeIsPartyA) out["Party A is pregnant DRDA10f"] = true;
+    else out["Party B IS pregnant DRDA10f"] = true;
     out["The baby is due on DRDA10f"] = v.dueDate;
     if (v.spouseIsFather) {
       out["Party A and Party B ARE the parents of the child OR DRDA10f"] = true;
-    } else {
+    } else if (wifeIsPartyB) {
       out["Party B IS NOT the parent of the child DRDA10f"] = true;
+    } else {
+      out["Party A or DRDA10f"] = true;
     }
-  } else {
-    out["Party A not pregnant DRDA10f"] = true;
+  } else if (v.pregnancyAnswered) {
+    // Mark the wife not pregnant; also mark the other party when they are not the wife.
+    if (wifeIsPartyA) out["Party A not pregnant DRDA10f"] = true;
+    if (wifeIsPartyB) out["Party B IS NOT pregnant OR DRDA10f"] = true;
+    if (!wifeIsPartyA && v.clientGender !== "female") out["Party A not pregnant DRDA10f"] = true;
+  }
+
+  if (v.hasWrittenAgreement === true) {
+    out["Party A and B have a written agreement DRDA10f"] = true;
+  } else if (v.hasWrittenAgreement === false) {
+    out["Party A and B do not have agreement DRDA10f"] = true;
   }
 
   if (v.restoreName) {
@@ -295,25 +415,49 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
     "years andor_2 DRDC15f": v.spouseAzMonths,
     "Date of Marriage DRDC15f": v.marriageDate,
     "City and state or country where we were married DRDC15f": v.marriagePlace,
-    "We do not have covenant marriage DRDC15f": true,
     "Our marriage is broken DRDC15f": true,
-    "We have tried to resolve our problems DRDC15f": true,
     "This Court has jurisdiction to determine DRDC15f": true,
     "This is the proper court to bring DRDC15f": true,
     "90 day requirement I have lived in AZ DRDC15f": true,
-    "has not occurred during this marriage DRDC15f": !v.hasDv,
-    "has or DRDC15f": v.hasDv,
     "Dissolve our marriage and return to single DRDC15f": true,
-    "To my knowledge there is no child support order DRDC15f": true,
     "Does not apply DRDC15f": true,
-    "Neither party is entitled to spousal support DRDC15f": true,
-    "Do not order spousal maintenance DRDC15f": true,
-    "DV has not occurred DRDC15f": !v.hasDv,
-    "There has been DV DRDC15f": v.hasDv,
-    "Neither party has been convicted DRDC15f": true,
     "Reasonable parenting time as set forth DRDC15f": true,
     "Other expenses DRDC15f": true,
   };
+
+  if (v.isCovenantMarriage === false) {
+    out["We do not have covenant marriage DRDC15f"] = true;
+  }
+  if (v.conciliationAttempted === true) {
+    out["We have tried to resolve our problems DRDC15f"] = true;
+  }
+  if (v.dvAnswered) {
+    out["has not occurred during this marriage DRDC15f"] = !v.hasDv;
+    out["has or DRDC15f"] = v.hasDv;
+    out["DV has not occurred DRDC15f"] = !v.hasDv;
+    out["There has been DV DRDC15f"] = v.hasDv;
+  }
+  if (v.hasExistingChildSupportOrder === false) {
+    out["To my knowledge there is no child support order DRDC15f"] = true;
+  } else if (v.hasExistingChildSupportOrder === true) {
+    out["There is an order for child support DRDC15f"] = true;
+  }
+  if (v.spousalMaintenanceRequested === false) {
+    out["Neither party is entitled to spousal support DRDC15f"] = true;
+    out["Do not order spousal maintenance DRDC15f"] = true;
+  } else if (v.spousalMaintenanceRequested === true) {
+    if (v.spousalMaintenanceFor === "client") {
+      out["Party A is entitled to spousal support DRDC15f"] = true;
+    } else if (v.spousalMaintenanceFor === "spouse") {
+      out["Party B is entitled to spousal support DRDC15f"] = true;
+    }
+    out["Order spousal support to be paid by DRDC15f"] = true;
+  }
+  if (v.hasDuiOrDrugConviction === false) {
+    out["Neither party has been convicted DRDC15f"] = true;
+  } else if (v.hasDuiOrDrugConviction === true) {
+    out["One or both parties have been convicted DRDC15f"] = true;
+  }
 
   // With-children track must never claim there are no children.
   if (!v.hasCommonChildren && v.children.length === 0) {
@@ -434,6 +578,8 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
       out["Make DRDC15f"] = String(v0.make ?? "");
       out["Year DRDC15f"] = v0.year != null ? String(v0.year) : "";
       out["Model DRDC15f"] = String(v0.model ?? "");
+      out["VIN DRDC15f"] = String(v0.vin ?? "");
+      out["Lien Holder DRDC15f"] = String(v0.lienholder ?? "");
       const value0 = dollar(v0.estimated_value);
       if (value0) out["undefined_71 DRDC15f"] = value0;
       if (partyA(v0.assigned_to)) out["A20 DRDC15f"] = true;
@@ -444,6 +590,8 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
       out["Make_2 DRDC15f"] = String(v1.make ?? "");
       out["Year_2 DRDC15f"] = v1.year != null ? String(v1.year) : "";
       out["Model_2 DRDC15f"] = String(v1.model ?? "");
+      out["VIN_2 DRDC15f"] = String(v1.vin ?? "");
+      out["Lien Holder_2 DRDC15f"] = String(v1.lienholder ?? "");
       const value1 = dollar(v1.estimated_value);
       if (value1) out["undefined_72 DRDC15f"] = value1;
       if (partyA(v1.assigned_to)) out["A21 DRDC15f"] = true;
@@ -541,9 +689,12 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
 
   // Current child support + attach worksheet/order.
   if (v.children.length > 0 || v.hasCommonChildren) {
-    out["Order that child support will be paid by DRDC15f"] = true;
-    if (supportPayerIsClient(v)) out["Party A OR_3 DRDC15f"] = true;
-    else out["Party B in a reasonable DRDC15f"] = true;
+    const payerIsClient = supportPayerIsClient(v);
+    if (payerIsClient !== null) {
+      out["Order that child support will be paid by DRDC15f"] = true;
+      if (payerIsClient) out["Party A OR_3 DRDC15f"] = true;
+      else out["Party B in a reasonable DRDC15f"] = true;
+    }
     out["The Child Support Order to be attached to the Decree of Dissolution of Marriage DRDC15f"] =
       true;
 
@@ -583,39 +734,35 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
       "Party B_16 DRDC15f",
       "Party B_17 DRDC15f",
     ];
-    const evenOddSplit =
-      v.taxClaimedBy === "split" &&
-      (/alternate/i.test(v.taxFrequency) || /even|odd/i.test(v.taxNotes));
-    if (evenOddSplit) {
-      // List every child for even years and again for odd years. "Pattern repeats"
-      // does not say who has the other child in the same year.
-      const spouseGetsEven = /(?:alex|spouse|party\s*b)[^.]{0,40}even/i.test(v.taxNotes);
-      const evenParty = spouseGetsEven ? "spouse" : "client";
-      const oddParty = spouseGetsEven ? "client" : "spouse";
-      const named = v.children.slice(0, 2);
-      const subjects =
-        v.children.length > 2
-          ? ["All minor children"]
-          : named.map((ch) => ch.fullName);
-      const rows = [
-        ...subjects.map((name) => ({ name, year: "even yrs", party: evenParty })),
-        ...subjects.map((name) => ({ name, year: "odd yrs", party: oddParty })),
-      ];
-      rows.slice(0, taxNameKeys.length).forEach((row, i) => {
-        out[taxNameKeys[i]] = row.name;
-        out[taxYearKeys[i]] = row.year;
-        if (row.party === "spouse") out[partyBTax[i]] = true;
-        else out[partyATax[i]] = true;
-      });
-    } else {
+    const alternateYears =
+      v.taxClaimedBy === "split" || /alternate/i.test(v.taxFrequency);
+    if (alternateYears) {
+      // Do not invent a every-year assignment when odd/even parent is unanswered.
+      if (v.taxEvenYearClaimant === "client" || v.taxEvenYearClaimant === "spouse") {
+        const evenParty = v.taxEvenYearClaimant;
+        const oddParty = evenParty === "client" ? "spouse" : "client";
+        const named = v.children.slice(0, 2);
+        const subjects =
+          v.children.length > 2
+            ? ["All minor children"]
+            : named.map((ch) => ch.fullName);
+        const rows = [
+          ...subjects.map((name) => ({ name, year: "even yrs", party: evenParty })),
+          ...subjects.map((name) => ({ name, year: "odd yrs", party: oddParty })),
+        ];
+        rows.slice(0, taxNameKeys.length).forEach((row, i) => {
+          out[taxNameKeys[i]] = row.name;
+          out[taxYearKeys[i]] = row.year;
+          if (row.party === "spouse") out[partyBTax[i]] = true;
+          else out[partyATax[i]] = true;
+        });
+      }
+    } else if (v.taxClaimedBy === "client" || v.taxClaimedBy === "spouse") {
       v.children.slice(0, 5).forEach((ch, i) => {
         out[taxNameKeys[i]] = ch.fullName;
-        out[taxYearKeys[i]] = String(year + (i % 2));
+        out[taxYearKeys[i]] = String(year);
         if (v.taxClaimedBy === "spouse") out[partyBTax[i]] = true;
-        else if (v.taxClaimedBy === "split") {
-          if (i % 2 === 0) out[partyATax[i]] = true;
-          else out[partyBTax[i]] = true;
-        } else out[partyATax[i]] = true;
+        else out[partyATax[i]] = true;
       });
       out["Pattern shall repeat for subsequent years DRDC15f"] = true;
     }
@@ -713,18 +860,26 @@ export function affidavitMinorChildrenFields(v: CaseFillValues): Record<string, 
 export function parentingPlanFields(v: CaseFillValues): Record<string, string | boolean> {
   const out: Record<string, string | boolean> = {
     ...commonCaptionFields(v),
-    // Joint-agreement periodic review (months).
-    "necessary or desired changes every": v.parenting.jointReviewMonths || "12",
   };
+  if (v.parenting.jointReviewMonths) {
+    out["necessary or desired changes every"] = v.parenting.jointReviewMonths;
+  }
 
   // Part 4 is the joint legal decision-making agreement. Those statements
   // apply only when both parents agree to joint custody.
   if (v.parenting.jointByAgreement === true) {
-    out["Domestic Violence has not occurred between the parties OR DRCVG11f"] = !v.hasDv;
-    out["Domestic Violence has occurred between the parties but one of the following applies 1 it DRCVG11f"] =
-      v.hasDv;
-    out["Neither party has been convicted of driving under the influence or a drug offense within the DRCVG11f"] =
-      true;
+    if (v.dvAnswered) {
+      out["Domestic Violence has not occurred between the parties OR DRCVG11f"] = !v.hasDv;
+      out["Domestic Violence has occurred between the parties but one of the following applies 1 it DRCVG11f"] =
+        v.hasDv;
+    }
+    if (v.hasDuiOrDrugConviction === false) {
+      out["Neither party has been convicted of driving under the influence or a drug offense within the DRCVG11f"] =
+        true;
+    } else if (v.hasDuiOrDrugConviction === true) {
+      out["One of the parties HAS been convicted of driving under the influence or a drug offense DRCVG11f"] =
+        true;
+    }
   }
 
   if (v.parenting.isSoleDecision && !v.parenting.isJointDecision) {
@@ -768,35 +923,53 @@ export function parentingPlanFields(v: CaseFillValues): Record<string, string | 
     assignStackedRows(out, "1_4 DRCVG11f", "2_4 DRCVG11f", v.parenting.scheduleExchangeNotes);
   }
 
-  // Pickup / drop-off / exchange — filled when enrichment extracts them.
-  if (v.parenting.pickupTime || v.parenting.dropoffTime || v.parenting.exchangeLocation) {
+  // Transportation only when the intake chose a provider — no silent Party A/B default.
+  const transport = v.parenting.transportationProvider;
+  if (transport) {
     out["Transportation will be provided as follows DRCVG11f"] = true;
-    out["Party B will pick the minor children up at DRCVG11f"] = true;
-    out["oclock DRCVG11f"] = v.parenting.pickupTime;
-    out["Party B will drop the minor children off at DRCVG11f"] = true;
-    out["oclock_2 DRCVG11f"] = v.parenting.dropoffTime || v.parenting.pickupTime;
+    if (transport === "client") {
+      out["Party A or DRCVG11f"] = true;
+      out["Party A or_2 DRCVG11f"] = true;
+    } else if (transport === "spouse") {
+      out["Party B will pick the minor children up at DRCVG11f"] = true;
+      out["Party B will drop the minor children off at DRCVG11f"] = true;
+    } else if (transport === "shared") {
+      out["Party A or DRCVG11f"] = true;
+      out["Party B will drop the minor children off at DRCVG11f"] = true;
+    }
+    if (v.parenting.pickupTime) out["oclock DRCVG11f"] = v.parenting.pickupTime;
+    if (v.parenting.dropoffTime || v.parenting.pickupTime) {
+      out["oclock_2 DRCVG11f"] = v.parenting.dropoffTime || v.parenting.pickupTime;
+    }
     if (v.parenting.exchangeLocation) {
       out["Parentingtime exchanges will occur at the following exchange location 1 DRCVG11f"] =
         v.parenting.exchangeLocation;
     }
   }
-  out["Parents may change their timeshare arrangements by mutual agreement with at least DRCVG11f"] =
-    v.parenting.advanceNoticeDays || "14";
+  if (v.parenting.advanceNoticeDays) {
+    out["Parents may change their timeshare arrangements by mutual agreement with at least DRCVG11f"] =
+      v.parenting.advanceNoticeDays;
+  }
 
-  // Summer / school breaks: keep regular schedule unless a special plan exists.
-  out["During summer months or school breaks that last longer than 4 days no changes shall be DRCVG11f"] =
-    true;
-  out["Each parent is entitled to a DRCVG11f"] = true;
-  // "week period..." is the summer-explain line above the sentence.
-  // The week count sits in the narrow blank on the entitlement line.
-  // The notice-day count is the blank on the following line.
-  out["children The parents will work out the details of the vacation at least DRCVG11f"] =
-    v.parenting.vacationWeeks || "2";
-  out["undefined_2 DRCVG11f"] = v.parenting.vacationNoticeDays || "30";
-
-  // Travel: keep each other informed; no hard out-of-state ban by default.
-  out["Should either parent travel out of the area with the minor children each parent will keep the DRCVG11f"] =
-    true;
+  // Summer / school breaks — only from explicit intake answers.
+  if (v.parenting.summerScheduleSame === true) {
+    out["During summer months or school breaks that last longer than 4 days no changes shall be DRCVG11f"] =
+      true;
+  } else if (v.parenting.summerScheduleSame === false) {
+    out["During summer months or school breaks that last longer than 4 days the minor children will DRCVG11f"] =
+      true;
+    if (v.parenting.summerScheduleNotes) {
+      out["be in the care of Party A Explain DRCVG11f"] = v.parenting.summerScheduleNotes;
+    }
+  }
+  if (v.parenting.vacationWeeks) {
+    out["Each parent is entitled to a DRCVG11f"] = true;
+    out["children The parents will work out the details of the vacation at least DRCVG11f"] =
+      v.parenting.vacationWeeks;
+  }
+  if (v.parenting.vacationNoticeDays) {
+    out["undefined_2 DRCVG11f"] = v.parenting.vacationNoticeDays;
+  }
 
   // Holiday grid: alternate even/odd years. Mother's Day and Father's Day stay
   // with that parent in both years when gender is known.
@@ -806,11 +979,8 @@ export function parentingPlanFields(v: CaseFillValues): Record<string, string | 
     out["other holidays DRCVG11f"] = true;
     out["Other Holidays Describe the other holidays and the arrangement DRCVG11f"] = holidayNotes;
   }
-  out["Each parent may have the children DRCVG11f"] = true;
-  out["three day weekends which include DRCVG11f"] = true;
-  out["telephone contact DRCVG11f"] = true;
 
-  // Medical / religious (joint-friendly defaults).
+  // Medical / religious (joint-friendly defaults for decision-making type only).
   if (v.parenting.isJointDecision || !v.parenting.isSoleDecision) {
     out["Both parents will make major medical decisions together except for emergency situations DRCVG11f"] =
       true;
@@ -820,36 +990,24 @@ export function parentingPlanFields(v: CaseFillValues): Record<string, string | 
     out["Major medicaldental decisions will be made by DRCVG11f"] = true;
     out["Party A_32 DRCVG11f"] = true;
   }
-  out["Both parents agree that religious arrangements are not applicable to this plan DRCVG11f"] =
-    true;
 
-  // Communication answers belong on their own lines. Method is not a frequency.
-  const method = v.parenting.communicationMethod || "Phone and email";
-  const frequency =
-    v.parenting.communicationFrequency ||
-    "At least once a week, and promptly about school, health, and schedule changes";
-  out["NOTIFY OTHER PARENT OF ADDRESS CHANGE Each parent will inform the other DRCVG11f"] = true;
-  out["parent of any change of address andor phone number in advance OR within DRCVG11f"] =
-    v.parenting.addressChangeNoticeDays || "30";
-  out["NOTIFY OTHER PARENT OF EMERGENCY Both parents agree that each parent will DRCVG11f"] = true;
-  out["TALK TO OTHER PARENT ABOUT EXTRA ACTIVITIES Each parent will consult and DRCVG11f"] = true;
-  out["COMMUNICATE Each parent agrees that all communications regarding the minor DRCVG11f"] = true;
-  out["METHOD OF COMMUNICATION Each parent agrees to use the following means of DRCVG11f"] = true;
-  out["communication DRCVG11f"] = method;
-  out["Phone DRCVG11f"] = /phone/i.test(method);
-  out["Email DRCVG11f"] = /email|e-mail/i.test(method);
-  out["FREQUENCY OF COMMUNICATION Each parent agrees to communicate regarding the DRCVG11f"] =
-    true;
-  out["and will be by the following methods DRCVG11f"] = frequency;
-  out["PRAISE OTHER PARENT Each parent agrees to encourage love and respect between the DRCVG11f"] =
-    true;
-  out["COOPERATE AND WORK TOGETHER Both parents agree to exert their best efforts to DRCVG11f"] =
-    true;
-  out["NOTIFY OTHER PARENT OF PROBLEMS WITH TIMESHARING AHEAD OF TIME DRCVG11f"] = true;
-  out["PARENTING PLAN Both parents agree that if either parent moves out of the area and DRCVG11f"] =
-    true;
-  out["MEDIATION If the parents are unable to reach a mutual agreement regarding a legal DRCVG11f"] =
-    true;
+  if (v.parenting.addressChangeNoticeDays) {
+    out["NOTIFY OTHER PARENT OF ADDRESS CHANGE Each parent will inform the other DRCVG11f"] = true;
+    out["parent of any change of address andor phone number in advance OR within DRCVG11f"] =
+      v.parenting.addressChangeNoticeDays;
+  }
+  if (v.parenting.communicationMethod) {
+    const method = v.parenting.communicationMethod;
+    out["METHOD OF COMMUNICATION Each parent agrees to use the following means of DRCVG11f"] = true;
+    out["communication DRCVG11f"] = method;
+    out["Phone DRCVG11f"] = /phone/i.test(method);
+    out["Email DRCVG11f"] = /email|e-mail/i.test(method);
+  }
+  if (v.parenting.communicationFrequency) {
+    out["FREQUENCY OF COMMUNICATION Each parent agrees to communicate regarding the DRCVG11f"] =
+      true;
+    out["and will be by the following methods DRCVG11f"] = v.parenting.communicationFrequency;
+  }
 
   return out;
 }

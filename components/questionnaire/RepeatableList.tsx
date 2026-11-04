@@ -4,10 +4,11 @@ import { useState, useTransition } from "react";
 import { addRecord, deleteRecord, updateRecord } from "@/lib/questionnaire/actions";
 import type { RepeatableTable } from "@/lib/questionnaire/data";
 import { Spinner } from "@/components/ui/SubmitButton";
-import { CurrencyInput, NumberInput, Select, TextInput } from "./fields";
+import { CurrencyInput, NumberInput, Select, TextArea, TextInput } from "./fields";
 
 export type FieldConfig =
   | { name: string; label: string; kind: "text"; required?: boolean }
+  | { name: string; label: string; kind: "textarea"; required?: boolean }
   | { name: string; label: string; kind: "number"; required?: boolean }
   | { name: string; label: string; kind: "currency"; required?: boolean }
   | {
@@ -93,6 +94,16 @@ function FieldInput({ field, defaultValue }: { field: FieldConfig; defaultValue?
         name={field.name}
         defaultValue={defaultValue as string | null}
         options={field.options}
+        required={field.required}
+      />
+    );
+  }
+  if (field.kind === "textarea") {
+    return (
+      <TextArea
+        name={field.name}
+        defaultValue={defaultValue as string | null}
+        rows={3}
         required={field.required}
       />
     );
