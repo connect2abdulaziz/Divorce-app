@@ -321,11 +321,20 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
       const clientPays = Number(d.amount_client_pays ?? 0);
       const spousePays = Number(d.amount_spouse_pays ?? 0);
       const creditor = String(d.creditor ?? "").trim();
-      const allocation =
-        clientPays > 0 || spousePays > 0
-          ? ` (Party A pays $${clientPays || 0}; Party B pays $${spousePays || 0})`
-          : "";
-      out[`Description of Debt ${n} DRDA10f`] = `${creditor}${allocation}`;
+      // Description column is very narrow — keep split short (A$…/B$…) so it stays visible.
+      // Only append amounts when both parties share the debt; single-payer is clear from checkboxes.
+      let description = creditor;
+      if (clientPays > 0 && spousePays > 0) {
+        const split = `A$${clientPays}/B$${spousePays}`;
+        const maxLen = 36;
+        const room = Math.max(0, maxLen - split.length - 1);
+        const base =
+          creditor.length > room
+            ? `${creditor.slice(0, Math.max(0, room - 1)).trimEnd()}…`
+            : creditor;
+        description = `${base} ${split}`.trim();
+      }
+      out[`Description of Debt ${n} DRDA10f`] = description;
       const amount = dollar(d.amount_owed);
       if (amount) out[debtAmountKeys[i]] = amount;
       // Check every party who is assigned a payment share.
