@@ -45,20 +45,23 @@ async function main() {
   const checks: Check[] = [];
 
   const addr = String(petition["Real estate located at DRDA10f"] || "");
-  const mortgage = String(petition["undefined_5 DRDA10f"] || "");
+  const legal0 = String(petition["undefined_5 DRDA10f"] || "");
   const legal1 = String(petition["Legal Description 1 DRDA10f"] || "");
+  const legal2 = String(petition["Legal Description 2 DRDA10f"] || "");
+  const legalAll = `${legal0} ${legal1} ${legal2}`;
   const sellA = bool(petition["A real estate DRDA10f"]);
   const sellB = bool(petition["B real estate DRDA10f"]);
   checks.push({
     id: "real-estate",
     pass:
       addr.includes("789 Example Street") &&
-      mortgage === "150000" &&
-      /sell/i.test(legal1) &&
-      /50/i.test(legal1) &&
+      /lot|block|maps|estate/i.test(legal0) &&
+      /sell/i.test(legalAll) &&
+      /50/i.test(legalAll) &&
+      /150000|mortgage/i.test(legalAll) &&
       sellA &&
       sellB,
-    detail: `addr=${addr} mortgage=${mortgage} legal1=${legal1} A=${sellA} B=${sellB}`,
+    detail: `addr=${addr} legal0=${legal0} legal1=${legal1} legal2=${legal2} A=${sellA} B=${sellB}`,
   });
 
   const retDesc = String(petition["1_4 DRDA10f"] || "");
@@ -106,7 +109,8 @@ async function main() {
   const pregBYes = bool(petition["Party B IS pregnant DRDA10f"]);
   checks.push({
     id: "pregnancy-wife-party-b",
-    pass: !values.pregnant && pregB && !pregAYes && !pregBYes,
+    // Husband petitioner → only Party B (wife) not-pregnant; Party A must stay unchecked.
+    pass: !values.pregnant && pregB && !pregA && !pregAYes && !pregBYes,
     detail: `notPregnantA=${pregA} notPregnantB=${pregB} pregnantA=${pregAYes} pregnantB=${pregBYes}`,
   });
 

@@ -193,13 +193,19 @@ export function buildCaseFillValues(bundle: CaseBundle) {
     spouseWeight: sp.weight_lbs != null ? String(sp.weight_lbs) : "",
     spouseGender: normalizeGender(sp.gender ?? sp.sex),
     spouseSsnLast4: sp.ssn_unknown ? "" : s(sp.ssn_last4),
-    spouseDriverLicenseLast4: last4(
-      sp.driver_license_last4 ?? sp.dl_last4 ?? sp.drivers_license_last4
-    ),
+    spouseDriverLicenseLast4: sp.driver_license_unknown
+      ? ""
+      : last4(sp.driver_license_last4 ?? sp.dl_last4 ?? sp.drivers_license_last4),
     spouseAzYears: sp.az_years != null ? String(sp.az_years) : "",
     spouseAzMonths: sp.az_months != null ? String(sp.az_months) : "",
     spouseAzResidency: azResidency(sp.az_years, sp.az_months),
-    interpreterNeeded: c.interpreter_needed === true || sp.interpreter_needed === true,
+    clientCourtTextsOptIn:
+      c.court_texts_opt_in === true ? true : c.court_texts_opt_in === false ? false : null,
+    spouseCourtTextsOptIn:
+      sp.court_texts_opt_in === true ? true : sp.court_texts_opt_in === false ? false : null,
+    interpreterNeeded: c.interpreter_needed === true,
+    interpreterAnswered: typeof c.interpreter_needed === "boolean",
+    interpreterLanguage: s(c.interpreter_language),
     parentInfoCompleted:
       parenting.parent_info_completed === true
         ? true
@@ -385,12 +391,22 @@ export function commonCaptionFields(v: CaseFillValues): Record<string, string | 
     Telephone: v.clientPhone,
     "Email Address": v.clientEmail,
     Email: v.clientEmail,
+    // Self-represented petitioner. Cover every Maricopa field-name variant, and
+    // explicitly clear Attorney/Respondent — some templates ship those pre-checked.
     "Self without a Lawyer": true,
     "Self without a Lawyer OR": true,
     "Self without a Lawyer  OR": true,
+    "Self without a Lawyer or": true,
+    "Self without a Lawyer OR_2": true,
+    "Self without a Lawyer  OR_2": true,
+    "Self without a Laywer": true, // typo on some official templates
     Representing: true,
     Petitioner: true,
     "Petitioner OR": true,
+    "Petitioner or": true,
+    "Petitioner OR_2": true,
+    "Attorney for": false,
+    Respondent: false,
     "Name of PetitionerParty A": v.clientName,
     "Nameof Petitioner  Party A": v.clientName,
     "Name of Petitioner  Party A": v.clientName,

@@ -25,6 +25,10 @@ const EMPTY_CLIENT: PartyClient = {
   phone: null,
   email: null,
   ssn_last4: null,
+  driver_license_last4: null,
+  court_texts_opt_in: null,
+  interpreter_needed: null,
+  interpreter_language: null,
 };
 
 export default async function ClientInfoPage({
