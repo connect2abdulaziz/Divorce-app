@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
-import { Field, NumberInput, Select, TextInput } from "@/components/questionnaire/fields";
+import { Field, NumberInput, Select, TextInput, YesNo } from "@/components/questionnaire/fields";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type PartyClient = {
@@ -25,6 +26,10 @@ export type PartyClient = {
   phone: string | null;
   email: string | null;
   ssn_last4: string | null;
+  driver_license_last4: string | null;
+  court_texts_opt_in: boolean | null;
+  interpreter_needed: boolean | null;
+  interpreter_language: string | null;
 };
 
 function emptyToNull(value: FormDataEntryValue | null) {
@@ -57,11 +62,16 @@ export function ClientInfoForm({
   initial: PartyClient;
 }) {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [courtTexts, setCourtTexts] = useState<boolean | null>(initial.court_texts_opt_in);
+  const [interpreterNeeded, setInterpreterNeeded] = useState<boolean | null>(
+    initial.interpreter_needed
+  );
 
-  async function handleSubmit(formData: FormData) {
+  function buildValues(formData: FormData) {
     const home = emptyToNull(formData.get("home_phone"));
     const cell = emptyToNull(formData.get("cell_phone"));
-    const values = {
+    return {
       first_name: emptyToNull(formData.get("first_name")),
       middle_name: emptyToNull(formData.get("middle_name")),
       last_name: emptyToNull(formData.get("last_name")),
@@ -81,35 +91,36 @@ export function ClientInfoForm({
       phone: cell ?? home,
       email: emptyToNull(formData.get("email")),
       ssn_last4: emptyToNull(formData.get("ssn_last4")),
+      driver_license_last4: emptyToNull(formData.get("driver_license_last4")),
+      court_texts_opt_in: courtTexts,
+      interpreter_needed: interpreterNeeded,
+      interpreter_language:
+        interpreterNeeded === true
+          ? emptyToNull(formData.get("interpreter_language"))
+          : null,
     };
-    await saveSingletonSection("party_client", caseId, values, slug);
+  }
+
+  async function handleSubmit(formData: FormData) {
+    if (courtTexts === null) {
+      setError("Please answer whether you want court text notices.");
+      return;
+    }
+    if (interpreterNeeded === null) {
+      setError("Please answer whether you need an interpreter.");
+      return;
+    }
+    if (interpreterNeeded === true && !emptyToNull(formData.get("interpreter_language"))) {
+      setError("Please enter the language for the interpreter.");
+      return;
+    }
+    setError(null);
+    await saveSingletonSection("party_client", caseId, buildValues(formData), slug);
     router.push(nextHref);
   }
 
   async function handleAutoSave(formData: FormData) {
-    const home = emptyToNull(formData.get("home_phone"));
-    const cell = emptyToNull(formData.get("cell_phone"));
-    await saveSingletonSection("party_client", caseId, {
-      first_name: emptyToNull(formData.get("first_name")),
-      middle_name: emptyToNull(formData.get("middle_name")),
-      last_name: emptyToNull(formData.get("last_name")),
-      date_of_birth: emptyToNull(formData.get("date_of_birth")),
-      gender: emptyToNull(formData.get("gender")),
-      height: emptyToNull(formData.get("height")),
-      weight_lbs: numberOrNull(formData.get("weight_lbs")),
-      az_years: numberOrNull(formData.get("az_years")),
-      az_months: numberOrNull(formData.get("az_months")),
-      address_line1: emptyToNull(formData.get("address_line1")),
-      address_line2: emptyToNull(formData.get("address_line2")),
-      city: emptyToNull(formData.get("city")),
-      state: emptyToNull(formData.get("state")),
-      zip: emptyToNull(formData.get("zip")),
-      home_phone: home,
-      cell_phone: cell,
-      phone: cell ?? home,
-      email: emptyToNull(formData.get("email")),
-      ssn_last4: emptyToNull(formData.get("ssn_last4")),
-    });
+    await saveSingletonSection("party_client", caseId, buildValues(formData));
   }
 
   return (
@@ -121,6 +132,11 @@ export function ClientInfoForm({
       onSubmit={handleSubmit}
       onAutoSave={handleAutoSave}
     >
+      {error ? (
+        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {error}
+        </p>
+      ) : null}
       <div className="grid gap-6 sm:grid-cols-3">
         <Field label="First name">
           <TextInput name="first_name" defaultValue={initial.first_name} required autoComplete="given-name" />
@@ -203,6 +219,13 @@ export function ClientInfoForm({
         </Field>
       </div>
 
+      <div>
+        <p className="field-label">
+          Receive texts from the court at the contact phone number above?
+        </p>
+        <YesNo name="court_texts_opt_in" value={courtTexts} onChange={setCourtTexts} />
+      </div>
+
       <Field label="Email">
         <TextInput name="email" type="email" defaultValue={initial.email} required autoComplete="email" />
       </Field>
@@ -219,6 +242,42 @@ export function ClientInfoForm({
           autoComplete="off"
         />
       </Field>
+
+      <Field
+        label="Driver's license (last 4 digits)"
+        hint="Exactly 4 digits. Used on the preliminary injunction description of the parties."
+      >
+        <TextInput
+          name="driver_license_last4"
+          defaultValue={initial.driver_license_last4}
+          required
+          maxLength={4}
+          pattern="[0-9]{4}"
+          inputMode="numeric"
+          placeholder="####"
+          autoComplete="off"
+        />
+      </Field>
+
+      <div>
+        <p className="field-label">Do you need a court interpreter?</p>
+        <YesNo
+          name="interpreter_needed"
+          value={interpreterNeeded}
+          onChange={setInterpreterNeeded}
+        />
+      </div>
+
+      {interpreterNeeded === true ? (
+        <Field label="What language?">
+          <TextInput
+            name="interpreter_language"
+            defaultValue={initial.interpreter_language}
+            required
+            placeholder="e.g. Spanish"
+          />
+        </Field>
+      ) : null}
     </StepShell>
   );
 }

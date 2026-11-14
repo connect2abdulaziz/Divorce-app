@@ -165,22 +165,27 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
     // Street / full address on the location line; overflow continues on legal lines.
     out["Real estate located at DRDA10f"] = address;
     out["Value DRDA10f"] = dollar(r.estimated_value);
-    const mortgage = dollar(r.amount_owed);
-    if (mortgage) out["undefined_5 DRDA10f"] = mortgage;
-    const legalLines: string[] = [];
     if (r.assigned_to === "sell") {
-      legalLines.push("Sell property and divide proceeds 50/50");
       out["A real estate DRDA10f"] = true;
       out["B real estate DRDA10f"] = true;
     } else {
       if (partyA(r.assigned_to)) out["A real estate DRDA10f"] = true;
       if (partyB(r.assigned_to)) out["B real estate DRDA10f"] = true;
     }
+    // undefined_5 is the first Legal Description line on DRDA10f (not a mortgage box).
+    // Order: deed legal → sell instruction → mortgage note.
+    const legalLines: string[] = [];
     const legal = realEstateLegal(r);
     if (legal) legalLines.push(legal);
     else if (address.length > 40) legalLines.push(address);
-    if (legalLines[0]) out["Legal Description 1 DRDA10f"] = legalLines[0];
-    if (legalLines[1]) out["Legal Description 2 DRDA10f"] = legalLines[1];
+    if (r.assigned_to === "sell") {
+      legalLines.push("Sell property and divide proceeds 50/50");
+    }
+    const mortgage = dollar(r.amount_owed);
+    if (mortgage) legalLines.push(`Mortgage/lien owed: $${mortgage}`);
+    if (legalLines[0]) out["undefined_5 DRDA10f"] = legalLines[0];
+    if (legalLines[1]) out["Legal Description 1 DRDA10f"] = legalLines[1];
+    if (legalLines[2]) out["Legal Description 2 DRDA10f"] = legalLines[2];
   }
   if (v.hasRealEstate && v.realEstate[1]) {
     const r = v.realEstate[1];
@@ -189,19 +194,23 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
     out["Real estate located at_2 DRDA10f"] = address;
     const value = dollar(r.estimated_value);
     if (value) out["undefined_7 DRDA10f"] = value;
-    const legalLines: string[] = [];
     if (r.assigned_to === "sell") {
-      legalLines.push("Sell property and divide proceeds 50/50");
       out["Party A real estate DRDA10f"] = true;
       out["Party B real estate DRDA10f"] = true;
     } else {
       if (partyA(r.assigned_to)) out["Party A real estate DRDA10f"] = true;
       if (partyB(r.assigned_to)) out["Party B real estate DRDA10f"] = true;
     }
-    const mortgage = dollar(r.amount_owed);
-    if (mortgage) legalLines.push(`Mortgage/lien owed: $${mortgage}`);
+    // Same order as RE #1: deed legal → sell → mortgage note.
+    const legalLines: string[] = [];
     const legal = realEstateLegal(r);
     if (legal) legalLines.push(legal);
+    else if (address.length > 40) legalLines.push(address);
+    if (r.assigned_to === "sell") {
+      legalLines.push("Sell property and divide proceeds 50/50");
+    }
+    const mortgage = dollar(r.amount_owed);
+    if (mortgage) legalLines.push(`Mortgage/lien owed: $${mortgage}`);
     if (legalLines[0]) out["Legal Description 1_2 DRDA10f"] = legalLines[0];
     if (legalLines[1]) out["Legal Description 2_2 DRDA10f"] = legalLines[1];
     if (legalLines[2]) out["Legal Description 3 DRDA10f"] = legalLines[2];
@@ -381,10 +390,9 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
       out["Party A or DRDA10f"] = true;
     }
   } else if (v.pregnancyAnswered) {
-    // Mark the wife not pregnant; also mark the other party when they are not the wife.
+    // Form uses OR — check only the wife's party, not both.
     if (wifeIsPartyA) out["Party A not pregnant DRDA10f"] = true;
-    if (wifeIsPartyB) out["Party B IS NOT pregnant OR DRDA10f"] = true;
-    if (!wifeIsPartyA && v.clientGender !== "female") out["Party A not pregnant DRDA10f"] = true;
+    else out["Party B IS NOT pregnant OR DRDA10f"] = true;
   }
 
   if (v.hasWrittenAgreement === true) {
@@ -518,17 +526,24 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
     out["children DRDC15f"] = v.children.map((c) => c.fullName).join("; ");
   }
 
-  // Pregnancy: exactly one selection (form instructs choose one).
+  // Pregnancy: exactly one selection (form instructs choose one) — wife's party only.
+  const wifeIsPartyAWc = v.clientGender === "female";
+  const wifeIsPartyBWc =
+    v.spouseGender === "female" || (!wifeIsPartyAWc && v.clientGender !== "female");
   if (v.pregnant) {
-    out["Party B IS pregnant DRDC15f"] = true;
+    if (wifeIsPartyAWc) out["Party A is pregnant or DRDC15f"] = true;
+    else out["Party B IS pregnant DRDC15f"] = true;
     out["The baby is due on DRDC15f"] = v.dueDate;
     if (v.spouseIsFather) {
       out["Party A and Party B ARE the parents of the child OR DRDC15f"] = true;
-    } else {
+    } else if (wifeIsPartyBWc) {
       out["Party B IS NOT the parent of the child OR DRDC15f"] = true;
+    } else {
+      out["Party A or DRDC15f"] = true;
     }
-  } else {
-    out["Party A is not pregnant DRDC15f"] = true;
+  } else if (v.pregnancyAnswered) {
+    if (wifeIsPartyAWc) out["Party A is not pregnant DRDC15f"] = true;
+    else out["Party B IS NOT pregnant OR DRDC15f"] = true;
   }
 
   if (hasListedCommunityAssets(v)) {
@@ -1047,9 +1062,6 @@ export function sensitiveDataCoverSheetWocFields(
     "2 DRSDS10f_An": v.spouseCsz,
     "IF REQUESTING ADDRESS PROTECTION 3 DRSDS10f_An": v.clientPhone,
     "3 DRSDS10f_Ann": v.spousePhone,
-    // Court text notices
-    "No texts DRSDS10f_Ann": true,
-    "No texts_2 DRSDS10f_Ann": true,
     // Email Address
     "contact phone number above 2 DRSDS10f_Ann": v.clientEmail,
     "2_2 DRSDS10f_Ann": v.spouseEmail,
@@ -1070,10 +1082,21 @@ export function sensitiveDataCoverSheetWocFields(
     "7 DRSDS10f_Ann": "",
     // Case type: Dissolution (Divorce) only
     "Dissolution Divorce DRSDS10f_Ann": true,
-    // Interpreter
-    "No DRSDS10f_Ann": !v.interpreterNeeded,
-    "Yes_3 DRSDS10f_Ann": v.interpreterNeeded,
   };
+
+  // Court text notices (Party A / Party B). Unanswered → No texts (safe default).
+  if (v.clientCourtTextsOptIn === true) out["Yes DRSDS10f_Ann"] = true;
+  else out["No texts DRSDS10f_Ann"] = true;
+  if (v.spouseCourtTextsOptIn === true) out["Yes_2 DRSDS10f_Ann"] = true;
+  else out["No texts_2 DRSDS10f_Ann"] = true;
+
+  // Interpreter — unanswered defaults to No.
+  if (v.interpreterNeeded) {
+    out["Yes_3 DRSDS10f_Ann"] = true;
+    if (v.interpreterLanguage) out["What language DRSDS10f_Ann"] = v.interpreterLanguage;
+  } else {
+    out["No DRSDS10f_Ann"] = true;
+  }
 
   if (v.clientGender === "male") out["PetitionerGenderMale DRSDS10f-A"] = true;
   if (v.clientGender === "female") out["PetitionerGenderFemale DRSDS10f-A"] = true;
@@ -1105,9 +1128,6 @@ export function sensitiveDataCoverSheetWcFields(
     // Contact Phone
     "undefined_3 DRSDS10f-c": v.clientPhone,
     "undefined_4 DRSDS10f-c": v.spousePhone,
-    // Court electronic notice defaults
-    "No texts DRSDS10f-c": true,
-    "No texts_2 DRSDS10f-c": true,
     // Email Address (template mislabels left email as Emp Add)
     "1_2 Emp Add DRSDS10f-c": v.clientEmail,
     "1_3 DRSDS10f-c": v.spouseEmail,
@@ -1126,12 +1146,19 @@ export function sensitiveDataCoverSheetWcFields(
     // Employer Fax left blank unless collected later
     "undefined_6 DRSDS10f-c": "",
     "undefined_7 DRSDS10f-c": "",
-    "No interpreter12 DRSDS10f-c": !v.interpreterNeeded,
-    "Interpreter needed yes_10 DRSDS10f-c": v.interpreterNeeded,
     // Case type: mark only Dissolution (Divorce). Legal decision-making is a
     // separate case category and must stay unchecked on a divorce filing.
     "undefined_8 DRSDS10f-c": true,
   };
+
+  // Court text notices (Party A / Party B). Unanswered → No texts.
+  if (v.clientCourtTextsOptIn === true) out["Yes DRSDS10f-c"] = true;
+  else out["No texts DRSDS10f-c"] = true;
+  if (v.spouseCourtTextsOptIn === true) out["Yes_2 DRSDS10f-c"] = true;
+  else out["No texts_2 DRSDS10f-c"] = true;
+
+  if (v.interpreterNeeded) out["Interpreter needed yes_10 DRSDS10f-c"] = true;
+  else out["No interpreter12 DRSDS10f-c"] = true;
 
   if (v.clientGender === "male") out["PetitionerGenderMale DRSDS10f-c"] = true;
   if (v.clientGender === "female") out["PetitionerGenderFemale DRSDS10f-c"] = true;
