@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { addRecord, deleteRecord, updateRecord } from "@/lib/questionnaire/actions";
 import type { RepeatableTable } from "@/lib/questionnaire/data";
 import { Spinner } from "@/components/ui/SubmitButton";
@@ -183,6 +183,7 @@ export function RepeatableList({
   addLabel,
   emptyLabel,
   validate,
+  onDirtyChange,
 }: {
   table: RepeatableTable;
   caseId: string;
@@ -192,10 +193,16 @@ export function RepeatableList({
   addLabel: string;
   emptyLabel: string;
   validate?: (values: Record<string, unknown>) => string | null;
+  /** Fires when an Add/Edit form is open so the parent can block Save & continue. */
+  onDirtyChange?: (dirty: boolean) => void;
 }) {
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+
+  useEffect(() => {
+    onDirtyChange?.(adding || editingId != null);
+  }, [adding, editingId, onDirtyChange]);
 
   function handleDelete(id: string) {
     startTransition(async () => {

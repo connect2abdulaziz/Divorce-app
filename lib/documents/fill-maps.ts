@@ -401,13 +401,17 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
     out["Party A and B do not have agreement DRDA10f"] = true;
   }
 
+  // Name restore is for the wife (intake asks that). Court form is fixed first-person
+  // ("My married name" / "I want my name restored") — fill the wife's names, not the
+  // husband's, when the husband is the petitioner.
   if (v.restoreName) {
-    out["Married name first DRDA10f"] = v.clientFirst;
-    out["Married name middle DRDA10f"] = v.clientMiddle;
-    out["Married name last DRDA10f"] = v.clientLast;
-    out["Restore name first DRDA10f"] = v.restoredFirst || v.clientFirst;
+    const wifeIsPetitioner = v.clientGender === "female";
+    out["Married name first DRDA10f"] = wifeIsPetitioner ? v.clientFirst : v.spouseFirst;
+    out["Married name middle DRDA10f"] = wifeIsPetitioner ? v.clientMiddle : v.spouseMiddle;
+    out["Married name last DRDA10f"] = wifeIsPetitioner ? v.clientLast : v.spouseLast;
+    out["Restore name first DRDA10f"] = v.restoredFirst;
     out["Restore name middle DRDA10f"] = v.restoredMiddle;
-    out["Restore name last DRDA10f"] = v.restoredLast || v.clientLast;
+    out["Restore name last DRDA10f"] = v.restoredLast;
   }
 
   return out;
@@ -804,12 +808,13 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
   if (spouseHasSeparate) out["Award Bs separate property to B DRDC15f"] = true;
 
   if (v.restoreName) {
-    out["First name DRDC15f"] = v.clientFirst;
-    out["Middle name DRDC15f"] = v.clientMiddle;
-    out["Last name DRDC15f"] = v.clientLast;
-    out["Restore first name DRDC15f"] = v.restoredFirst || v.clientFirst;
+    const wifeIsPetitioner = v.clientGender === "female";
+    out["First name DRDC15f"] = wifeIsPetitioner ? v.clientFirst : v.spouseFirst;
+    out["Middle name DRDC15f"] = wifeIsPetitioner ? v.clientMiddle : v.spouseMiddle;
+    out["Last name DRDC15f"] = wifeIsPetitioner ? v.clientLast : v.spouseLast;
+    out["Restore first name DRDC15f"] = v.restoredFirst;
     out["Restore middle name DRDC15f"] = v.restoredMiddle;
-    out["Restore last name DRDC15f"] = v.restoredLast || v.clientLast;
+    out["Restore last name DRDC15f"] = v.restoredLast;
   }
 
   const bornBeforeMarriage = v.children.filter((ch) => ch.bornPriorToMarriage);

@@ -62,9 +62,11 @@ export function GatedRepeatableStep({
 }) {
   const router = useRouter();
   const [gate, setGate] = useState<boolean | null>(gateValue);
+  const [itemFormOpen, setItemFormOpen] = useState(false);
   const validate = REPEATABLE_VALIDATORS[slug as RepeatableSectionSlug];
 
   async function handleContinue() {
+    if (itemFormOpen) return;
     await updateCaseGates(caseId, { [gateColumn]: gate ?? false }, slug);
     router.push(nextHref);
   }
@@ -77,10 +79,19 @@ export function GatedRepeatableStep({
       backLabel={backLabel}
       continueLabel={submitLabel}
       onContinue={handleContinue}
+      continueDisabled={itemFormOpen}
+      continueDisabledReason="Click Add (or Save) on the item form first, then Save & continue."
     >
       <div>
         <p className="field-label">{gateQuestion}</p>
-        <YesNo name={gateColumn} value={gate} onChange={setGate} />
+        <YesNo
+          name={gateColumn}
+          value={gate}
+          onChange={(next) => {
+            setGate(next);
+            if (next !== true) setItemFormOpen(false);
+          }}
+        />
       </div>
 
       {gate === true && (
@@ -93,6 +104,7 @@ export function GatedRepeatableStep({
           addLabel={addLabel}
           emptyLabel={emptyLabel}
           validate={validate}
+          onDirtyChange={setItemFormOpen}
         />
       )}
     </StepFrame>

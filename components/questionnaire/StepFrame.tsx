@@ -13,6 +13,8 @@ export function StepFrame({
   onContinue,
   children,
   continueLabel = "Save & continue",
+  continueDisabled = false,
+  continueDisabledReason,
 }: {
   title: string;
   subtitle?: string;
@@ -21,10 +23,15 @@ export function StepFrame({
   onContinue: () => Promise<void>;
   children: React.ReactNode;
   continueLabel?: string;
+  /** When true, Save & continue cannot be clicked (e.g. unfinished Add form). */
+  continueDisabled?: boolean;
+  continueDisabledReason?: string;
 }) {
   const [isPending, startTransition] = useTransition();
+  const blocked = continueDisabled || isPending;
 
   function handleContinue() {
+    if (continueDisabled) return;
     startTransition(async () => {
       await onContinue();
     });
@@ -39,30 +46,36 @@ export function StepFrame({
 
       <div className="space-y-6 px-6 py-7 md:px-8">{children}</div>
 
-      <div className="flex items-center justify-between gap-4 border-t border-line/70 bg-[#F7F6F1] px-6 py-5 md:px-8">
-        {backHref ? (
-          <Link href={backHref} className="btn-secondary">
-            {backLabel}
-          </Link>
-        ) : (
-          <span />
-        )}
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={handleContinue}
-          disabled={isPending}
-          aria-busy={isPending}
-        >
-          {isPending ? (
-            <span className="inline-flex items-center gap-2">
-              <Spinner />
-              Saving…
-            </span>
+      <div className="flex flex-col gap-3 border-t border-line/70 bg-[#F7F6F1] px-6 py-5 md:px-8">
+        {continueDisabled && continueDisabledReason ? (
+          <p className="text-sm text-muted">{continueDisabledReason}</p>
+        ) : null}
+        <div className="flex items-center justify-between gap-4">
+          {backHref ? (
+            <Link href={backHref} className="btn-secondary">
+              {backLabel}
+            </Link>
           ) : (
-            continueLabel
+            <span />
           )}
-        </button>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={handleContinue}
+            disabled={blocked}
+            aria-busy={isPending}
+            title={continueDisabled ? continueDisabledReason : undefined}
+          >
+            {isPending ? (
+              <span className="inline-flex items-center gap-2">
+                <Spinner />
+                Saving…
+              </span>
+            ) : (
+              continueLabel
+            )}
+          </button>
+        </div>
       </div>
     </FormPanel>
   );
