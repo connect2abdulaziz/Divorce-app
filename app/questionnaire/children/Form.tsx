@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import {
   addChildResidence,
   addRecord,
@@ -158,10 +158,23 @@ function AddResidenceForm({
   );
 }
 
-function ChildCard({ child, caseId }: { child: Child; caseId: string }) {
+function ChildCard({
+  child,
+  caseId,
+  onDirtyChange,
+}: {
+  child: Child;
+  caseId: string;
+  onDirtyChange?: (dirty: boolean) => void;
+}) {
   const [editing, setEditing] = useState(false);
   const [addingResidence, setAddingResidence] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    onDirtyChange?.(editing || addingResidence);
+    return () => onDirtyChange?.(false);
+  }, [editing, addingResidence, onDirtyChange]);
 
   if (editing) {
     return (
@@ -281,9 +294,24 @@ export function ChildrenForm({
   const router = useRouter();
   const [hasChildren, setHasChildren] = useState<boolean | null>(gateValue);
   const [adding, setAdding] = useState(false);
+  const [dirtyChildIds, setDirtyChildIds] = useState<Set<string>>(() => new Set());
   const [isPending, startTransition] = useTransition();
 
+  const setChildDirty = useCallback((id: string, dirty: boolean) => {
+    setDirtyChildIds((prev) => {
+      const has = prev.has(id);
+      if (dirty === has) return prev;
+      const next = new Set(prev);
+      if (dirty) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }, []);
+
+  const itemFormOpen = adding || dirtyChildIds.size > 0;
+
   async function handleContinue() {
+    if (itemFormOpen) return;
     const value = hasChildren ?? false;
     await updateCaseGates(caseId, { has_common_children: value }, slug);
     // Pre-answer nextHref skips parenting/tax; Yes opens them.
@@ -301,10 +329,22 @@ export function ChildrenForm({
       backLabel={backLabel}
       continueLabel={submitLabel}
       onContinue={handleContinue}
+      continueDisabled={itemFormOpen}
+      continueDisabledReason="Click Add child (or Save / Cancel) on the open form first, then Save & continue."
     >
       <div>
         <p className="field-label">Do you and your spouse have any children together?</p>
-        <YesNo name="has_common_children" value={hasChildren} onChange={setHasChildren} />
+        <YesNo
+          name="has_common_children"
+          value={hasChildren}
+          onChange={(next) => {
+            setHasChildren(next);
+            if (next !== true) {
+              setAdding(false);
+              setDirtyChildIds(new Set());
+            }
+          }}
+        />
       </div>
 
       {hasChildren === true ? (
@@ -312,7 +352,12 @@ export function ChildrenForm({
           {kids.length === 0 && !adding ? <p className="text-muted">No children added yet.</p> : null}
 
           {kids.map((child) => (
-            <ChildCard key={child.id} child={child} caseId={caseId} />
+            <ChildCard
+              key={child.id}
+              child={child}
+              caseId={caseId}
+              onDirtyChange={(dirty) => setChildDirty(child.id, dirty)}
+            />
           ))}
 
           {adding ? (
