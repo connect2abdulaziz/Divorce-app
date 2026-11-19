@@ -3,7 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
-import { CurrencyInput, Field, Select, TextInput } from "@/components/questionnaire/fields";
+import {
+  CurrencyInput,
+  Field,
+  PhoneInput,
+  sanitizePhone,
+  Select,
+  TextInput,
+} from "@/components/questionnaire/fields";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type Employment = {
@@ -69,7 +76,7 @@ export function EmploymentForm({
       client_status: emptyToNull(formData.get("client_status")),
       client_employer_name: emptyToNull(formData.get("client_employer_name")),
       client_position: emptyToNull(formData.get("client_position")),
-      client_employer_phone: emptyToNull(formData.get("client_employer_phone")),
+      client_employer_phone: sanitizePhone(String(formData.get("client_employer_phone") ?? "")),
       client_employer_address: emptyToNull(formData.get("client_employer_address")),
       client_employer_city: emptyToNull(formData.get("client_employer_city")),
       client_employer_state: emptyToNull(formData.get("client_employer_state")),
@@ -79,7 +86,7 @@ export function EmploymentForm({
       spouse_status: emptyToNull(formData.get("spouse_status")),
       spouse_employer_name: emptyToNull(formData.get("spouse_employer_name")),
       spouse_position: emptyToNull(formData.get("spouse_position")),
-      spouse_employer_phone: emptyToNull(formData.get("spouse_employer_phone")),
+      spouse_employer_phone: sanitizePhone(String(formData.get("spouse_employer_phone") ?? "")),
       spouse_employer_address: emptyToNull(formData.get("spouse_employer_address")),
       spouse_employer_city: emptyToNull(formData.get("spouse_employer_city")),
       spouse_employer_state: emptyToNull(formData.get("spouse_employer_state")),
@@ -98,7 +105,7 @@ export function EmploymentForm({
       client_status: emptyToNull(formData.get("client_status")),
       client_employer_name: emptyToNull(formData.get("client_employer_name")),
       client_position: emptyToNull(formData.get("client_position")),
-      client_employer_phone: emptyToNull(formData.get("client_employer_phone")),
+      client_employer_phone: sanitizePhone(String(formData.get("client_employer_phone") ?? "")),
       client_employer_address: emptyToNull(formData.get("client_employer_address")),
       client_employer_city: emptyToNull(formData.get("client_employer_city")),
       client_employer_state: emptyToNull(formData.get("client_employer_state")),
@@ -108,7 +115,7 @@ export function EmploymentForm({
       spouse_status: emptyToNull(formData.get("spouse_status")),
       spouse_employer_name: emptyToNull(formData.get("spouse_employer_name")),
       spouse_position: emptyToNull(formData.get("spouse_position")),
-      spouse_employer_phone: emptyToNull(formData.get("spouse_employer_phone")),
+      spouse_employer_phone: sanitizePhone(String(formData.get("spouse_employer_phone") ?? "")),
       spouse_employer_address: emptyToNull(formData.get("spouse_employer_address")),
       spouse_employer_city: emptyToNull(formData.get("spouse_employer_city")),
       spouse_employer_state: emptyToNull(formData.get("spouse_employer_state")),
@@ -151,9 +158,8 @@ export function EmploymentForm({
               <TextInput name="client_position" defaultValue={initial.client_position} required />
             </Field>
             <Field label="Employer phone">
-              <TextInput
+              <PhoneInput
                 name="client_employer_phone"
-                type="tel"
                 defaultValue={initial.client_employer_phone}
                 required
               />
@@ -204,7 +210,7 @@ export function EmploymentForm({
               <TextInput name="spouse_position" defaultValue={initial.spouse_position} />
             </Field>
             <Field label="Employer phone">
-              <TextInput name="spouse_employer_phone" type="tel" defaultValue={initial.spouse_employer_phone} />
+              <PhoneInput name="spouse_employer_phone" defaultValue={initial.spouse_employer_phone} />
             </Field>
             <Field label="Monthly salary / income" hint="Best estimate is fine.">
               <CurrencyInput name="spouse_monthly_income" defaultValue={initial.spouse_monthly_income} />

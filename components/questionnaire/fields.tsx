@@ -26,6 +26,8 @@ export function TextInput({
   pattern,
   inputMode,
   autoComplete,
+  title,
+  onInput,
 }: {
   name: string;
   defaultValue?: string | null;
@@ -36,6 +38,8 @@ export function TextInput({
   pattern?: string;
   inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
   autoComplete?: string;
+  title?: string;
+  onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
 }) {
   return (
     <input
@@ -49,6 +53,48 @@ export function TextInput({
       pattern={pattern}
       inputMode={inputMode}
       autoComplete={autoComplete}
+      title={title}
+      onInput={onInput}
+    />
+  );
+}
+
+/** Digits and common phone punctuation only — blocks letters. */
+const PHONE_CHARS = /[^0-9+()\-.\s]/g;
+
+export function sanitizePhone(value: string | null | undefined) {
+  if (value == null) return null;
+  const cleaned = String(value).replace(PHONE_CHARS, "").trim();
+  return cleaned === "" ? null : cleaned;
+}
+
+export function PhoneInput({
+  name,
+  defaultValue,
+  required,
+  placeholder,
+}: {
+  name: string;
+  defaultValue?: string | null;
+  required?: boolean;
+  placeholder?: string;
+}) {
+  return (
+    <TextInput
+      name={name}
+      type="tel"
+      defaultValue={sanitizePhone(defaultValue) ?? defaultValue}
+      required={required}
+      placeholder={placeholder}
+      inputMode="tel"
+      autoComplete="tel"
+      pattern="[0-9+()\\-.\\s]*"
+      title="Use numbers only (and + ( ) - . spaces)"
+      onInput={(e) => {
+        const input = e.currentTarget;
+        const cleaned = input.value.replace(PHONE_CHARS, "");
+        if (cleaned !== input.value) input.value = cleaned;
+      }}
     />
   );
 }
