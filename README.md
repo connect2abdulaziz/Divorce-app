@@ -105,6 +105,12 @@ npx supabase link --project-ref <your-project-ref>
 npx supabase db push
 ```
 
+## Deploy notes
+
+Vercel deploys from `main`. After QA hardening (phone validation, birth-date
+guards, submit blocking, and malware cleanup), push to `main` to refresh the
+production build.
+
 ## Next phases (not built yet)
 
 1. **Questionnaire UI** — multi-step form for Sections 1–17, reading/writing
