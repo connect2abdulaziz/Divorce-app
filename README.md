@@ -1,4 +1,4 @@
-## Divorce Questionnaire — DB Schema & Supabase Setup
+# Divorce Questionnaire — DB Schema & Supabase Setup
 
 This is phase 1 of the build: the Postgres schema, migrations, and RLS
 policies, plus a minimal Next.js scaffold wired up to Supabase. The
