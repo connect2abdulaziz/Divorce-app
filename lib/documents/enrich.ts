@@ -11,6 +11,21 @@ export type ParentingScheduleSplit = {
   source: "ai" | "heuristic" | "empty";
 };
 
+/** Coerce AI/JSON values to a trimmed string; never throw on non-strings. */
+function asTrimmedString(value: unknown): string {
+  if (value == null) return "";
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "number" || typeof value === "boolean") return String(value).trim();
+  if (Array.isArray(value)) {
+    return value
+      .map((part) => asTrimmedString(part))
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+  }
+  return "";
+}
+
 function extractTimes(text: string): { pickupTime: string; dropoffTime: string } {
   const times = [...text.matchAll(/\b(\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm))\b/g)].map((m) =>
     m[1].replace(/\s+/g, " ").trim()
@@ -111,43 +126,49 @@ function heuristicScheduleSplit(raw: string): ParentingScheduleSplit {
 async function aiScheduleSplit(raw: string): Promise<ParentingScheduleSplit | null> {
   if (!hasOpenAI()) return null;
 
-  const result = await chatJson<{
-    partyA?: string;
-    partyB?: string;
-    exchangeNotes?: string;
-    exchangeLocation?: string;
-    pickupTime?: string;
-    dropoffTime?: string;
-  }>({
+  const result = await chatJson<Record<string, unknown>>({
     system:
-      "You split Arizona parenting-time proposals into Party A (petitioner) and Party B (respondent) schedules. Return JSON only with keys partyA, partyB, exchangeNotes, exchangeLocation, pickupTime, dropoffTime. Use only days, times, and exchange places stated by the client. Do not add drafting instructions or tell anyone to specify something before filing. Keep each value under 180 characters.",
+      "You split Arizona parenting-time proposals into Party A (petitioner) and Party B (respondent) schedules. Return JSON only with keys partyA, partyB, exchangeNotes, exchangeLocation, pickupTime, dropoffTime. Each of those keys must be a plain string (not an object or array). Use only days, times, and exchange places stated by the client. Do not add drafting instructions or tell anyone to specify something before filing. Keep each value under 180 characters.",
     user: `Parenting schedule text:\n${raw}`,
   });
 
-  if (!result?.partyA?.trim() || !result?.partyB?.trim()) return null;
-  if (result.partyA.trim() === result.partyB.trim()) return null;
+  if (!result) return null;
+
+  const partyA = asTrimmedString(result.partyA);
+  const partyB = asTrimmedString(result.partyB);
+  if (!partyA || !partyB) return null;
+  if (partyA === partyB) return null;
 
   const fallback = extractTimes(raw);
   return {
-    partyA: result.partyA.trim(),
-    partyB: result.partyB.trim(),
-    exchangeNotes: (result.exchangeNotes || "").trim(),
+    partyA,
+    partyB,
+    exchangeNotes: asTrimmedString(result.exchangeNotes),
     exchangeLocation:
-      (result.exchangeLocation || "").trim() || extractExchangeLocation(raw),
-    pickupTime: (result.pickupTime || "").trim() || fallback.pickupTime,
-    dropoffTime: (result.dropoffTime || "").trim() || fallback.dropoffTime,
+      asTrimmedString(result.exchangeLocation) || extractExchangeLocation(raw),
+    pickupTime: asTrimmedString(result.pickupTime) || fallback.pickupTime,
+    dropoffTime: asTrimmedString(result.dropoffTime) || fallback.dropoffTime,
     source: "ai",
   };
 }
 
 /** Enrich fill values with schedule split + any AI-assisted clarifications. */
 export async function enrichCaseFillValues(values: CaseFillValues): Promise<CaseFillValues> {
-  const raw = values.parenting.parentingTimeSchedule || values.parenting.notes;
+  const raw = asTrimmedString(
+    values.parenting.parentingTimeSchedule || values.parenting.notes
+  );
   let schedule = heuristicScheduleSplit(raw);
 
-  if (raw.trim()) {
-    const ai = await aiScheduleSplit(raw);
-    if (ai) schedule = ai;
+  if (raw) {
+    try {
+      const ai = await aiScheduleSplit(raw);
+      if (ai) schedule = ai;
+    } catch (err) {
+      console.warn(
+        "[enrich] AI schedule split failed; using heuristic",
+        err instanceof Error ? err.message : err
+      );
+    }
   }
 
   return {
