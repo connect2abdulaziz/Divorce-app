@@ -10,7 +10,7 @@ import {
   updateCaseGates,
   updateRecord,
 } from "@/lib/questionnaire/actions";
-import { Field, Select, TextInput, YesNo } from "@/components/questionnaire/fields";
+import { BirthDateInput, Field, Select, TextInput, YesNo } from "@/components/questionnaire/fields";
 import { StepFrame } from "@/components/questionnaire/StepFrame";
 
 type Residence = {
@@ -202,7 +202,7 @@ function ChildCard({
           <TextInput name="last_name" defaultValue={child.last_name} placeholder="Last name" required />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextInput name="date_of_birth" type="date" defaultValue={child.date_of_birth} required />
+          <BirthDateInput name="date_of_birth" defaultValue={child.date_of_birth} required />
           <TextInput
             name="ssn_last4"
             defaultValue={child.ssn_last4}
@@ -385,7 +385,7 @@ export function ChildrenForm({
                 <TextInput name="last_name" placeholder="Last name" required />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                <TextInput name="date_of_birth" type="date" required />
+                <BirthDateInput name="date_of_birth" required />
                 <TextInput
                   name="ssn_last4"
                   placeholder="SSN last 4"

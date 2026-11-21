@@ -133,6 +133,13 @@ export async function deleteChildResidence(id: string) {
 }
 
 export async function submitQuestionnaire(caseId: string) {
+  const { buildCaseFillValues } = await import("@/lib/documents/case-values");
+  const { assertPacketReady } = await import("@/lib/documents/validate-packet");
+  const { loadCaseBundle } = await import("@/lib/questionnaire/data");
+
+  const bundle = await loadCaseBundle(caseId);
+  assertPacketReady(buildCaseFillValues(bundle));
+
   const supabase = await createClient();
   const { error } = await supabase
     .from("cases")

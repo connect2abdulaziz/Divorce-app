@@ -25,9 +25,45 @@ function hasListedCommunityAssets(v: CaseFillValues) {
   );
 }
 
+function todayIsoDate() {
+  const d = new Date();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mm}-${dd}`;
+}
+
+function isFutureDate(iso: string | null | undefined) {
+  return Boolean(iso && iso > todayIsoDate());
+}
+
 /** Blocking + advisory checks before PDF generation. */
 export function validatePacket(v: CaseFillValues): PacketIssue[] {
   const issues: PacketIssue[] = [];
+
+  if (isFutureDate(v.clientDob)) {
+    issues.push({
+      code: "client_dob_future",
+      severity: "error",
+      message: "Petitioner date of birth cannot be in the future.",
+    });
+  }
+  if (isFutureDate(v.spouseDob)) {
+    issues.push({
+      code: "spouse_dob_future",
+      severity: "error",
+      message: "Respondent date of birth cannot be in the future.",
+    });
+  }
+  for (const child of v.children) {
+    if (isFutureDate(child.dob)) {
+      const who = [child.first, child.last].filter(Boolean).join(" ") || "A child";
+      issues.push({
+        code: "child_dob_future",
+        severity: "error",
+        message: `${who}'s date of birth cannot be in the future.`,
+      });
+    }
+  }
 
   if (!v.clientName) {
     issues.push({

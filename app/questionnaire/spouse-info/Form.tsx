@@ -3,7 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
-import { Checkbox, Field, NumberInput, Select, TextInput, YesNo } from "@/components/questionnaire/fields";
+import {
+  BirthDateInput,
+  Checkbox,
+  Field,
+  NumberInput,
+  Select,
+  TextInput,
+  YesNo,
+} from "@/components/questionnaire/fields";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type PartySpouse = {
@@ -157,7 +165,7 @@ export function SpouseInfoForm({
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label="Date of birth">
-          <TextInput name="date_of_birth" type="date" defaultValue={initial.date_of_birth} required />
+          <BirthDateInput name="date_of_birth" defaultValue={initial.date_of_birth} required />
         </Field>
         <Field label="Gender">
           <Select

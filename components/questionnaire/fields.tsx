@@ -23,6 +23,8 @@ export function TextInput({
   required,
   placeholder,
   maxLength,
+  min,
+  max,
   pattern,
   inputMode,
   autoComplete,
@@ -35,6 +37,8 @@ export function TextInput({
   required?: boolean;
   placeholder?: string;
   maxLength?: number;
+  min?: string | number;
+  max?: string | number;
   pattern?: string;
   inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
   autoComplete?: string;
@@ -50,11 +54,50 @@ export function TextInput({
       required={required}
       placeholder={placeholder}
       maxLength={maxLength}
+      min={min}
+      max={max}
       pattern={pattern}
       inputMode={inputMode}
       autoComplete={autoComplete}
       title={title}
       onInput={onInput}
+    />
+  );
+}
+
+function todayIsoDate() {
+  const d = new Date();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mm}-${dd}`;
+}
+
+/** Returns null when empty; throws if the date is in the future. */
+export function requirePastOrTodayDate(value: string | null | undefined, label = "Date of birth") {
+  if (value == null || value === "") return null;
+  if (value > todayIsoDate()) {
+    throw new Error(`${label} cannot be in the future.`);
+  }
+  return value;
+}
+
+export function BirthDateInput({
+  name,
+  defaultValue,
+  required,
+}: {
+  name: string;
+  defaultValue?: string | null;
+  required?: boolean;
+}) {
+  return (
+    <TextInput
+      name={name}
+      type="date"
+      defaultValue={defaultValue}
+      required={required}
+      max={todayIsoDate()}
+      title="Date of birth cannot be in the future"
     />
   );
 }

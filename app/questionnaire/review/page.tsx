@@ -1,10 +1,17 @@
 import { CaseSummary } from "@/components/questionnaire/CaseSummary";
 import { FormPanel } from "@/components/questionnaire/FormPanel";
+import { buildCaseFillValues } from "@/lib/documents/case-values";
+import { validatePacket } from "@/lib/documents/validate-packet";
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
+import { loadCaseBundle } from "@/lib/questionnaire/data";
 import { ReviewSubmitFooter } from "./ReviewSubmitFooter";
 
 export default async function ReviewPage() {
   const { caseId } = await getCurrentUserAndCase();
+  const bundle = await loadCaseBundle(caseId);
+  const blockingErrors = validatePacket(buildCaseFillValues(bundle))
+    .filter((i) => i.severity === "error")
+    .map((i) => i.message);
 
   return (
     <FormPanel>
@@ -22,7 +29,7 @@ export default async function ReviewPage() {
         <CaseSummary caseId={caseId} editHrefFor={(slug) => `/questionnaire/${slug}?from=review`} />
       </div>
 
-      <ReviewSubmitFooter caseId={caseId} />
+      <ReviewSubmitFooter caseId={caseId} blockingErrors={blockingErrors} />
     </FormPanel>
   );
 }
