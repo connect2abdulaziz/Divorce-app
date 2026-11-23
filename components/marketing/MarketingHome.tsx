@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Footer } from "@/components/marketing/layout/Footer";
 import { Header } from "@/components/marketing/layout/Header";
 import { MobileNav } from "@/components/marketing/layout/MobileNav";
@@ -89,9 +89,7 @@ export function MarketingHome() {
       />
       <main id="main">
         <HeroSection onStart={startDivorce} />
-        <Suspense fallback={null}>
-          <QualificationSection presetHelp={presetHelp} onComplete={handleQualificationComplete} />
-        </Suspense>
+        <QualificationSection presetHelp={presetHelp} onComplete={handleQualificationComplete} />
         <WhySection onStart={() => startDivorce()} />
         <ProcessSection onStart={() => startDivorce()} />
         <PricingSection onStart={startDivorce} />

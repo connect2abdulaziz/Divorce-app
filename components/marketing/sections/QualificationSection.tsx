@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { HELP_OPTIONS, QUALIFY_STORAGE_KEY } from "@/lib/marketing/content";
 import { PrimaryButton } from "../ui/PrimaryButton";
 
@@ -26,13 +25,25 @@ function normalizeAnswers(raw: Partial<Answers> | null | undefined): Answers {
 }
 
 function readStoredAnswers(): Answers | null {
-  if (typeof window === "undefined") return null;
   try {
     const raw = sessionStorage.getItem(QUALIFY_STORAGE_KEY);
     if (!raw) return null;
     return normalizeAnswers(JSON.parse(raw) as Partial<Answers>);
   } catch {
     return null;
+  }
+}
+
+function readUrlAnswers(): Answers {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return normalizeAnswers({
+      children: params.get("children"),
+      property: params.get("property"),
+      help: params.get("help"),
+    });
+  } catch {
+    return initialAnswers;
   }
 }
 
@@ -51,16 +62,11 @@ export function QualificationSection({
   onComplete: (answers: Answers) => void;
   presetHelp?: string | null;
 }) {
-  const searchParams = useSearchParams();
   const [answers, setAnswers] = useState<Answers>(initialAnswers);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const fromUrl = normalizeAnswers({
-      children: searchParams.get("children"),
-      property: searchParams.get("property"),
-      help: searchParams.get("help"),
-    });
+    const fromUrl = readUrlAnswers();
     const stored = readStoredAnswers();
     setAnswers({
       children: fromUrl.children ?? stored?.children ?? null,
@@ -68,7 +74,7 @@ export function QualificationSection({
       help: presetHelp ?? fromUrl.help ?? stored?.help ?? null,
     });
     setHydrated(true);
-  }, [presetHelp, searchParams]);
+  }, [presetHelp]);
 
   useEffect(() => {
     if (!hydrated) return;
