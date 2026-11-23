@@ -180,8 +180,10 @@ export function buildCaseFillValues(bundle: CaseBundle) {
     clientHeight: s(c.height),
     clientWeight: c.weight_lbs != null ? String(c.weight_lbs) : "",
     clientGender: normalizeGender(c.gender ?? c.sex),
-    clientSsnLast4: s(c.ssn_last4),
-    clientDriverLicenseLast4: last4(c.driver_license_last4 ?? c.dl_last4 ?? c.drivers_license_last4),
+    clientSsnLast4: c.ssn_unknown ? "" : s(c.ssn_last4),
+    clientDriverLicenseLast4: c.driver_license_unknown
+      ? ""
+      : last4(c.driver_license_last4 ?? c.dl_last4 ?? c.drivers_license_last4),
     clientAzYears: c.az_years != null ? String(c.az_years) : "",
     clientAzMonths: c.az_months != null ? String(c.az_months) : "",
     clientAzResidency: azResidency(c.az_years, c.az_months),

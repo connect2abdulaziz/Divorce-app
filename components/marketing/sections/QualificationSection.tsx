@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { HELP_OPTIONS } from "@/lib/marketing/content";
+import { useSearchParams } from "next/navigation";
+import { HELP_OPTIONS, QUALIFY_STORAGE_KEY } from "@/lib/marketing/content";
 import { PrimaryButton } from "../ui/PrimaryButton";
 
 type Answers = {
@@ -16,6 +17,33 @@ const initialAnswers: Answers = {
   help: null,
 };
 
+function normalizeAnswers(raw: Partial<Answers> | null | undefined): Answers {
+  return {
+    children: raw?.children === "yes" || raw?.children === "no" ? raw.children : null,
+    property: raw?.property === "yes" || raw?.property === "no" ? raw.property : null,
+    help: raw?.help === "online" || raw?.help === "guided" ? raw.help : null,
+  };
+}
+
+function readStoredAnswers(): Answers | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(QUALIFY_STORAGE_KEY);
+    if (!raw) return null;
+    return normalizeAnswers(JSON.parse(raw) as Partial<Answers>);
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredAnswers(answers: Answers) {
+  try {
+    sessionStorage.setItem(QUALIFY_STORAGE_KEY, JSON.stringify(answers));
+  } catch {
+    // Ignore quota / private-mode failures; answers still work in-session.
+  }
+}
+
 export function QualificationSection({
   onComplete,
   presetHelp = null,
@@ -23,12 +51,29 @@ export function QualificationSection({
   onComplete: (answers: Answers) => void;
   presetHelp?: string | null;
 }) {
+  const searchParams = useSearchParams();
   const [answers, setAnswers] = useState<Answers>(initialAnswers);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (!presetHelp) return;
-    setAnswers((prev) => ({ ...prev, help: presetHelp }));
-  }, [presetHelp]);
+    const fromUrl = normalizeAnswers({
+      children: searchParams.get("children"),
+      property: searchParams.get("property"),
+      help: searchParams.get("help"),
+    });
+    const stored = readStoredAnswers();
+    setAnswers({
+      children: fromUrl.children ?? stored?.children ?? null,
+      property: fromUrl.property ?? stored?.property ?? null,
+      help: presetHelp ?? fromUrl.help ?? stored?.help ?? null,
+    });
+    setHydrated(true);
+  }, [presetHelp, searchParams]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    writeStoredAnswers(answers);
+  }, [answers, hydrated]);
 
   const ready =
     answers.children !== null && answers.property !== null && answers.help !== null;
@@ -49,6 +94,7 @@ export function QualificationSection({
         onSubmit={(event) => {
           event.preventDefault();
           if (!ready) return;
+          writeStoredAnswers(answers);
           onComplete(answers);
         }}
       >

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
 import {
   BirthDateInput,
+  Checkbox,
   Field,
   NumberInput,
   Select,
@@ -33,7 +34,9 @@ export type PartyClient = {
   phone: string | null;
   email: string | null;
   ssn_last4: string | null;
+  ssn_unknown: boolean | null;
   driver_license_last4: string | null;
+  driver_license_unknown: boolean | null;
   court_texts_opt_in: boolean | null;
   interpreter_needed: boolean | null;
   interpreter_language: string | null;
@@ -74,10 +77,14 @@ export function ClientInfoForm({
   const [interpreterNeeded, setInterpreterNeeded] = useState<boolean | null>(
     initial.interpreter_needed
   );
+  const [ssnUnknown, setSsnUnknown] = useState(Boolean(initial.ssn_unknown));
+  const [dlUnknown, setDlUnknown] = useState(Boolean(initial.driver_license_unknown));
 
   function buildValues(formData: FormData) {
     const home = emptyToNull(formData.get("home_phone"));
     const cell = emptyToNull(formData.get("cell_phone"));
+    const ssnIsUnknown = formData.get("ssn_unknown") === "true";
+    const dlIsUnknown = formData.get("driver_license_unknown") === "true";
     return {
       first_name: emptyToNull(formData.get("first_name")),
       middle_name: emptyToNull(formData.get("middle_name")),
@@ -97,8 +104,12 @@ export function ClientInfoForm({
       cell_phone: cell,
       phone: cell ?? home,
       email: emptyToNull(formData.get("email")),
-      ssn_last4: emptyToNull(formData.get("ssn_last4")),
-      driver_license_last4: emptyToNull(formData.get("driver_license_last4")),
+      ssn_unknown: ssnIsUnknown,
+      ssn_last4: ssnIsUnknown ? null : emptyToNull(formData.get("ssn_last4")),
+      driver_license_unknown: dlIsUnknown,
+      driver_license_last4: dlIsUnknown
+        ? null
+        : emptyToNull(formData.get("driver_license_last4")),
       court_texts_opt_in: courtTexts,
       interpreter_needed: interpreterNeeded,
       interpreter_language:
@@ -119,6 +130,16 @@ export function ClientInfoForm({
     }
     if (interpreterNeeded === true && !emptyToNull(formData.get("interpreter_language"))) {
       setError("Please enter the language for the interpreter.");
+      return;
+    }
+    const ssnIsUnknown = formData.get("ssn_unknown") === "true";
+    if (!ssnIsUnknown && !emptyToNull(formData.get("ssn_last4"))) {
+      setError("Enter the last 4 digits of your Social Security number, or mark it unavailable.");
+      return;
+    }
+    const dlIsUnknown = formData.get("driver_license_unknown") === "true";
+    if (!dlIsUnknown && !emptyToNull(formData.get("driver_license_last4"))) {
+      setError("Enter the last 4 digits of your driver's license, or mark it unavailable.");
       return;
     }
     setError(null);
@@ -237,34 +258,65 @@ export function ClientInfoForm({
         <TextInput name="email" type="email" defaultValue={initial.email} required autoComplete="email" />
       </Field>
 
-      <Field label="Social Security number (last 4 digits)" hint="Exactly 4 digits. Sensitive information.">
-        <TextInput
-          name="ssn_last4"
-          defaultValue={initial.ssn_last4}
-          required
-          maxLength={4}
-          pattern="[0-9]{4}"
-          inputMode="numeric"
-          placeholder="####"
-          autoComplete="off"
-        />
-      </Field>
+      <Checkbox
+        name="ssn_unknown"
+        label="I do not have / prefer not to provide my Social Security number last 4"
+        checked={ssnUnknown}
+        onChange={setSsnUnknown}
+      />
 
-      <Field
-        label="Driver's license (last 4 digits)"
-        hint="Exactly 4 digits. Used on the preliminary injunction description of the parties."
-      >
-        <TextInput
-          name="driver_license_last4"
-          defaultValue={initial.driver_license_last4}
-          required
-          maxLength={4}
-          pattern="[0-9]{4}"
-          inputMode="numeric"
-          placeholder="####"
-          autoComplete="off"
-        />
-      </Field>
+      {!ssnUnknown ? (
+        <Field
+          label="Social Security number (last 4 digits)"
+          hint="Used on the Sensitive Data Sheet (and related family-law forms). Exactly 4 digits."
+        >
+          <TextInput
+            name="ssn_last4"
+            defaultValue={initial.ssn_last4}
+            required
+            maxLength={4}
+            pattern="[0-9]{4}"
+            inputMode="numeric"
+            placeholder="####"
+            autoComplete="off"
+          />
+        </Field>
+      ) : (
+        <p className="text-sm text-muted">
+          Related SSN fields on court forms will be left blank. You can add this later if the court
+          requires it.
+        </p>
+      )}
+
+      <Checkbox
+        name="driver_license_unknown"
+        label="I do not have an Arizona driver's license / last 4 unavailable"
+        checked={dlUnknown}
+        onChange={setDlUnknown}
+      />
+
+      {!dlUnknown ? (
+        <Field
+          label="Driver's license (last 4 digits)"
+          hint="Used on the Preliminary Injunction (DR14) party description. Exactly 4 digits."
+        >
+          <TextInput
+            name="driver_license_last4"
+            defaultValue={initial.driver_license_last4}
+            required
+            maxLength={4}
+            pattern="[0-9]{4}"
+            inputMode="numeric"
+            placeholder="####"
+            autoComplete="off"
+          />
+        </Field>
+      ) : (
+        <p className="text-sm text-muted">
+          The Preliminary Injunction license field will be left blank. You can update this later if
+          you obtain a license number.
+        </p>
+      )}
 
       <div>
         <p className="field-label">Do you need a court interpreter?</p>

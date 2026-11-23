@@ -4,10 +4,30 @@ import { NextResponse, type NextRequest } from "next/server";
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 // Paths that don't require a signed-in user.
-const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth", "/error", "/about-us", "/services"];
+const PUBLIC_PATHS = [
+  "/",
+  "/login",
+  "/signup",
+  "/auth",
+  "/error",
+  "/about-us",
+  "/services",
+  "/privacy",
+  "/terms",
+  "/refund",
+  "/disclaimer",
+];
 
 // Marketing pages never read the session — skip the auth round trip.
-const MARKETING_PATHS = new Set(["/", "/about-us", "/services"]);
+const MARKETING_PATHS = new Set([
+  "/",
+  "/about-us",
+  "/services",
+  "/privacy",
+  "/terms",
+  "/refund",
+  "/disclaimer",
+]);
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));

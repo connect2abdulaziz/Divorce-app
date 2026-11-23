@@ -85,7 +85,20 @@ export async function CaseSummary({
         <Row label="Home phone" value={(c.home_phone as ReactNode) || "—"} />
         <Row label="Cell phone" value={c.cell_phone as ReactNode} />
         <Row label="Email" value={c.email as ReactNode} />
-        <Row label="SSN (last 4)" value={c.ssn_last4 ? `•••-••-${c.ssn_last4}` : null} />
+        <Row
+          label="SSN (last 4)"
+          value={c.ssn_unknown ? "Not provided" : c.ssn_last4 ? `•••-••-${c.ssn_last4}` : null}
+        />
+        <Row
+          label="DL (last 4)"
+          value={
+            c.driver_license_unknown
+              ? "Not provided"
+              : c.driver_license_last4
+                ? `••••${c.driver_license_last4}`
+                : null
+          }
+        />
       </Group>
 
       <Group title="Spouse Information" editHref={edit("spouse-info")}>
@@ -292,31 +305,69 @@ export async function CaseSummary({
         </Group>
       )}
 
-      {gates.hasCommonChildren && (
-        <Group title="Tax Information" editHref={edit("tax-information")}>
-          <Row
-            label="Claimed by"
-            value={
-              t.dependents_claimed_by === "client"
-                ? "Me"
-                : t.dependents_claimed_by === "spouse"
-                  ? "Spouse"
-                  : (t.dependents_claimed_by as ReactNode)
-            }
-          />
-          <Row
-            label="How often"
-            value={
-              t.claim_frequency === "every_year"
-                ? "Every year"
-                : t.claim_frequency === "alternate_years"
-                  ? "Alternate years"
-                  : (t.claim_frequency as ReactNode)
-            }
-          />
-          <Row label="Notes" value={t.notes as ReactNode} />
-        </Group>
-      )}
+      <Group title="Tax Information" editHref={edit("tax-information")}>
+        <Row
+          label="Going forward"
+          value={
+            t.going_forward_filing === "separate" || t.filing_status === "separate"
+              ? "File separate federal and state returns"
+              : t.going_forward_filing === "joint" || t.filing_status === "joint"
+                ? "Continue filing jointly"
+                : ((t.going_forward_filing as ReactNode) ?? (t.filing_status as ReactNode))
+          }
+        />
+        <Row
+          label="Previous years"
+          value={
+            t.previous_years_filing === "joint"
+              ? "File joint federal and state returns"
+              : t.previous_years_filing === "separate"
+                ? "File separate federal and state returns"
+                : t.previous_years_filing === "not_applicable"
+                  ? "Not applicable / already filed"
+                  : (t.previous_years_filing as ReactNode)
+          }
+        />
+        {gates.hasCommonChildren ? (
+          <>
+            <Row
+              label="How often"
+              value={
+                t.claim_frequency === "every_year"
+                  ? "Every year (same parent)"
+                  : t.claim_frequency === "alternate_years"
+                    ? "Alternate years (odd / even)"
+                    : (t.claim_frequency as ReactNode)
+              }
+            />
+            {t.claim_frequency === "every_year" ? (
+              <Row
+                label="Claimed by"
+                value={
+                  t.dependents_claimed_by === "client"
+                    ? "Me"
+                    : t.dependents_claimed_by === "spouse"
+                      ? "Spouse"
+                      : (t.dependents_claimed_by as ReactNode)
+                }
+              />
+            ) : null}
+            {t.claim_frequency === "alternate_years" ? (
+              <Row
+                label="Even years"
+                value={
+                  t.even_year_claimant === "client"
+                    ? "Me"
+                    : t.even_year_claimant === "spouse"
+                      ? "Spouse"
+                      : (t.even_year_claimant as ReactNode)
+                }
+              />
+            ) : null}
+          </>
+        ) : null}
+        <Row label="Notes" value={t.notes as ReactNode} />
+      </Group>
 
       <Group title="Community Property" editHref={edit("community-property")}>
         <Row

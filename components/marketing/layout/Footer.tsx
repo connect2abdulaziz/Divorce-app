@@ -6,6 +6,7 @@ import { Brand } from '../ui/Brand';
 
 export function Footer({ onSignIn }: { onSignIn: () => void }) {
   const year = new Date().getFullYear();
+  const hasCldp = Boolean(CLDP_INFO.name || CLDP_INFO.certification);
 
   return (
     <footer className="site-footer" id="contact">
@@ -17,11 +18,20 @@ export function Footer({ onSignIn }: { onSignIn: () => void }) {
             Legal Divorce Docs is not a law firm and does not provide legal advice or legal
             representation. Services are provided for self-represented individuals.
           </p>
-          <p className="footer-cldp">
-            {CLDP_INFO.name}
-            <br />
-            {CLDP_INFO.certification}
-          </p>
+          {hasCldp ? (
+            <p className="footer-cldp">
+              {CLDP_INFO.name ? (
+                <>
+                  {CLDP_INFO.name}
+                  <br />
+                </>
+              ) : null}
+              {CLDP_INFO.certification ||
+                (CLDP_INFO.name ? 'Arizona Certified Legal Document Preparer' : null)}
+            </p>
+          ) : (
+            <p className="footer-cldp">Arizona Certified Legal Document Preparer</p>
+          )}
         </div>
 
         <div className="footer-column">

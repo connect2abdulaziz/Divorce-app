@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { DIALOG_MESSAGES } from "@/lib/marketing/content";
+import { DIALOG_MESSAGES, packageForHelp } from "@/lib/marketing/content";
 import { Icon } from "./Icon";
 import { PrimaryButton } from "./PrimaryButton";
 
@@ -40,6 +40,8 @@ export function ServiceDialog({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const message = dialogKey ? DIALOG_MESSAGES[dialogKey] : null;
   const summary = summarizeQualification(qualification);
+  const showPackage = dialogKey === "start" || dialogKey === "quote";
+  const recommended = showPackage ? packageForHelp(qualification?.help) : null;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -77,6 +79,7 @@ export function ServiceDialog({
     if (qualification?.children) params.set("children", qualification.children);
     if (qualification?.property) params.set("property", qualification.property);
     if (qualification?.help) params.set("help", qualification.help);
+    if (recommended?.id) params.set("package", recommended.id);
     const qs = params.toString();
     router.push(qs ? `/signup?${qs}` : "/signup");
   };
@@ -96,6 +99,22 @@ export function ServiceDialog({
       <p className="dialog-kicker">Legal Divorce Docs</p>
       <h2 id="dialog-title">{message?.title ?? ""}</h2>
       <p id="dialog-description">{message?.body ?? ""}</p>
+
+      {recommended ? (
+        <div className="dialog-package" aria-label="Recommended package">
+          <div className="dialog-package-top">
+            <strong>{recommended.name}</strong>
+            <span className="dialog-package-price">{recommended.price}</span>
+          </div>
+          <p className="dialog-package-blurb">{recommended.blurb}</p>
+          <ul className="dialog-package-features">
+            {recommended.features.slice(0, 4).map((feature) => (
+              <li key={feature}>{feature}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {summary ? (
         <ul className="dialog-summary">
           {summary.map((item) => (
@@ -103,6 +122,7 @@ export function ServiceDialog({
           ))}
         </ul>
       ) : null}
+
       <PrimaryButton className="dialog-done" onClick={handleContinue}>
         {dialogKey === "portal" ? "Continue to sign in" : "Continue to sign up"}
       </PrimaryButton>

@@ -1127,6 +1127,49 @@ dialog.service-dialog p:not(.dialog-kicker) {
   margin-bottom: 18px;
 }
 
+.dialog-package {
+  margin: 0 0 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f7fbfc 0%, #eef5f8 100%);
+}
+
+.dialog-package-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dialog-package-top strong {
+  font-size: 18px;
+  color: var(--navy);
+}
+
+.dialog-package-price {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--navy-deep);
+  white-space: nowrap;
+}
+
+.dialog-package-blurb {
+  margin: 8px 0 12px !important;
+  font-size: 14px !important;
+  color: var(--muted) !important;
+}
+
+.dialog-package-features {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink);
+}
+
 .dialog-summary {
   margin: 0 0 22px;
   padding: 14px 16px;
@@ -1400,6 +1443,33 @@ dialog.service-dialog p:not(.dialog-kicker) {
 .marketing-site .hero-trust,
 .marketing-site .hero-disclaimer {
   font-family: var(--sans);
+}
+
+/* Policy pages */
+.policy-body {
+  padding-top: 0;
+}
+
+.policy-prose {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.policy-section {
+  margin-bottom: 28px;
+}
+
+.policy-section h2 {
+  font-family: var(--serif);
+  font-size: 1.45rem;
+  margin: 0 0 10px;
+  color: var(--navy-deep);
+}
+
+.policy-section p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  line-height: 1.7;
 }
 
 /* Inner marketing pages */

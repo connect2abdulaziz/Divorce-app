@@ -61,6 +61,21 @@ export async function signup(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
   const fullName = String(formData.get("full_name") ?? "");
+  const policiesAccepted = formData.get("policies_accepted") === "true";
+
+  if (!policiesAccepted) {
+    const params = new URLSearchParams();
+    params.set("error", "Please agree to the policies before creating an account.");
+    for (const [from, to] of [
+      ["qualify_children", "children"],
+      ["qualify_property", "property"],
+      ["qualify_help", "help"],
+    ] as const) {
+      const value = String(formData.get(from) ?? "").trim();
+      if (value) params.set(to, value);
+    }
+    redirect(`/signup?${params.toString()}`);
+  }
 
   let result;
   try {

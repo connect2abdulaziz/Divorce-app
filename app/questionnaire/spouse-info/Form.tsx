@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
 import {
   BirthDateInput,
@@ -77,7 +77,13 @@ export function SpouseInfoForm({
   const [phoneUnknown, setPhoneUnknown] = useState(Boolean(initial.phone_unknown));
   const [ssnUnknown, setSsnUnknown] = useState(Boolean(initial.ssn_unknown));
   const [dlUnknown, setDlUnknown] = useState(Boolean(initial.driver_license_unknown));
-  const [courtTexts, setCourtTexts] = useState<boolean | null>(initial.court_texts_opt_in);
+  const [courtTexts, setCourtTexts] = useState<boolean | null>(
+    initial.phone_unknown ? null : initial.court_texts_opt_in
+  );
+
+  useEffect(() => {
+    if (phoneUnknown) setCourtTexts(null);
+  }, [phoneUnknown]);
 
   function buildValues(formData: FormData) {
     const addressIsUnknown = formData.get("address_unknown") === "true";
@@ -113,12 +119,13 @@ export function SpouseInfoForm({
       driver_license_last4: dlIsUnknown
         ? null
         : emptyToNull(formData.get("driver_license_last4")),
-      court_texts_opt_in: courtTexts,
+      court_texts_opt_in: phoneIsUnknown ? null : courtTexts,
     };
   }
 
   async function handleSubmit(formData: FormData) {
-    if (courtTexts === null) {
+    const phoneIsUnknown = formData.get("phone_unknown") === "true";
+    if (!phoneIsUnknown && courtTexts === null) {
       setError("Please answer whether your spouse should receive court text notices.");
       return;
     }
@@ -237,22 +244,24 @@ export function SpouseInfoForm({
       />
 
       {!phoneUnknown ? (
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field label="Home phone">
-            <TextInput name="home_phone" type="tel" defaultValue={initial.home_phone} />
-          </Field>
-          <Field label="Cell phone">
-            <TextInput name="cell_phone" type="tel" defaultValue={initial.cell_phone} required />
-          </Field>
-        </div>
-      ) : null}
+        <>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <Field label="Home phone">
+              <TextInput name="home_phone" type="tel" defaultValue={initial.home_phone} />
+            </Field>
+            <Field label="Cell phone">
+              <TextInput name="cell_phone" type="tel" defaultValue={initial.cell_phone} required />
+            </Field>
+          </div>
 
-      <div>
-        <p className="field-label">
-          Receive texts from the court at your spouse&apos;s contact phone number?
-        </p>
-        <YesNo name="court_texts_opt_in" value={courtTexts} onChange={setCourtTexts} />
-      </div>
+          <div>
+            <p className="field-label">
+              Receive texts from the court at your spouse&apos;s contact phone number?
+            </p>
+            <YesNo name="court_texts_opt_in" value={courtTexts} onChange={setCourtTexts} />
+          </div>
+        </>
+      ) : null}
 
       <Field label="Email">
         <TextInput name="email" type="email" defaultValue={initial.email} />

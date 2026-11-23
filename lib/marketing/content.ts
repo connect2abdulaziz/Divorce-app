@@ -1,17 +1,19 @@
 export const DIALOG_MESSAGES = {
   start: {
-    title: 'Continue your intake.',
-    body: 'Create your account to start the secure online questionnaire. No payment is required to answer the initial questions.',
+    title: 'Your recommended package',
+    body: 'Based on your answers, here is the service that matches your preferences. Create an account to continue — payment is collected after you confirm the package in your account.',
   },
   portal: {
     title: 'Client login',
     body: 'Sign in to continue your questionnaire where you left off.',
   },
   quote: {
-    title: 'See which option fits your case',
-    body: 'Based on your answers, we will recommend the package that matches your situation. Create an account to continue — package confirmation and payment happen after qualification.',
+    title: 'Your recommended package',
+    body: 'Based on your answers, here is the service that matches your preferences. Create an account to continue — payment is collected after you confirm the package in your account.',
   },
 };
+
+export const QUALIFY_STORAGE_KEY = 'ldd-qualify-answers';
 
 export const NAV_LINKS = [
   { href: '/services', label: 'Services' },
@@ -106,6 +108,14 @@ export const PRICING_PACKAGES = [
     ],
   },
 ];
+
+/** Map screener “help” answer to a priced package shown before signup. */
+export function packageForHelp(help: string | null | undefined) {
+  if (help === 'guided') {
+    return PRICING_PACKAGES.find((pkg) => pkg.id === 'guided') ?? PRICING_PACKAGES[1];
+  }
+  return PRICING_PACKAGES.find((pkg) => pkg.id === 'diy') ?? PRICING_PACKAGES[0];
+}
 
 export const ARIZONA_POINTS = [
   { icon: 'document', label: 'Arizona Divorce Documents' },
@@ -224,10 +234,10 @@ export const SERVICE_DETAILS = [
 ];
 
 export const FOOTER_LEGAL = [
-  { href: '#privacy', label: 'Privacy Policy' },
-  { href: '#terms', label: 'Terms of Service' },
-  { href: '#refund', label: 'Refund Policy' },
-  { href: '#disclaimer', label: 'Disclaimer' },
+  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/terms', label: 'Terms of Service' },
+  { href: '/refund', label: 'Refund Policy' },
+  { href: '/disclaimer', label: 'Disclaimer' },
 ];
 
 export const HELP_OPTIONS = [
@@ -243,8 +253,17 @@ export const HELP_OPTIONS = [
   },
 ];
 
-/** Replace with your licensed CLDP details before launch. */
+/**
+ * Public CLDP disclosure. Set NEXT_PUBLIC_CLDP_NAME and NEXT_PUBLIC_CLDP_NUMBER
+ * in the environment so the footer never shows bracket placeholders.
+ */
+const CLDP_NAME = (process.env.NEXT_PUBLIC_CLDP_NAME ?? '').trim();
+const CLDP_NUMBER = (process.env.NEXT_PUBLIC_CLDP_NUMBER ?? '').trim();
+
 export const CLDP_INFO = {
-  name: '[Certified Legal Document Preparer Name]',
-  certification: 'Arizona Certified Legal Document Preparer #[Certification Number]',
+  name: CLDP_NAME,
+  number: CLDP_NUMBER,
+  certification: CLDP_NUMBER
+    ? `Arizona Certified Legal Document Preparer #${CLDP_NUMBER}`
+    : '',
 };

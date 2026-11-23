@@ -6,14 +6,10 @@ import { SubmitButton } from "@/components/ui/SubmitButton";
 
 export function LoginForm({ error }: { error?: string }) {
   return (
-    <>
-      {error ? (
-        <p className="mt-6 rounded-sm border border-error/30 bg-error/5 px-3 py-2 text-sm text-error">
-          {error}
-        </p>
-      ) : null}
+    <div className="auth-body">
+      {error ? <p className="auth-error">{error}</p> : null}
 
-      <form action={login} className="mt-8 space-y-5">
+      <form action={login} className="auth-form">
         <div>
           <label className="field-label" htmlFor="email">
             Email
@@ -40,20 +36,24 @@ export function LoginForm({ error }: { error?: string }) {
             autoComplete="current-password"
           />
         </div>
-        <SubmitButton pendingLabel="Signing in…">Log in</SubmitButton>
+        <SubmitButton className="btn-primary auth-submit" pendingLabel="Signing in…">
+          Log in
+        </SubmitButton>
       </form>
 
-      <p className="mt-6 text-sm text-muted">
-        No account yet?{" "}
-        <Link href="/signup" className="btn-text">
-          Sign up
-        </Link>
-      </p>
-      <p className="mt-4 text-sm text-muted">
-        <Link href="/" className="btn-text">
-          Back to home
-        </Link>
-      </p>
-    </>
+      <div className="auth-links">
+        <p>
+          No account yet?{" "}
+          <Link href="/signup" className="btn-text">
+            Sign up
+          </Link>
+        </p>
+        <p>
+          <Link href="/" className="btn-text">
+            ← Back to home
+          </Link>
+        </p>
+      </div>
+    </div>
   );
 }
