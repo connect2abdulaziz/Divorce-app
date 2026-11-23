@@ -16,6 +16,7 @@ const PUBLIC_PATHS = [
   "/terms",
   "/refund",
   "/disclaimer",
+  "/contact",
 ];
 
 // Marketing pages never read the session — skip the auth round trip.
@@ -27,6 +28,7 @@ const MARKETING_PATHS = new Set([
   "/terms",
   "/refund",
   "/disclaimer",
+  "/contact",
 ]);
 
 function isPublicPath(pathname: string) {

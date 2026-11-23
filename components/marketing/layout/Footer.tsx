@@ -9,7 +9,7 @@ export function Footer({ onSignIn }: { onSignIn: () => void }) {
   const hasCldp = Boolean(CLDP_INFO.name || CLDP_INFO.certification);
 
   return (
-    <footer className="site-footer" id="contact">
+    <footer className="site-footer">
       <div className="footer-grid">
         <div className="footer-brand">
           <Brand loading="lazy" />
@@ -17,6 +17,10 @@ export function Footer({ onSignIn }: { onSignIn: () => void }) {
           <p className="footer-disclaimer">
             Legal Divorce Docs is not a law firm and does not provide legal advice or legal
             representation. Services are provided for self-represented individuals.
+          </p>
+          <p className="footer-contact-line">
+            Questions?{" "}
+            <a href="/contact">Contact us</a>
           </p>
           {hasCldp ? (
             <p className="footer-cldp">

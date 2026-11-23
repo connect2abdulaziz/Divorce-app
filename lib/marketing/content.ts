@@ -178,8 +178,17 @@ export const FOOTER_LINKS = [
   { href: '/#pricing', label: 'Pricing' },
   { href: '/#arizona', label: 'Arizona Divorce' },
   { href: '/#faq', label: 'FAQ' },
-  { href: '/#contact', label: 'Contact' },
+  { href: '/contact', label: 'Contact' },
 ];
+
+/** Public contact details. Override with NEXT_PUBLIC_CONTACT_EMAIL / PHONE. */
+export const CONTACT_INFO = {
+  email: (process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'info@legaldivorcedocs.com').trim(),
+  phone: (process.env.NEXT_PUBLIC_CONTACT_PHONE ?? '').trim(),
+  hours: 'Monday–Friday, 9:00 a.m.–5:00 p.m. Arizona time',
+  blurb:
+    'Questions about packages, your questionnaire, or document preparation? Send a message and we will get back to you.',
+};
 
 export const ABOUT_VALUES = [
   {

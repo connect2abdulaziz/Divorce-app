@@ -1445,6 +1445,178 @@ dialog.service-dialog p:not(.dialog-kicker) {
   font-family: var(--sans);
 }
 
+/* Contact page — single composition, form as the only interactive panel */
+.contact-page {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 6% 72px;
+  background:
+    radial-gradient(ellipse 65% 50% at 12% 8%, rgba(15, 138, 107, 0.12), transparent 55%),
+    radial-gradient(ellipse 55% 40% at 88% 0%, rgba(74, 163, 212, 0.14), transparent 50%),
+    linear-gradient(180deg, #e8f1f7 0%, #f5f8fb 48%, #ffffff 100%);
+}
+
+.contact-page-inner {
+  width: min(640px, 100%);
+  margin: 0 auto;
+}
+
+.contact-hero {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.contact-brand {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+
+.contact-hero h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1.08;
+  color: var(--navy-deep);
+}
+
+.contact-lead {
+  margin: 14px auto 0;
+  max-width: 34rem;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+.contact-email-link {
+  display: inline-block;
+  margin-top: 18px;
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 2.4vw, 1.55rem);
+  font-weight: 600;
+  color: var(--cta);
+  text-decoration: none;
+}
+
+.contact-email-link:hover {
+  color: var(--cta-hover);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.contact-meta {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.contact-meta a {
+  color: var(--navy);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contact-meta a:hover {
+  color: var(--cta);
+}
+
+.contact-form-panel {
+  display: grid;
+  gap: 14px;
+  padding: 26px 24px 24px;
+  border: 1px solid rgba(215, 225, 234, 0.95);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 18px 40px rgba(7, 38, 61, 0.08);
+}
+
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.contact-message {
+  min-height: 132px;
+  resize: vertical;
+}
+
+.contact-form-error {
+  margin: 0;
+  color: #9b3b3b;
+  font-size: 0.9rem;
+}
+
+.contact-form-ok {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.contact-submit {
+  margin-top: 4px;
+  width: 100%;
+}
+
+.contact-success h2 {
+  margin: 0 0 8px;
+  font-family: var(--serif);
+  font-size: 1.55rem;
+  color: var(--navy-deep);
+}
+
+.contact-success p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.contact-footnote {
+  margin: 18px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.footer-contact-line {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.footer-contact-line a {
+  color: var(--cta);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-contact-line a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .contact-page {
+    padding: 40px 5% 56px;
+  }
+
+  .contact-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-form-panel {
+    padding: 22px 18px 20px;
+  }
+}
+
 /* Policy pages */
 .policy-body {
   padding-top: 0;
