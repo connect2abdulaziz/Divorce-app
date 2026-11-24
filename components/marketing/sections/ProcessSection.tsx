@@ -8,15 +8,17 @@ export function ProcessSection({ onStart }: { onStart: () => void }) {
     <section className="ldd-process" id="how-it-works" aria-labelledby="process-heading">
       <div className="ldd-process__container">
         <header className="ldd-process__header reveal">
-          <div className="ldd-process__intro">
-            <p className="ldd-process__eyebrow">How it works</p>
-            <h2 id="process-heading" className="ldd-process__heading">
-              From starting your case to <em>completing your divorce.</em>
-            </h2>
+          <div className="ldd-process__header-inner">
+            <div className="ldd-process__intro">
+              <p className="ldd-process__eyebrow">How it works</p>
+              <h2 id="process-heading" className="ldd-process__heading">
+                From starting your case to <em>completing your divorce.</em>
+              </h2>
+            </div>
+            <PrimaryButton className="ldd-process__cta" icon="chevronDown" onClick={onStart}>
+              Get started
+            </PrimaryButton>
           </div>
-          <PrimaryButton className="ldd-process__cta" icon="chevronDown" onClick={onStart}>
-            Get started
-          </PrimaryButton>
         </header>
 
         <ol className="ldd-process__timeline">

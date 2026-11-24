@@ -1,9 +1,8 @@
 ﻿"use client";
-// @ts-nocheck
 
-import { PRICING_PACKAGES } from '@/lib/marketing/content';
-import { Icon } from '../ui/Icon';
-import { PrimaryButton } from '../ui/PrimaryButton';
+import { PRICING_PACKAGES } from "@/lib/marketing/content";
+import { Icon } from "../ui/Icon";
+import { PrimaryButton } from "../ui/PrimaryButton";
 
 export function PricingSection({
   onStart,
@@ -11,44 +10,81 @@ export function PricingSection({
   onStart: (helpPreference?: string | null) => void;
 }) {
   return (
-    <section className="section pricing" id="pricing" aria-labelledby="pricing-heading">
-      <div className="section-intro reveal">
-        <h2 id="pricing-heading">Choose the Level of Help That&apos;s Right for You</h2>
-        <p>Simple, upfront pricing.</p>
-      </div>
+    <section className="ldd-pricing" id="pricing" aria-labelledby="pricing-heading">
+      <div className="ldd-pricing__inner">
+        <div className="ldd-pricing__layout reveal">
+          <div className="ldd-pricing__intro">
+            <p className="ldd-pricing__eyebrow">Simple, upfront pricing</p>
+            <h2 id="pricing-heading" className="ldd-pricing__heading">
+              <span>Choose the level of help</span>
+              <em>that&apos;s right for you.</em>
+            </h2>
+          </div>
 
-      <div className="pricing-grid">
-        {PRICING_PACKAGES.map((pkg) => (
-          <article
-            className={pkg.popular ? 'pricing-card popular reveal' : 'pricing-card reveal'}
-            key={pkg.id}
-          >
-            {pkg.popular ? <span className="popular-badge">Most Popular</span> : null}
-            <h3>{pkg.name}</h3>
-            <p className="pricing-amount">{pkg.price}</p>
-            <p className="pricing-blurb">{pkg.blurb}</p>
-            <ul className="pricing-features">
-              {pkg.features.map((feature) => (
-                <li key={feature}>
-                  <Icon name="check" size={18} />
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-            <PrimaryButton
-              className="cta-strong"
-              onClick={() => onStart(pkg.id === 'guided' ? 'guided' : 'online')}
-            >
-              {pkg.cta}
-            </PrimaryButton>
-          </article>
-        ))}
-      </div>
+          <div className="ldd-pricing__grid">
+          {PRICING_PACKAGES.map((pkg) => {
+            const isGuided = pkg.id === "guided";
+            return (
+              <article
+                className={
+                  isGuided
+                    ? "ldd-pricing__card ldd-pricing__card--guided reveal"
+                    : "ldd-pricing__card ldd-pricing__card--online reveal"
+                }
+                key={pkg.id}
+              >
+                <header className="ldd-pricing__card-header">
+                  <p className="ldd-pricing__plan">{pkg.name}</p>
+                  {pkg.popular ? (
+                    <span className="ldd-pricing__badge">Most popular</span>
+                  ) : null}
+                </header>
 
-      <p className="pricing-footnote reveal">
-        Arizona court filing fees, service-of-process fees, notary fees and other court or
-        third-party charges are separate unless specifically stated otherwise.
-      </p>
+                <p className="ldd-pricing__price">{pkg.price}</p>
+                <p className="ldd-pricing__description">{pkg.blurb}</p>
+
+                <hr className="ldd-pricing__divider" aria-hidden="true" />
+
+                <ul className="ldd-pricing__features">
+                  {pkg.features.map((feature) => (
+                    <li className="ldd-pricing__feature" key={feature}>
+                      <Icon name="check" size={18} className="ldd-pricing__check" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="ldd-pricing__card-footer">
+                  {isGuided ? (
+                    <PrimaryButton
+                      className="ldd-pricing__cta ldd-pricing__cta--solid"
+                      icon="chevronDown"
+                      onClick={() => onStart("guided")}
+                    >
+                      {pkg.cta}
+                    </PrimaryButton>
+                  ) : (
+                    <button
+                      type="button"
+                      className="ldd-pricing__cta ldd-pricing__cta--outline"
+                      onClick={() => onStart("online")}
+                    >
+                      {pkg.cta}
+                      <Icon name="chevronDown" size={18} className="ldd-pricing__cta-icon" />
+                    </button>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+          </div>
+        </div>
+
+        <p className="ldd-pricing__footnote reveal">
+          Arizona court filing fees, service-of-process fees, notary fees and other court or
+          third-party charges are separate unless specifically stated otherwise.
+        </p>
+      </div>
     </section>
   );
 }

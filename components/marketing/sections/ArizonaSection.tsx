@@ -1,7 +1,6 @@
 ﻿"use client";
-// @ts-nocheck
 
-import { ARIZONA_POINTS } from '@/lib/marketing/content';
+import { ARIZONA_POINTS } from "@/lib/marketing/content";
 import { Icon } from '../ui/Icon';
 import { PrimaryButton } from '../ui/PrimaryButton';
 
@@ -17,8 +16,8 @@ export function ArizonaSection({ onStart }: { onStart: () => void }) {
             designed to collect the information needed for Arizona divorce documents and guide
             customers through the document preparation process.
           </p>
-          <PrimaryButton className="cta-strong" onClick={onStart}>
-            Start My Arizona Divorce
+          <PrimaryButton className="ldd-arizona__cta" icon="chevronDown" onClick={onStart}>
+            Start my Arizona divorce
           </PrimaryButton>
         </div>
 
