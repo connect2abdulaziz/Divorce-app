@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { login } from "@/app/auth/actions";
+import { AuthPasswordField } from "@/components/auth/AuthPasswordField";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 
 export function LoginForm({ error }: { error?: string }) {
@@ -23,19 +24,7 @@ export function LoginForm({ error }: { error?: string }) {
             autoComplete="email"
           />
         </div>
-        <div>
-          <label className="field-label" htmlFor="password">
-            Password
-          </label>
-          <input
-            className="field-input"
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="current-password"
-          />
-        </div>
+        <AuthPasswordField id="password" autoComplete="current-password" />
         <SubmitButton className="btn-primary auth-submit" pendingLabel="Signing in…">
           Log in
         </SubmitButton>
@@ -43,14 +32,9 @@ export function LoginForm({ error }: { error?: string }) {
 
       <div className="auth-links">
         <p>
-          No account yet?{" "}
+          New here?{" "}
           <Link href="/signup" className="btn-text">
-            Sign up
-          </Link>
-        </p>
-        <p>
-          <Link href="/" className="btn-text">
-            ← Back to home
+            Create an account
           </Link>
         </p>
       </div>

@@ -10,8 +10,12 @@ export default async function LoginPage({
 
   return (
     <AuthShell
+      variant="login"
+      backHref="/"
       title="Welcome back"
-      subtitle="Sign in to continue your questionnaire where you left off."
+      subtitle="Sign in to continue your divorce questionnaire."
+      visualTitle="A clearer path forward."
+      visualSubtitle="Continue your Arizona divorce document preparation at your own pace."
     >
       <LoginForm error={error} />
     </AuthShell>

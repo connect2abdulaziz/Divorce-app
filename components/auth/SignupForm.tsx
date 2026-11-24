@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { signup } from "@/app/auth/actions";
+import { AuthPasswordField } from "@/components/auth/AuthPasswordField";
 import { FOOTER_LEGAL, packageForHelp } from "@/lib/marketing/content";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 
@@ -21,11 +22,6 @@ export function SignupForm({
 }) {
   const [policiesAccepted, setPoliciesAccepted] = useState(false);
   const recommended = fromQualify ? packageForHelp(help) : null;
-  const homeHref =
-    fromQualify && (qualifyChildren || property || help)
-      ? `/?children=${encodeURIComponent(qualifyChildren ?? "")}&property=${encodeURIComponent(property ?? "")}&help=${encodeURIComponent(help ?? "")}#qualify`
-      : "/";
-
   return (
     <div className="auth-body">
       {error ? <p className="auth-error">{error}</p> : null}
@@ -75,21 +71,12 @@ export function SignupForm({
             autoComplete="email"
           />
         </div>
-        <div>
-          <label className="field-label" htmlFor="password">
-            Password
-          </label>
-          <input
-            className="field-input"
-            id="password"
-            name="password"
-            type="password"
-            required
-            minLength={8}
-            autoComplete="new-password"
-          />
-          <p className="field-hint">At least 8 characters.</p>
-        </div>
+        <AuthPasswordField
+          id="password"
+          autoComplete="new-password"
+          minLength={8}
+          hint="At least 8 characters."
+        />
 
         <label className="auth-policy-check">
           <input
@@ -128,11 +115,6 @@ export function SignupForm({
           Already have an account?{" "}
           <Link href="/login" className="btn-text">
             Log in
-          </Link>
-        </p>
-        <p>
-          <Link href={homeHref} className="btn-text">
-            ← Back to home
           </Link>
         </p>
       </div>

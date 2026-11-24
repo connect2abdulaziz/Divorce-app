@@ -84,48 +84,75 @@ export function ServiceDialog({
     router.push(qs ? `/signup?${qs}` : "/signup");
   };
 
+  const continueLabel =
+    dialogKey === "portal" ? "Continue to sign in" : "Continue to sign up";
+
   return (
     <dialog
       id="service-dialog"
-      className="service-dialog"
+      className="service-dialog ldd-dialog"
       ref={dialogRef}
       aria-labelledby="dialog-title"
+      aria-describedby={message ? "dialog-description" : undefined}
       onClose={onClose}
       onClick={handleBackdropClick}
     >
-      <button className="dialog-close" aria-label="Close dialog" onClick={onClose}>
-        <Icon name="close" size={18} />
-      </button>
-      <p className="dialog-kicker">Legal Divorce Docs</p>
-      <h2 id="dialog-title">{message?.title ?? ""}</h2>
-      <p id="dialog-description">{message?.body ?? ""}</p>
+      <div className="ldd-dialog__panel">
+        <button
+          type="button"
+          className="ldd-dialog__close dialog-close"
+          aria-label="Close dialog"
+          onClick={onClose}
+        >
+          <Icon name="close" size={18} />
+        </button>
 
-      {recommended ? (
-        <div className="dialog-package" aria-label="Recommended package">
-          <div className="dialog-package-top">
-            <strong>{recommended.name}</strong>
-            <span className="dialog-package-price">{recommended.price}</span>
+        <header className="ldd-dialog__header">
+          <p className="ldd-dialog__eyebrow">
+            {showPackage ? "Your match" : "Legal Divorce Docs"}
+          </p>
+          <h2 id="dialog-title" className="ldd-dialog__title">
+            {message?.title ?? ""}
+          </h2>
+          <p id="dialog-description" className="ldd-dialog__lede">
+            {message?.body ?? ""}
+          </p>
+        </header>
+
+        {recommended ? (
+          <div className="ldd-dialog__package" aria-label="Recommended package">
+            <div className="ldd-dialog__package-head">
+              <strong className="ldd-dialog__package-name">{recommended.name}</strong>
+              <span className="ldd-dialog__package-price">{recommended.price}</span>
+            </div>
+            <p className="ldd-dialog__package-blurb">{recommended.blurb}</p>
+            <ul className="ldd-dialog__package-features">
+              {recommended.features.slice(0, 4).map((feature) => (
+                <li key={feature}>
+                  <Icon name="check" size={14} />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <p className="dialog-package-blurb">{recommended.blurb}</p>
-          <ul className="dialog-package-features">
-            {recommended.features.slice(0, 4).map((feature) => (
-              <li key={feature}>{feature}</li>
+        ) : null}
+
+        {summary ? (
+          <ul className="ldd-dialog__summary">
+            {summary.map((item) => (
+              <li key={item}>{item}</li>
             ))}
           </ul>
-        </div>
-      ) : null}
+        ) : null}
 
-      {summary ? (
-        <ul className="dialog-summary">
-          {summary.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      ) : null}
-
-      <PrimaryButton className="dialog-done" onClick={handleContinue}>
-        {dialogKey === "portal" ? "Continue to sign in" : "Continue to sign up"}
-      </PrimaryButton>
+        <PrimaryButton
+          className="ldd-dialog__submit dialog-done"
+          icon="chevronDown"
+          onClick={handleContinue}
+        >
+          {continueLabel}
+        </PrimaryButton>
+      </div>
     </dialog>
   );
 }
