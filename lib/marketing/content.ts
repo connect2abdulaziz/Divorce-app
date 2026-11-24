@@ -171,15 +171,15 @@ export const FAQ_ITEMS = [
   },
 ];
 
-export const FOOTER_LINKS = [
+/** Simplified links shown in the marketing footer Explore column. */
+export const FOOTER_EXPLORE_LINKS = [
   { href: '/services', label: 'Services' },
   { href: '/about-us', label: 'About Us' },
-  { href: '/#how-it-works', label: 'How It Works' },
   { href: '/#pricing', label: 'Pricing' },
-  { href: '/#arizona', label: 'Arizona Divorce' },
-  { href: '/#faq', label: 'FAQ' },
-  { href: '/contact', label: 'Contact' },
 ];
+
+/** @deprecated Use FOOTER_EXPLORE_LINKS for the marketing footer. */
+export const FOOTER_LINKS = FOOTER_EXPLORE_LINKS;
 
 /** Public contact details. Override with NEXT_PUBLIC_CONTACT_EMAIL / PHONE. */
 export const CONTACT_INFO = {
@@ -259,6 +259,44 @@ export const HELP_OPTIONS = [
     id: 'guided',
     title: 'Help Me With the Document Process',
     body: 'Get personal assistance with document preparation and filing support.',
+  },
+];
+
+export type MarketingTestimonial = {
+  id: string;
+  quote: string;
+  name: string;
+  attribution?: string;
+  isPlaceholder: boolean;
+};
+
+/** Approved customer testimonials — add entries here when ready for production. */
+export const CUSTOMER_TESTIMONIALS: MarketingTestimonial[] = [];
+
+/** Illustrative copy for local design preview only (isPlaceholder: true). */
+export const SAMPLE_TESTIMONIALS: MarketingTestimonial[] = [
+  {
+    id: 'sample-01',
+    quote:
+      'The process felt much more manageable when everything was organized into clear steps.',
+    name: 'Daniel M.',
+    attribution: 'Illustrative sample · Design preview',
+    isPlaceholder: true,
+  },
+  {
+    id: 'sample-02',
+    quote:
+      'I appreciated having everything organized in one place rather than trying to figure out the paperwork on my own.',
+    name: 'Rachel K.',
+    attribution: 'Illustrative sample · Design preview',
+    isPlaceholder: true,
+  },
+  {
+    id: 'sample-03',
+    quote: 'I liked knowing what the service included before getting started.',
+    name: 'James T.',
+    attribution: 'Illustrative sample · Design preview',
+    isPlaceholder: true,
   },
 ];
 
