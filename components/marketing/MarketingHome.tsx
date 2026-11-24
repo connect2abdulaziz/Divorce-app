@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Footer } from "@/components/marketing/layout/Footer";
 import { Header } from "@/components/marketing/layout/Header";
 import { MobileNav } from "@/components/marketing/layout/MobileNav";
@@ -17,6 +18,7 @@ import { ReviewsSection } from "@/components/marketing/sections/ReviewsSection";
 import { WhySection } from "@/components/marketing/sections/WhySection";
 import { ServiceDialog } from "@/components/marketing/ui/ServiceDialog";
 import { usePageMotion } from "@/components/marketing/hooks/usePageMotion";
+import { useScrollLock } from "@/components/marketing/hooks/useScrollLock";
 
 type DialogKey = "start" | "portal" | "quote" | null;
 type Qualification = {
@@ -26,12 +28,14 @@ type Qualification = {
 };
 
 export function MarketingHome() {
+  const router = useRouter();
   const [navOpen, setNavOpen] = useState(false);
   const [dialogKey, setDialogKey] = useState<DialogKey>(null);
   const [qualification, setQualification] = useState<Qualification | null>(null);
   const [presetHelp, setPresetHelp] = useState<string | null>(null);
 
   usePageMotion();
+  useScrollLock(navOpen || dialogKey !== null);
 
   const closeNavigation = useCallback(() => setNavOpen(false), []);
 
@@ -45,6 +49,12 @@ export function MarketingHome() {
     if (typeof helpPreference === "string") setPresetHelp(helpPreference);
     document.getElementById("qualify")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
+
+  const goSignIn = useCallback(() => {
+    setNavOpen(false);
+    setDialogKey(null);
+    router.push("/login");
+  }, [router]);
 
   const handleQualificationComplete = useCallback(
     (answers: Qualification) => {
@@ -70,22 +80,27 @@ export function MarketingHome() {
   }, [closeNavigation]);
 
   return (
-    <div className={navOpen ? "marketing-site nav-open" : "marketing-site"}>
+    <div
+      className={[
+        "marketing-site",
+        navOpen ? "nav-open" : "",
+        navOpen || dialogKey !== null ? "marketing-site--scroll-locked" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <SkipLink />
       <Header
         navOpen={navOpen}
         onToggleNav={() => setNavOpen((open) => !open)}
         onStart={startDivorce}
-        onSignIn={() => openDialog("portal")}
+        onSignIn={goSignIn}
       />
       <MobileNav
         open={navOpen}
         onClose={closeNavigation}
         onStart={startDivorce}
-        onSignIn={() => {
-          closeNavigation();
-          openDialog("portal");
-        }}
+        onSignIn={goSignIn}
       />
       <main id="main">
         <HeroSection onStart={startDivorce} />
@@ -99,7 +114,7 @@ export function MarketingHome() {
         <FaqSection />
         <ClosingSection onStart={startDivorce} />
       </main>
-      <Footer onSignIn={() => openDialog("portal")} />
+      <Footer onSignIn={goSignIn} />
       <ServiceDialog
         dialogKey={dialogKey}
         qualification={qualification}

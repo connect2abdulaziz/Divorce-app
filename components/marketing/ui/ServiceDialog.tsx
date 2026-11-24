@@ -42,13 +42,22 @@ export function ServiceDialog({
   const summary = summarizeQualification(qualification);
   const showPackage = dialogKey === "start" || dialogKey === "quote";
   const recommended = showPackage ? packageForHelp(qualification?.help) : null;
+  const showQualificationSummary = showPackage && summary !== null;
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
 
     if (message && !dialog.open) {
-      dialog.showModal();
+      if ("showModal" in dialog) {
+        try {
+          dialog.showModal({ preventScroll: true } as never);
+        } catch {
+          dialog.showModal();
+        }
+      } else {
+        dialog.showModal();
+      }
     }
 
     if (!message && dialog.open) {
@@ -137,7 +146,7 @@ export function ServiceDialog({
           </div>
         ) : null}
 
-        {summary ? (
+        {showQualificationSummary ? (
           <ul className="ldd-dialog__summary">
             {summary.map((item) => (
               <li key={item}>{item}</li>
