@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { NAV_LINKS } from "@/lib/marketing/content";
+import { useMarketingSession } from "@/components/marketing/hooks/useMarketingSession";
 import { PrimaryButton } from "../ui/PrimaryButton";
 
 export function MobileNav({
@@ -14,6 +16,8 @@ export function MobileNav({
   onStart: () => void;
   onSignIn: () => void;
 }) {
+  const { isAuthed, ready } = useMarketingSession();
+
   return (
     <>
       <button
@@ -29,9 +33,15 @@ export function MobileNav({
             {link.label}
           </a>
         ))}
-        <button type="button" onClick={onSignIn}>
-          Sign In
-        </button>
+        {ready && isAuthed ? (
+          <Link href="/dashboard" onClick={onClose}>
+            Dashboard
+          </Link>
+        ) : (
+          <button type="button" onClick={onSignIn}>
+            Sign In
+          </button>
+        )}
         <PrimaryButton
           className="marketing-cta-primary"
           onClick={() => {

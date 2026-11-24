@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { addRecord, deleteRecord, updateRecord } from "@/lib/questionnaire/actions";
 import type { RepeatableTable } from "@/lib/questionnaire/data";
 import { Spinner } from "@/components/ui/SubmitButton";
-import { CurrencyInput, NumberInput, Select, TextArea, TextInput } from "./fields";
+import { CurrencyInput, Field, NumberInput, Select, TextArea, TextInput } from "./fields";
 
 export type FieldConfig =
   | { name: string; label: string; kind: "text"; required?: boolean }
@@ -144,19 +144,23 @@ function RecordForm({
     });
   }
 
+  const heading = submitLabel === "Add" ? "Add item" : "Edit item";
+
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-line bg-[#F7F6F1] p-4 md:p-5">
-      <div className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={handleSubmit} className="ldd-q-record-form">
+      <p className="ldd-q-record-form__title">{heading}</p>
+      <div className="ldd-q-grid ldd-q-grid--2">
         {fields.map((f) => (
-          <div key={f.name} className={f.kind === "select" ? "sm:col-span-2" : "sm:col-span-1"}>
-            <label className="field-label">{f.label}</label>
-            <FieldInput field={f} defaultValue={defaults?.[f.name]} />
+          <div key={f.name} className={f.kind === "select" ? "ldd-q-grid__full" : undefined}>
+            <Field label={f.label} htmlFor={f.name} required={f.required}>
+              <FieldInput field={f} defaultValue={defaults?.[f.name]} />
+            </Field>
           </div>
         ))}
       </div>
-      {error ? <p className="field-error mt-3">{error}</p> : null}
-      <div className="mt-4 flex gap-3">
-        <button type="submit" className="btn-primary" disabled={isPending} aria-busy={isPending}>
+      {error ? <p className="ldd-q-error">{error}</p> : null}
+      <div className="ldd-q-record-form__actions">
+        <button type="submit" className="ldd-q-btn ldd-q-btn--primary" disabled={isPending} aria-busy={isPending}>
           {isPending ? (
             <span className="inline-flex items-center gap-2">
               <Spinner />
@@ -166,7 +170,7 @@ function RecordForm({
             submitLabel
           )}
         </button>
-        <button type="button" className="btn-secondary" onClick={onCancel} disabled={isPending}>
+        <button type="button" className="ldd-q-btn ldd-q-btn--secondary" onClick={onCancel} disabled={isPending}>
           Cancel
         </button>
       </div>
@@ -211,8 +215,8 @@ export function RepeatableList({
   }
 
   return (
-    <div className="space-y-3">
-      {records.length === 0 && !adding && <p className="text-muted">{emptyLabel}</p>}
+    <div className="ldd-q-repeat">
+      {records.length === 0 && !adding && <p className="ldd-q-repeat__empty">{emptyLabel}</p>}
 
       {records.map((row) => {
         const { title, detail } = summarizeRow(row, summary);
@@ -233,19 +237,16 @@ export function RepeatableList({
           );
         }
         return (
-          <div
-            key={row.id}
-            className="flex items-center justify-between rounded-xl border border-line bg-[#FBFBF8] px-4 py-3.5"
-          >
+          <div key={row.id} className="ldd-q-repeat__item">
             <div>
-              <p className="text-ink">{title}</p>
-              {detail && <p className="text-sm text-muted">{detail}</p>}
+              <p className="ldd-q-repeat__title">{title}</p>
+              {detail ? <p className="ldd-q-repeat__detail">{detail}</p> : null}
             </div>
-            <div className="flex gap-4 text-sm">
-              <button type="button" className="btn-text" onClick={() => setEditingId(row.id)}>
+            <div className="ldd-q-repeat__actions">
+              <button type="button" className="ldd-q-btn ldd-q-btn--text" onClick={() => setEditingId(row.id)}>
                 Edit
               </button>
-              <button type="button" className="btn-danger-text" onClick={() => handleDelete(row.id)}>
+              <button type="button" className="ldd-q-btn ldd-q-btn--danger" onClick={() => handleDelete(row.id)}>
                 Remove
               </button>
             </div>
@@ -265,7 +266,7 @@ export function RepeatableList({
           }}
         />
       ) : (
-        <button type="button" className="btn-secondary" onClick={() => setAdding(true)}>
+        <button type="button" className="ldd-q-btn ldd-q-btn--secondary" onClick={() => setAdding(true)}>
           {addLabel}
         </button>
       )}

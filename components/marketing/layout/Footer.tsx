@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { CLDP_INFO, FOOTER_EXPLORE_LINKS, FOOTER_LEGAL } from "@/lib/marketing/content";
+import { useMarketingSession } from "@/components/marketing/hooks/useMarketingSession";
 import { Brand } from "../ui/Brand";
 
 export function Footer({ onSignIn }: { onSignIn: () => void }) {
+  const { isAuthed, ready } = useMarketingSession();
   const year = new Date().getFullYear();
   const hasCldp = Boolean(CLDP_INFO.name || CLDP_INFO.certification);
 
@@ -58,9 +60,13 @@ export function Footer({ onSignIn }: { onSignIn: () => void }) {
                 </li>
               ))}
               <li>
-                <button type="button" onClick={onSignIn}>
-                  Client Login
-                </button>
+                {ready && isAuthed ? (
+                  <Link href="/dashboard">Dashboard</Link>
+                ) : (
+                  <button type="button" onClick={onSignIn}>
+                    Client Login
+                  </button>
+                )}
               </li>
             </ul>
           </nav>

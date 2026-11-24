@@ -11,6 +11,7 @@ import {
   updateRecord,
 } from "@/lib/questionnaire/actions";
 import { BirthDateInput, Field, Select, TextInput, YesNo } from "@/components/questionnaire/fields";
+import { QuestionBlock } from "@/components/questionnaire/QuestionBlock";
 import { StepFrame } from "@/components/questionnaire/StepFrame";
 
 type Residence = {
@@ -58,20 +59,25 @@ function ResidenceRow({ residence }: { residence: Residence; caseId: string }) {
   const [, startTransition] = useTransition();
   const withLabel = livedWithLabel(residence.lived_with);
   return (
-    <li className="flex items-start justify-between gap-3 rounded-xl border border-line bg-[#FBFBF8] px-3 py-2 text-sm">
-      <span className="text-ink">
-        {residenceLabel(residence)}
-        {residence.is_primary_residence ? <span className="ml-2 text-accent">Primary</span> : null}
-        {withLabel ? <span className="ml-2 text-muted">{withLabel}</span> : null}
-        {(residence.start_date || residence.end_date) && (
-          <span className="ml-2 text-muted">
-            {residence.start_date ?? "…"} – {residence.end_date ?? "present"}
-          </span>
-        )}
-      </span>
+    <li className="ldd-q-repeat__item">
+      <div>
+        <p className="ldd-q-repeat__title">
+          {residenceLabel(residence)}
+          {residence.is_primary_residence ? <span className="ml-2 text-accent">Primary</span> : null}
+        </p>
+        <p className="ldd-q-repeat__detail">
+          {withLabel ? withLabel : null}
+          {(residence.start_date || residence.end_date) && (
+            <span>
+              {withLabel ? " · " : ""}
+              {residence.start_date ?? "…"} – {residence.end_date ?? "present"}
+            </span>
+          )}
+        </p>
+      </div>
       <button
         type="button"
-        className="btn-danger-text shrink-0"
+        className="ldd-q-btn ldd-q-btn--danger"
         onClick={() => startTransition(async () => void (await deleteChildResidence(residence.id)))}
       >
         Remove
@@ -117,16 +123,17 @@ function AddResidenceForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-2 space-y-3 rounded-xl border border-line bg-[#F7F6F1] p-4">
-      <Field label="Street address">
+    <form onSubmit={handleSubmit} className="ldd-q-record-form mt-2">
+      <p className="ldd-q-record-form__title">Add residence</p>
+      <Field label="Street address" htmlFor="street_address" required>
         <TextInput name="street_address" placeholder="Street address" required />
       </Field>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="ldd-q-grid ldd-q-grid--3">
         <TextInput name="city" placeholder="City" required />
         <TextInput name="state" placeholder="State" required />
         <TextInput name="zip" placeholder="ZIP" required />
       </div>
-      <Field label="Child lived with">
+      <Field label="Child lived with" htmlFor="lived_with" required>
         <Select
           name="lived_with"
           options={[
@@ -138,19 +145,24 @@ function AddResidenceForm({
           required
         />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="ldd-q-grid ldd-q-grid--2">
         <TextInput name="start_date" type="date" required />
         <TextInput name="end_date" type="date" />
       </div>
-      <label className="flex items-center gap-2 text-sm text-ink">
-        <input type="checkbox" checked={isPrimary} onChange={(e) => setIsPrimary(e.target.checked)} />
-        Primary residence
+      <label className="ldd-q-checkbox">
+        <input
+          type="checkbox"
+          className="ldd-q-checkbox__input"
+          checked={isPrimary}
+          onChange={(e) => setIsPrimary(e.target.checked)}
+        />
+        <span className="ldd-q-checkbox__label">Primary residence</span>
       </label>
-      <div className="flex gap-3">
-        <button type="submit" className="btn-primary" disabled={isPending}>
+      <div className="ldd-q-record-form__actions">
+        <button type="submit" className="ldd-q-btn ldd-q-btn--primary" disabled={isPending}>
           {isPending ? "Saving…" : "Add residence"}
         </button>
-        <button type="button" className="btn-secondary" onClick={onDone} disabled={isPending}>
+        <button type="button" className="ldd-q-btn ldd-q-btn--secondary" onClick={onDone} disabled={isPending}>
           Cancel
         </button>
       </div>
@@ -194,29 +206,30 @@ function ChildCard({
             setEditing(false);
           });
         }}
-        className="space-y-4 rounded-xl border border-line bg-[#F7F6F1] p-4"
+        className="ldd-q-record-form"
       >
-        <div className="grid gap-4 sm:grid-cols-3">
+        <p className="ldd-q-record-form__title">Edit child</p>
+        <div className="ldd-q-grid ldd-q-grid--3">
           <TextInput name="first_name" defaultValue={child.first_name} placeholder="First name" required />
           <TextInput name="middle_name" defaultValue={child.middle_name} placeholder="Middle name" />
           <TextInput name="last_name" defaultValue={child.last_name} placeholder="Last name" required />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="ldd-q-grid ldd-q-grid--2">
           <BirthDateInput name="date_of_birth" defaultValue={child.date_of_birth} required />
           <TextInput
             name="ssn_last4"
             defaultValue={child.ssn_last4}
-            placeholder="SSN last 4"
+            placeholder="SSN last 4 (optional)"
             maxLength={4}
             pattern="[0-9]{4}"
             inputMode="numeric"
           />
         </div>
-        <div className="flex gap-3">
-          <button type="submit" className="btn-primary" disabled={isPending}>
+        <div className="ldd-q-record-form__actions">
+          <button type="submit" className="ldd-q-btn ldd-q-btn--primary" disabled={isPending}>
             {isPending ? "Saving…" : "Save"}
           </button>
-          <button type="button" className="btn-secondary" onClick={() => setEditing(false)}>
+          <button type="button" className="ldd-q-btn ldd-q-btn--secondary" onClick={() => setEditing(false)}>
             Cancel
           </button>
         </div>
@@ -225,24 +238,24 @@ function ChildCard({
   }
 
   return (
-    <div className="rounded-xl border border-line bg-[#FBFBF8] p-4">
-      <div className="flex items-center justify-between gap-3">
+    <div className="ldd-q-repeat__item ldd-q-repeat__item--column ldd-q-grid__full">
+      <div className="flex items-center justify-between gap-3 w-full">
         <div>
-          <p className="text-ink">
+          <p className="ldd-q-repeat__title">
             {[child.first_name, child.middle_name, child.last_name].filter(Boolean).join(" ")}
           </p>
-          <p className="text-sm text-muted">
+          <p className="ldd-q-repeat__detail">
             {child.date_of_birth ? `Born ${child.date_of_birth}` : null}
             {child.ssn_last4 ? ` · SSN •••-••-${child.ssn_last4}` : null}
           </p>
         </div>
-        <div className="flex gap-4 text-sm">
-          <button type="button" className="btn-text" onClick={() => setEditing(true)}>
+        <div className="ldd-q-repeat__actions">
+          <button type="button" className="ldd-q-btn ldd-q-btn--text" onClick={() => setEditing(true)}>
             Edit
           </button>
           <button
             type="button"
-            className="btn-danger-text"
+            className="ldd-q-btn ldd-q-btn--danger"
             onClick={() => startTransition(async () => void (await deleteRecord("children", child.id)))}
             disabled={isPending}
           >
@@ -251,10 +264,10 @@ function ChildCard({
         </div>
       </div>
 
-      <div className="mt-3 border-t border-line pt-3">
-        <p className="text-sm text-muted">Residence history (previous five years)</p>
+      <div className="mt-3 border-t border-line pt-3 w-full">
+        <p className="ldd-q-repeat__detail">Residence history (previous five years)</p>
         {child.child_residences.length > 0 ? (
-          <ul className="mt-2 space-y-1.5">
+          <ul className="ldd-q-repeat mt-2">
             {child.child_residences.map((r) => (
               <ResidenceRow key={r.id} residence={r} caseId={caseId} />
             ))}
@@ -263,7 +276,7 @@ function ChildCard({
         {addingResidence ? (
           <AddResidenceForm childId={child.id} caseId={caseId} onDone={() => setAddingResidence(false)} />
         ) : (
-          <button type="button" className="btn-text mt-2 text-sm" onClick={() => setAddingResidence(true)}>
+          <button type="button" className="ldd-q-btn ldd-q-btn--text mt-2" onClick={() => setAddingResidence(true)}>
             + Add residence
           </button>
         )}
@@ -332,24 +345,22 @@ export function ChildrenForm({
       continueDisabled={itemFormOpen}
       continueDisabledReason="Click Add child (or Save / Cancel) on the open form first, then Save & continue."
     >
-      <div>
-        <p className="field-label">Do you and your spouse have any children together?</p>
-        <YesNo
-          name="has_common_children"
-          value={hasChildren}
-          onChange={(next) => {
-            setHasChildren(next);
-            if (next !== true) {
-              setAdding(false);
-              setDirtyChildIds(new Set());
-            }
-          }}
-        />
-      </div>
+      <QuestionBlock required>Do you and your spouse have any children together?</QuestionBlock>
+      <YesNo
+        name="has_common_children"
+        value={hasChildren}
+        onChange={(next) => {
+          setHasChildren(next);
+          if (next !== true) {
+            setAdding(false);
+            setDirtyChildIds(new Set());
+          }
+        }}
+      />
 
       {hasChildren === true ? (
-        <div className="space-y-3">
-          {kids.length === 0 && !adding ? <p className="text-muted">No children added yet.</p> : null}
+        <div className="ldd-q-repeat">
+          {kids.length === 0 && !adding ? <p className="ldd-q-repeat__empty">No children added yet.</p> : null}
 
           {kids.map((child) => (
             <ChildCard
@@ -377,34 +388,35 @@ export function ChildrenForm({
                   setAdding(false);
                 });
               }}
-              className="space-y-4 rounded-xl border border-line bg-[#F7F6F1] p-4"
+              className="ldd-q-record-form"
             >
-              <div className="grid gap-4 sm:grid-cols-3">
+              <p className="ldd-q-record-form__title">Add a child</p>
+              <div className="ldd-q-grid ldd-q-grid--3">
                 <TextInput name="first_name" placeholder="First name" required />
                 <TextInput name="middle_name" placeholder="Middle name" />
                 <TextInput name="last_name" placeholder="Last name" required />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="ldd-q-grid ldd-q-grid--2">
                 <BirthDateInput name="date_of_birth" required />
                 <TextInput
                   name="ssn_last4"
-                  placeholder="SSN last 4"
+                  placeholder="SSN last 4 (optional)"
                   maxLength={4}
                   pattern="[0-9]{4}"
                   inputMode="numeric"
                 />
               </div>
-              <div className="flex gap-3">
-                <button type="submit" className="btn-primary" disabled={isPending}>
+              <div className="ldd-q-record-form__actions">
+                <button type="submit" className="ldd-q-btn ldd-q-btn--primary" disabled={isPending}>
                   {isPending ? "Saving…" : "Add child"}
                 </button>
-                <button type="button" className="btn-secondary" onClick={() => setAdding(false)}>
+                <button type="button" className="ldd-q-btn ldd-q-btn--secondary" onClick={() => setAdding(false)}>
                   Cancel
                 </button>
               </div>
             </form>
           ) : (
-            <button type="button" className="btn-secondary" onClick={() => setAdding(true)}>
+            <button type="button" className="ldd-q-btn ldd-q-btn--secondary" onClick={() => setAdding(true)}>
               + Add another child
             </button>
           )}

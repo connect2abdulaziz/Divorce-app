@@ -16,25 +16,25 @@ function Group({
   children: ReactNode;
 }) {
   return (
-    <section className="border-b border-line/70 py-6 last:border-b-0">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="font-serif text-lg font-semibold text-ink">{title}</h3>
-        {editHref && (
-          <Link href={editHref} className="btn-text text-sm print:hidden">
+    <section className="ldd-q-review-section">
+      <div className="ldd-q-review-section__head">
+        <h3 className="ldd-q-review-section__title">{title}</h3>
+        {editHref ? (
+          <Link href={editHref} className="ldd-q-btn ldd-q-btn--text print:hidden">
             Edit
           </Link>
-        )}
+        ) : null}
       </div>
-      <div className="mt-3 text-sm text-ink">{children}</div>
+      <div>{children}</div>
     </section>
   );
 }
 
 function Row({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="flex gap-2 py-0.5">
-      <span className="w-40 shrink-0 text-muted">{label}</span>
-      <span>{value ?? "—"}</span>
+    <div className="ldd-q-review-row">
+      <span className="ldd-q-review-row__label">{label}</span>
+      <span className="ldd-q-review-row__value">{value ?? "—"}</span>
     </div>
   );
 }

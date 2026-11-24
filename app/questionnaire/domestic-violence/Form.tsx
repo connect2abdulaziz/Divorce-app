@@ -3,7 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
-import { Field, Select, TextArea, TextInput, YesNo } from "@/components/questionnaire/fields";
+import { Field, FormDependent, Select, TextArea, TextInput, YesNo } from "@/components/questionnaire/fields";
+import { FormNotice } from "@/components/questionnaire/FormNotice";
+import { FormSection } from "@/components/questionnaire/FormSection";
+import { QuestionBlock } from "@/components/questionnaire/QuestionBlock";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type DomesticViolence = {
@@ -91,64 +94,64 @@ export function DomesticViolenceForm({
       onSubmit={handleSubmit}
       onAutoSave={handleAutoSave}
     >
-      {error ? <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</p> : null}
+      {error ? <FormNotice variant="error">{error}</FormNotice> : null}
 
-      <div>
-        <p className="field-label">Has there been domestic violence during the marriage?</p>
+      <FormSection title="Domestic violence">
+        <QuestionBlock required>Has there been domestic violence during the marriage?</QuestionBlock>
         <YesNo name="has_domestic_violence" value={hasDv} onChange={setHasDv} />
-      </div>
+      </FormSection>
 
       {hasDv === true ? (
-        <>
-          <div>
-            <p className="field-label">Was an Order of Protection obtained?</p>
+        <FormDependent>
+          <FormSection title="Order of Protection">
+            <QuestionBlock required>Was an Order of Protection obtained?</QuestionBlock>
             <YesNo name="order_of_protection_exists" value={hasOrder} onChange={setHasOrder} />
-          </div>
 
-          {hasOrder === true ? (
-            <>
-              <Field label="Who filed it?">
-                <Select
-                  name="filed_by"
-                  defaultValue={initial.filed_by}
-                  options={[
-                    { value: "client", label: "Me" },
-                    { value: "spouse", label: "Spouse" },
-                  ]}
-                  required
-                />
-              </Field>
-              <Field label="Against whom?">
-                <Select
-                  name="against_whom"
-                  defaultValue={initial.against_whom}
-                  options={[
-                    { value: "client", label: "Me" },
-                    { value: "spouse", label: "Spouse" },
-                    { value: "both", label: "Both" },
-                    { value: "other", label: "Other" },
-                  ]}
-                  required
-                />
-              </Field>
-              <Field label="Date issued">
-                <TextInput name="date_issued" type="date" defaultValue={initial.date_issued} />
-              </Field>
-              <div className="grid gap-6 sm:grid-cols-2">
-                <Field label="City">
-                  <TextInput name="oop_city" defaultValue={initial.oop_city} required />
+            {hasOrder === true ? (
+              <FormDependent>
+                <Field label="Who filed it?" htmlFor="filed_by" required>
+                  <Select
+                    name="filed_by"
+                    defaultValue={initial.filed_by}
+                    options={[
+                      { value: "client", label: "Me" },
+                      { value: "spouse", label: "Spouse" },
+                    ]}
+                    required
+                  />
                 </Field>
-                <Field label="State">
-                  <TextInput name="oop_state" defaultValue={initial.oop_state} required />
+                <Field label="Against whom?" htmlFor="against_whom" required>
+                  <Select
+                    name="against_whom"
+                    defaultValue={initial.against_whom}
+                    options={[
+                      { value: "client", label: "Me" },
+                      { value: "spouse", label: "Spouse" },
+                      { value: "both", label: "Both" },
+                      { value: "other", label: "Other" },
+                    ]}
+                    required
+                  />
                 </Field>
-              </div>
-            </>
-          ) : null}
+                <Field label="Date issued" htmlFor="date_issued" optional>
+                  <TextInput name="date_issued" type="date" defaultValue={initial.date_issued} />
+                </Field>
+                <div className="ldd-q-grid ldd-q-grid--2">
+                  <Field label="City" htmlFor="oop_city" required>
+                    <TextInput name="oop_city" defaultValue={initial.oop_city} required />
+                  </Field>
+                  <Field label="State" htmlFor="oop_state" required>
+                    <TextInput name="oop_state" defaultValue={initial.oop_state} required />
+                  </Field>
+                </div>
+              </FormDependent>
+            ) : null}
 
-          <Field label="Additional details" hint="Optional, but helpful.">
-            <TextArea name="details" defaultValue={initial.details} rows={4} />
-          </Field>
-        </>
+            <Field label="Additional details" htmlFor="details" optional hint="Optional, but helpful.">
+              <TextArea name="details" defaultValue={initial.details} rows={4} />
+            </Field>
+          </FormSection>
+        </FormDependent>
       ) : null}
     </StepShell>
   );

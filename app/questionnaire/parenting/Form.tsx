@@ -3,7 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
-import { Field, NumberInput, Select, TextArea, YesNo } from "@/components/questionnaire/fields";
+import { Field, FormDependent, NumberInput, Select, TextArea, YesNo } from "@/components/questionnaire/fields";
+import { FormNotice } from "@/components/questionnaire/FormNotice";
+import { FormSection } from "@/components/questionnaire/FormSection";
+import { QuestionBlock } from "@/components/questionnaire/QuestionBlock";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type Parenting = {
@@ -190,163 +193,170 @@ export function ParentingForm({
       onSubmit={handleSubmit}
       onAutoSave={handleAutoSave}
     >
-      {error ? <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</p> : null}
+      {error ? <FormNotice variant="error">{error}</FormNotice> : null}
 
-      <Field label="What custody arrangement do you want?">
-        <Select
-          name="custody_arrangement"
-          value={custody}
-          onChange={setCustody}
-          options={[
-            { value: "joint", label: "Joint custody" },
-            { value: "sole", label: "Sole custody" },
-          ]}
-          required
-        />
-      </Field>
-
-      {custody === "joint" ? (
-        <div>
-          <p className="field-label">Do both parents agree to joint legal decision-making?</p>
-          <YesNo name="joint_by_agreement" value={jointByAgreement} onChange={setJointByAgreement} />
-          <p className="field-hint">
-            Choose Yes only if both parents already agree. If you alone are requesting joint
-            decision-making, choose No.
-          </p>
-        </div>
-      ) : null}
-
-      <div>
-        <p className="field-label">Do you want your spouse to have visitation / parenting time?</p>
-        <YesNo name="visitation_wanted" value={visitationWanted} onChange={setVisitationWanted} />
-      </div>
-
-      {visitationWanted === false ? (
-        <Field label="Please explain why">
-          <TextArea
-            name="visitation_denied_reason"
-            defaultValue={initial.visitation_denied_reason}
-            rows={4}
+      <FormSection title="Custody">
+        <Field label="What custody arrangement do you want?" htmlFor="custody_arrangement" required>
+          <Select
+            name="custody_arrangement"
+            value={custody}
+            onChange={setCustody}
+            options={[
+              { value: "joint", label: "Joint custody" },
+              { value: "sole", label: "Sole custody" },
+            ]}
             required
           />
         </Field>
-      ) : null}
 
-      {visitationWanted === true ? (
-        <>
-          <Field
-            label="Proposed parenting-time schedule"
-            hint="Specify who has which weekends, weekday evenings/overnights, start and end times, and exchange location. Example: Party A — weekdays; Party B — every other weekend Fri 6pm–Sun 6pm; exchanges at school."
-          >
-            <TextArea
-              name="parenting_time_schedule"
-              defaultValue={initial.parenting_time_schedule}
-              rows={5}
+        {custody === "joint" ? (
+          <FormDependent>
+            <QuestionBlock
               required
-            />
-          </Field>
+              hint="Choose Yes only if both parents already agree. If you alone are requesting joint decision-making, choose No."
+            >
+              Do both parents agree to joint legal decision-making?
+            </QuestionBlock>
+            <YesNo name="joint_by_agreement" value={jointByAgreement} onChange={setJointByAgreement} />
+          </FormDependent>
+        ) : null}
+      </FormSection>
 
-          <Field label="Who provides transportation for parenting-time exchanges?">
-            <Select
-              name="transportation_provider"
-              value={transport}
-              onChange={setTransport}
-              options={[
-                { value: "client", label: "Me (Party A)" },
-                { value: "spouse", label: "Spouse (Party B)" },
-                { value: "shared", label: "Shared / each parent one way" },
-              ]}
-              required
-            />
-          </Field>
+      <FormSection title="Parenting time">
+        <QuestionBlock required>Do you want your spouse to have visitation / parenting time?</QuestionBlock>
+        <YesNo name="visitation_wanted" value={visitationWanted} onChange={setVisitationWanted} />
 
-          <Field
-            label="Advance notice for schedule changes (days)"
-            hint="How many days of notice before either parent may change a timeshare by mutual agreement."
-          >
-            <NumberInput
-              name="advance_notice_days"
-              defaultValue={initial.advance_notice_days}
-              min={0}
-              required
-            />
-          </Field>
-
-          <div>
-            <p className="field-label">
-              Is the summer / school-break schedule the same as the regular school-year schedule?
-            </p>
-            <YesNo name="summer_schedule_same" value={summerSame} onChange={setSummerSame} />
-          </div>
-
-          {summerSame === false ? (
-            <Field label="Describe the summer / school-break schedule">
+        {visitationWanted === false ? (
+          <FormDependent>
+            <Field label="Please explain why" htmlFor="visitation_denied_reason" required>
               <TextArea
-                name="summer_schedule_notes"
-                defaultValue={initial.summer_schedule_notes}
+                name="visitation_denied_reason"
+                defaultValue={initial.visitation_denied_reason}
                 rows={4}
                 required
               />
             </Field>
-          ) : null}
+          </FormDependent>
+        ) : null}
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Vacation weeks each parent receives per year">
+        {visitationWanted === true ? (
+          <FormDependent>
+            <Field
+              label="Proposed parenting-time schedule"
+              htmlFor="parenting_time_schedule"
+              required
+              hint="Specify who has which weekends, weekday evenings/overnights, start and end times, and exchange location. Example: Party A — weekdays; Party B — every other weekend Fri 6pm–Sun 6pm; exchanges at school."
+            >
+              <TextArea
+                name="parenting_time_schedule"
+                defaultValue={initial.parenting_time_schedule}
+                rows={5}
+                required
+              />
+            </Field>
+
+            <Field label="Who provides transportation for parenting-time exchanges?" htmlFor="transportation_provider" required>
+              <Select
+                name="transportation_provider"
+                value={transport}
+                onChange={setTransport}
+                options={[
+                  { value: "client", label: "Me (Party A)" },
+                  { value: "spouse", label: "Spouse (Party B)" },
+                  { value: "shared", label: "Shared / each parent one way" },
+                ]}
+                required
+              />
+            </Field>
+
+            <Field
+              label="Advance notice for schedule changes (days)"
+              htmlFor="advance_notice_days"
+              required
+              hint="How many days of notice before either parent may change a timeshare by mutual agreement."
+            >
               <NumberInput
-                name="vacation_weeks"
-                defaultValue={initial.vacation_weeks}
+                name="advance_notice_days"
+                defaultValue={initial.advance_notice_days}
                 min={0}
                 required
               />
             </Field>
-            <Field label="Days of notice required for vacation plans">
-              <NumberInput
-                name="vacation_notice_days"
-                defaultValue={initial.vacation_notice_days}
-                min={0}
-                required
-              />
-            </Field>
-          </div>
-        </>
-      ) : null}
 
-      <Field label="Who should pay child support?">
-        <Select
-          name="child_support_payer"
-          value={supportPayer}
-          onChange={setSupportPayer}
-          options={[
-            { value: "client", label: "Me (Party A)" },
-            { value: "spouse", label: "Spouse (Party B)" },
-          ]}
-          required
-        />
-      </Field>
+            <QuestionBlock required>
+              Is the summer / school-break schedule the same as the regular school-year schedule?
+            </QuestionBlock>
+            <YesNo name="summer_schedule_same" value={summerSame} onChange={setSummerSame} />
 
-      <div>
-        <p className="field-label">Is there an existing child-support order?</p>
+            {summerSame === false ? (
+              <Field label="Describe the summer / school-break schedule" htmlFor="summer_schedule_notes" required>
+                <TextArea
+                  name="summer_schedule_notes"
+                  defaultValue={initial.summer_schedule_notes}
+                  rows={4}
+                  required
+                />
+              </Field>
+            ) : null}
+
+            <div className="ldd-q-grid ldd-q-grid--2">
+              <Field label="Vacation weeks each parent receives per year" htmlFor="vacation_weeks" required>
+                <NumberInput
+                  name="vacation_weeks"
+                  defaultValue={initial.vacation_weeks}
+                  min={0}
+                  required
+                />
+              </Field>
+              <Field label="Days of notice required for vacation plans" htmlFor="vacation_notice_days" required>
+                <NumberInput
+                  name="vacation_notice_days"
+                  defaultValue={initial.vacation_notice_days}
+                  min={0}
+                  required
+                />
+              </Field>
+            </div>
+          </FormDependent>
+        ) : null}
+      </FormSection>
+
+      <FormSection title="Child support & disclosures">
+        <Field label="Who should pay child support?" htmlFor="child_support_payer" required>
+          <Select
+            name="child_support_payer"
+            value={supportPayer}
+            onChange={setSupportPayer}
+            options={[
+              { value: "client", label: "Me (Party A)" },
+              { value: "spouse", label: "Spouse (Party B)" },
+            ]}
+            required
+          />
+        </Field>
+
+        <QuestionBlock required>Is there an existing child-support order?</QuestionBlock>
         <YesNo
           name="has_existing_child_support_order"
           value={existingOrder}
           onChange={setExistingOrder}
         />
-      </div>
 
-      <div>
-        <p className="field-label">
+        <QuestionBlock required>
           Has either party been convicted of a DUI or drug offense within the past 12 months?
-        </p>
+        </QuestionBlock>
         <YesNo
           name="has_dui_or_drug_conviction"
           value={duiConviction}
           onChange={setDuiConviction}
         />
-      </div>
+      </FormSection>
 
-      <Field label="Additional notes">
-        <TextArea name="notes" defaultValue={initial.notes} rows={3} />
-      </Field>
+      <FormSection title="Notes">
+        <Field label="Additional notes" htmlFor="notes" optional>
+          <TextArea name="notes" defaultValue={initial.notes} rows={3} />
+        </Field>
+      </FormSection>
     </StepShell>
   );
 }

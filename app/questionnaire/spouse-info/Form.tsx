@@ -11,7 +11,11 @@ import {
   Select,
   TextInput,
   YesNo,
+  FormDependent,
 } from "@/components/questionnaire/fields";
+import { FormNotice } from "@/components/questionnaire/FormNotice";
+import { FormSection } from "@/components/questionnaire/FormSection";
+import { QuestionBlock } from "@/components/questionnaire/QuestionBlock";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type PartySpouse = {
@@ -153,163 +157,172 @@ export function SpouseInfoForm({
       onSubmit={handleSubmit}
       onAutoSave={handleAutoSave}
     >
-      {error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {error}
-        </p>
-      ) : null}
-      <div className="grid gap-6 sm:grid-cols-3">
-        <Field label="First name">
-          <TextInput name="first_name" defaultValue={initial.first_name} required />
-        </Field>
-        <Field label="Middle name">
-          <TextInput name="middle_name" defaultValue={initial.middle_name} />
-        </Field>
-        <Field label="Last name">
-          <TextInput name="last_name" defaultValue={initial.last_name} required />
-        </Field>
-      </div>
+      {error ? <FormNotice variant="error">{error}</FormNotice> : null}
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Date of birth">
-          <BirthDateInput name="date_of_birth" defaultValue={initial.date_of_birth} required />
-        </Field>
-        <Field label="Gender">
-          <Select
-            name="gender"
-            defaultValue={initial.gender}
-            options={[
-              { value: "male", label: "Male" },
-              { value: "female", label: "Female" },
-            ]}
-          />
-        </Field>
-      </div>
+      <FormSection title="Personal details">
+        <div className="ldd-q-grid ldd-q-grid--3">
+          <Field label="First name" htmlFor="first_name" required>
+            <TextInput name="first_name" defaultValue={initial.first_name} required />
+          </Field>
+          <Field label="Middle name" htmlFor="middle_name" optional>
+            <TextInput name="middle_name" defaultValue={initial.middle_name} />
+          </Field>
+          <Field label="Last name" htmlFor="last_name" required>
+            <TextInput name="last_name" defaultValue={initial.last_name} required />
+          </Field>
+        </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Height" hint="Example: 5'8&quot; or 68 in.">
-          <TextInput name="height" defaultValue={initial.height} placeholder='e.g. 5&apos;8"' />
-        </Field>
-        <Field label="Weight" hint="Pounds (lbs).">
-          <NumberInput name="weight_lbs" defaultValue={initial.weight_lbs} min={0} step="0.1" />
-        </Field>
-      </div>
+        <div className="ldd-q-grid ldd-q-grid--2">
+          <Field label="Date of birth" htmlFor="date_of_birth" required>
+            <BirthDateInput name="date_of_birth" defaultValue={initial.date_of_birth} required />
+          </Field>
+          <Field label="Gender" htmlFor="gender" optional>
+            <Select
+              name="gender"
+              defaultValue={initial.gender}
+              options={[
+                { value: "male", label: "Male" },
+                { value: "female", label: "Female" },
+              ]}
+            />
+          </Field>
+        </div>
 
-      <div>
-        <p className="field-label">How long has your spouse lived in Arizona?</p>
-        <div className="mt-2 grid gap-6 sm:grid-cols-2">
-          <Field label="Years">
+        <div className="ldd-q-grid ldd-q-grid--2">
+          <Field label="Height" htmlFor="height" optional hint="Example: 5'8&quot; or 68 in.">
+            <TextInput name="height" defaultValue={initial.height} placeholder='e.g. 5&apos;8"' />
+          </Field>
+          <Field label="Weight" htmlFor="weight" optional hint="Pounds (lbs).">
+            <NumberInput name="weight_lbs" defaultValue={initial.weight_lbs} min={0} step="0.1" />
+          </Field>
+        </div>
+      </FormSection>
+
+      <FormSection title="Arizona residency">
+        <QuestionBlock>How long has your spouse lived in Arizona?</QuestionBlock>
+        <div className="ldd-q-grid ldd-q-grid--2">
+          <Field label="Years" htmlFor="az_years" optional>
             <NumberInput name="az_years" defaultValue={initial.az_years} min={0} step="1" />
           </Field>
-          <Field label="Months">
+          <Field label="Months" htmlFor="az_months" optional>
             <NumberInput name="az_months" defaultValue={initial.az_months} min={0} step="1" />
           </Field>
         </div>
-      </div>
+      </FormSection>
 
-      <Checkbox
-        name="address_unknown"
-        label="I do not know my spouse's current address."
-        checked={addressUnknown}
-        onChange={setAddressUnknown}
-      />
+      <FormSection title="Address information">
+        <Checkbox
+          name="address_unknown"
+          label="I do not know my spouse's current address."
+          checked={addressUnknown}
+          onChange={setAddressUnknown}
+        />
 
-      {!addressUnknown ? (
-        <>
-          <Field label="Street address">
-            <TextInput name="address_line1" defaultValue={initial.address_line1} required />
-          </Field>
-          <Field label="Apartment / unit">
-            <TextInput name="address_line2" defaultValue={initial.address_line2} placeholder="Optional" />
-          </Field>
-          <div className="grid gap-6 sm:grid-cols-3">
-            <Field label="City">
-              <TextInput name="city" defaultValue={initial.city} required />
+        {!addressUnknown ? (
+          <FormDependent>
+            <Field label="Street address" htmlFor="address_line1" required>
+              <TextInput name="address_line1" defaultValue={initial.address_line1} required />
             </Field>
-            <Field label="State">
-              <TextInput name="state" defaultValue={initial.state} required />
+            <Field label="Apartment / unit" htmlFor="address_line2" optional>
+              <TextInput name="address_line2" defaultValue={initial.address_line2} placeholder="Optional" />
             </Field>
-            <Field label="ZIP">
-              <TextInput name="zip" defaultValue={initial.zip} required />
-            </Field>
-          </div>
-        </>
-      ) : null}
+            <div className="ldd-q-grid ldd-q-grid--3">
+              <Field label="City" htmlFor="city" required>
+                <TextInput name="city" defaultValue={initial.city} required />
+              </Field>
+              <Field label="State" htmlFor="state" required>
+                <TextInput name="state" defaultValue={initial.state} required />
+              </Field>
+              <Field label="ZIP" htmlFor="zip" required>
+                <TextInput name="zip" defaultValue={initial.zip} required />
+              </Field>
+            </div>
+          </FormDependent>
+        ) : null}
+      </FormSection>
 
-      <Checkbox
-        name="phone_unknown"
-        label="Phone numbers unknown"
-        checked={phoneUnknown}
-        onChange={setPhoneUnknown}
-      />
+      <FormSection title="Contact information">
+        <Checkbox
+          name="phone_unknown"
+          label="Phone numbers unknown"
+          checked={phoneUnknown}
+          onChange={setPhoneUnknown}
+        />
 
-      {!phoneUnknown ? (
-        <>
-          <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Home phone">
-              <TextInput name="home_phone" type="tel" defaultValue={initial.home_phone} />
-            </Field>
-            <Field label="Cell phone">
-              <TextInput name="cell_phone" type="tel" defaultValue={initial.cell_phone} required />
-            </Field>
-          </div>
+        {!phoneUnknown ? (
+          <FormDependent>
+            <div className="ldd-q-grid ldd-q-grid--2">
+              <Field label="Home phone" htmlFor="home_phone" optional>
+                <TextInput name="home_phone" type="tel" defaultValue={initial.home_phone} />
+              </Field>
+              <Field label="Cell phone" htmlFor="cell_phone" required>
+                <TextInput name="cell_phone" type="tel" defaultValue={initial.cell_phone} required />
+              </Field>
+            </div>
 
-          <div>
-            <p className="field-label">
-              Receive texts from the court at your spouse&apos;s contact phone number?
-            </p>
-            <YesNo name="court_texts_opt_in" value={courtTexts} onChange={setCourtTexts} />
-          </div>
-        </>
-      ) : null}
+            <div>
+              <QuestionBlock required>
+                Receive texts from the court at your spouse&apos;s contact phone number?
+              </QuestionBlock>
+              <YesNo name="court_texts_opt_in" value={courtTexts} onChange={setCourtTexts} />
+            </div>
+          </FormDependent>
+        ) : null}
 
-      <Field label="Email">
-        <TextInput name="email" type="email" defaultValue={initial.email} />
-      </Field>
-
-      <Checkbox
-        name="ssn_unknown"
-        label="Social Security number unknown"
-        checked={ssnUnknown}
-        onChange={setSsnUnknown}
-      />
-
-      {!ssnUnknown ? (
-        <Field label="Social Security number (last 4 digits)" hint="Exactly 4 digits.">
-          <TextInput
-            name="ssn_last4"
-            defaultValue={initial.ssn_last4}
-            required
-            maxLength={4}
-            pattern="[0-9]{4}"
-            inputMode="numeric"
-            placeholder="####"
-            autoComplete="off"
-          />
+        <Field label="Email" htmlFor="email" optional>
+          <TextInput name="email" type="email" defaultValue={initial.email} />
         </Field>
-      ) : null}
+      </FormSection>
 
-      <Checkbox
-        name="driver_license_unknown"
-        label="Driver's license unknown"
-        checked={dlUnknown}
-        onChange={setDlUnknown}
-      />
+      <FormSection title="Identification">
+        <Checkbox
+          name="ssn_unknown"
+          label="Social Security number unknown"
+          checked={ssnUnknown}
+          onChange={setSsnUnknown}
+        />
 
-      {!dlUnknown ? (
-        <Field label="Driver's license (last 4 digits)" hint="Exactly 4 digits.">
-          <TextInput
-            name="driver_license_last4"
-            defaultValue={initial.driver_license_last4}
-            required
-            maxLength={4}
-            pattern="[0-9]{4}"
-            inputMode="numeric"
-            placeholder="####"
-            autoComplete="off"
-          />
-        </Field>
-      ) : null}
+        {!ssnUnknown ? (
+          <FormDependent>
+            <Field label="Social Security number (last 4 digits)" htmlFor="ssn_last4" required hint="Exactly 4 digits.">
+              <TextInput
+                name="ssn_last4"
+                defaultValue={initial.ssn_last4}
+                required
+                maxLength={4}
+                pattern="[0-9]{4}"
+                inputMode="numeric"
+                placeholder="####"
+                autoComplete="off"
+              />
+            </Field>
+          </FormDependent>
+        ) : null}
+
+        <Checkbox
+          name="driver_license_unknown"
+          label="Driver's license unknown"
+          checked={dlUnknown}
+          onChange={setDlUnknown}
+        />
+
+        {!dlUnknown ? (
+          <FormDependent>
+            <Field label="Driver's license (last 4 digits)" htmlFor="driver_license_last4" required hint="Exactly 4 digits.">
+              <TextInput
+                name="driver_license_last4"
+                defaultValue={initial.driver_license_last4}
+                required
+                maxLength={4}
+                pattern="[0-9]{4}"
+                inputMode="numeric"
+                placeholder="####"
+                autoComplete="off"
+              />
+            </Field>
+          </FormDependent>
+        ) : null}
+      </FormSection>
     </StepShell>
   );
 }

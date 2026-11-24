@@ -3,7 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { saveSingletonSection, updateCaseGates } from "@/lib/questionnaire/actions";
-import { Field, Select, TextInput, YesNo } from "@/components/questionnaire/fields";
+import { Field, FormDependent, Select, TextInput, YesNo } from "@/components/questionnaire/fields";
+import { FormNotice } from "@/components/questionnaire/FormNotice";
+import { FormSection } from "@/components/questionnaire/FormSection";
+import { QuestionBlock } from "@/components/questionnaire/QuestionBlock";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type Marriage = {
@@ -143,115 +146,117 @@ export function MarriageForm({
       onSubmit={handleSubmit}
       onAutoSave={handleAutoSave}
     >
-      {error ? <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</p> : null}
+      {error ? <FormNotice variant="error">{error}</FormNotice> : null}
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Date of marriage">
-          <TextInput name="marriage_date" type="date" defaultValue={initial.marriage_date} required />
-        </Field>
-        <Field label="Date of separation" hint="Leave blank if you have not separated yet.">
-          <TextInput name="separation_date" type="date" defaultValue={initial.separation_date} />
-        </Field>
-      </div>
+      <FormSection title="Marriage dates & location">
+        <div className="ldd-q-grid ldd-q-grid--2">
+          <Field label="Date of marriage" htmlFor="marriage_date" required>
+            <TextInput name="marriage_date" type="date" defaultValue={initial.marriage_date} required />
+          </Field>
+          <Field label="Date of separation" htmlFor="separation_date" optional hint="Leave blank if you have not separated yet.">
+            <TextInput name="separation_date" type="date" defaultValue={initial.separation_date} />
+          </Field>
+        </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Place of marriage — city">
-          <TextInput name="marriage_city" defaultValue={initial.marriage_city} required />
-        </Field>
-        <Field label="Place of marriage — state">
-          <TextInput name="marriage_state" defaultValue={initial.marriage_state} required />
-        </Field>
-      </div>
+        <div className="ldd-q-grid ldd-q-grid--2">
+          <Field label="Place of marriage — city" htmlFor="marriage_city" required>
+            <TextInput name="marriage_city" defaultValue={initial.marriage_city} required />
+          </Field>
+          <Field label="Place of marriage — state" htmlFor="marriage_state" required>
+            <TextInput name="marriage_state" defaultValue={initial.marriage_state} required />
+          </Field>
+        </div>
 
-      <Field label="Grounds for divorce" hint="Arizona is a no-fault state; most cases say the marriage is irretrievably broken.">
-        <TextInput name="grounds" defaultValue={initial.grounds ?? "Marriage is irretrievably broken"} />
-      </Field>
+        <Field label="Grounds for divorce" htmlFor="grounds" optional hint="Arizona is a no-fault state; most cases say the marriage is irretrievably broken.">
+          <TextInput name="grounds" defaultValue={initial.grounds ?? "Marriage is irretrievably broken"} />
+        </Field>
+      </FormSection>
 
-      <div>
-        <p className="field-label">Is this a covenant marriage?</p>
+      <FormSection title="Legal status">
+        <QuestionBlock
+          required
+          hint="Most Arizona marriages are not covenant marriages. Confirm from your marriage license if unsure."
+        >
+          Is this a covenant marriage?
+        </QuestionBlock>
         <YesNo name="is_covenant_marriage" value={covenant} onChange={setCovenant} />
-        <p className="field-hint">
-          Most Arizona marriages are not covenant marriages. Confirm from your marriage license if unsure.
-        </p>
-      </div>
 
-      <div>
-        <p className="field-label">
+        <QuestionBlock required>
           Have you attempted conciliation or other efforts to resolve problems in the marriage?
-        </p>
+        </QuestionBlock>
         <YesNo name="conciliation_attempted" value={conciliation} onChange={setConciliation} />
-      </div>
 
-      <div>
-        <p className="field-label">Is either party requesting spousal maintenance (alimony)?</p>
-        <YesNo
-          name="spousal_maintenance_requested"
-          value={spousalRequested}
-          onChange={setSpousalRequested}
-        />
-      </div>
-
-      {spousalRequested === true ? (
-        <Field label="Who should receive spousal maintenance?">
-          <Select
-            name="spousal_maintenance_for"
-            value={spousalFor}
-            onChange={setSpousalFor}
-            options={[
-              { value: "client", label: "Me (Party A)" },
-              { value: "spouse", label: "Spouse (Party B)" },
-            ]}
-            required
-          />
-        </Field>
-      ) : null}
-
-      <div>
-        <p className="field-label">
+        <QuestionBlock required>
           Do you and your spouse already have a written agreement about property and debts?
-        </p>
+        </QuestionBlock>
         <YesNo
           name="has_written_agreement"
           value={writtenAgreement}
           onChange={setWrittenAgreement}
         />
-      </div>
+      </FormSection>
 
-      <div>
-        <p className="field-label">Does the wife want her former name restored?</p>
+      <FormSection title="Spousal maintenance">
+        <QuestionBlock required>Is either party requesting spousal maintenance (alimony)?</QuestionBlock>
+        <YesNo
+          name="spousal_maintenance_requested"
+          value={spousalRequested}
+          onChange={setSpousalRequested}
+        />
+
+        {spousalRequested === true ? (
+          <FormDependent>
+            <Field label="Who should receive spousal maintenance?" htmlFor="spousal_maintenance_for" required>
+              <Select
+                name="spousal_maintenance_for"
+                value={spousalFor}
+                onChange={setSpousalFor}
+                options={[
+                  { value: "client", label: "Me (Party A)" },
+                  { value: "spouse", label: "Spouse (Party B)" },
+                ]}
+                required
+              />
+            </Field>
+          </FormDependent>
+        ) : null}
+      </FormSection>
+
+      <FormSection title="Name restoration">
+        <QuestionBlock required>Does the wife want her former name restored?</QuestionBlock>
         <YesNo name="restore_former_name" value={restoreName} onChange={setRestoreName} />
-      </div>
 
-      {restoreName === true ? (
-        <div className="grid gap-6 sm:grid-cols-3">
-          <Field label="Restored first name">
-            <TextInput name="restored_first_name" defaultValue={initial.restored_first_name} required />
-          </Field>
-          <Field label="Restored middle name">
-            <TextInput name="restored_middle_name" defaultValue={initial.restored_middle_name} />
-          </Field>
-          <Field label="Restored last name">
-            <TextInput name="restored_last_name" defaultValue={initial.restored_last_name} required />
-          </Field>
-        </div>
-      ) : null}
+        {restoreName === true ? (
+          <FormDependent>
+            <div className="ldd-q-grid ldd-q-grid--3">
+              <Field label="Restored first name" htmlFor="restored_first_name" required>
+                <TextInput name="restored_first_name" defaultValue={initial.restored_first_name} required />
+              </Field>
+              <Field label="Restored middle name" htmlFor="restored_middle_name" optional>
+                <TextInput name="restored_middle_name" defaultValue={initial.restored_middle_name} />
+              </Field>
+              <Field label="Restored last name" htmlFor="restored_last_name" required>
+                <TextInput name="restored_last_name" defaultValue={initial.restored_last_name} required />
+              </Field>
+            </div>
+          </FormDependent>
+        ) : null}
+      </FormSection>
 
-      <div>
-        <p className="field-label">Is the wife currently pregnant?</p>
+      <FormSection title="Pregnancy">
+        <QuestionBlock required>Is the wife currently pregnant?</QuestionBlock>
         <YesNo name="is_spouse_pregnant" value={pregnant} onChange={setPregnant} />
-      </div>
 
-      {pregnant === true ? (
-        <>
-          <div>
-            <p className="field-label">Is the spouse the father?</p>
+        {pregnant === true ? (
+          <FormDependent>
+            <QuestionBlock>Is the spouse the father?</QuestionBlock>
             <YesNo name="spouse_is_father" value={spouseIsFather} onChange={setSpouseIsFather} />
-          </div>
-          <Field label="Expected due date">
-            <TextInput name="due_date" type="date" defaultValue={initial.due_date} />
-          </Field>
-        </>
-      ) : null}
+            <Field label="Expected due date" htmlFor="due_date" optional>
+              <TextInput name="due_date" type="date" defaultValue={initial.due_date} />
+            </Field>
+          </FormDependent>
+        ) : null}
+      </FormSection>
     </StepShell>
   );
 }

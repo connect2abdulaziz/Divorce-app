@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { Spinner } from "@/components/ui/SubmitButton";
 import { FormPanel } from "./FormPanel";
+import { RequiredFieldsLegend } from "./FormNotice";
 
 export function StepFrame({
   title,
@@ -15,6 +16,7 @@ export function StepFrame({
   continueLabel = "Save & continue",
   continueDisabled = false,
   continueDisabledReason,
+  showRequiredLegend = true,
 }: {
   title: string;
   subtitle?: string;
@@ -23,9 +25,9 @@ export function StepFrame({
   onContinue: () => Promise<void>;
   children: React.ReactNode;
   continueLabel?: string;
-  /** When true, Save & continue cannot be clicked (e.g. unfinished Add form). */
   continueDisabled?: boolean;
   continueDisabledReason?: string;
+  showRequiredLegend?: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
   const blocked = continueDisabled || isPending;
@@ -39,20 +41,29 @@ export function StepFrame({
 
   return (
     <FormPanel>
-      <div className="border-b border-line/70 px-6 py-7 md:px-8">
-        <h2 className="font-serif text-[1.75rem] font-semibold leading-tight text-ink">{title}</h2>
-        {subtitle && <p className="mt-2 text-[15px] leading-relaxed text-muted">{subtitle}</p>}
+      <div className="ldd-q-card-header">
+        <div className="ldd-q-card-header__main">
+          <h2 className="ldd-q-card-title">{title}</h2>
+          {subtitle ? <p className="ldd-q-card-subtitle">{subtitle}</p> : null}
+        </div>
       </div>
 
-      <div className="space-y-6 px-6 py-7 md:px-8">{children}</div>
-
-      <div className="flex flex-col gap-3 border-t border-line/70 bg-[#F7F6F1] px-6 py-5 md:px-8">
-        {continueDisabled && continueDisabledReason ? (
-          <p className="text-sm text-muted">{continueDisabledReason}</p>
+      <div className="ldd-q-card-body">
+        {showRequiredLegend ? (
+          <div className="ldd-q-card-body__legend">
+            <RequiredFieldsLegend />
+          </div>
         ) : null}
-        <div className="flex items-center justify-between gap-4">
+        {children}
+      </div>
+
+      <div className="ldd-q-card-footer ldd-q-card-footer--stack">
+        {continueDisabled && continueDisabledReason ? (
+          <p className="ldd-q-footer-hint">{continueDisabledReason}</p>
+        ) : null}
+        <div className="ldd-q-card-footer__actions">
           {backHref ? (
-            <Link href={backHref} className="btn-secondary">
+            <Link href={backHref} className="ldd-q-btn ldd-q-btn--secondary">
               {backLabel}
             </Link>
           ) : (
@@ -60,14 +71,14 @@ export function StepFrame({
           )}
           <button
             type="button"
-            className="btn-primary"
+            className="ldd-q-btn ldd-q-btn--primary"
             onClick={handleContinue}
             disabled={blocked}
             aria-busy={isPending}
             title={continueDisabled ? continueDisabledReason : undefined}
           >
             {isPending ? (
-              <span className="inline-flex items-center gap-2">
+              <span className="ldd-q-btn__pending">
                 <Spinner />
                 Saving…
               </span>

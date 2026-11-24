@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { saveSingletonSection } from "@/lib/questionnaire/actions";
-import { Field, Select, TextArea } from "@/components/questionnaire/fields";
+import { Field, FormDependent, Select, TextArea } from "@/components/questionnaire/fields";
+import { FormNotice } from "@/components/questionnaire/FormNotice";
+import { FormSection } from "@/components/questionnaire/FormSection";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 type TaxInformation = {
@@ -144,45 +146,45 @@ export function TaxInformationForm({
       onSubmit={handleSubmit}
       onAutoSave={handleAutoSave}
     >
-      {error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {error}
-        </p>
-      ) : null}
+      {error ? <FormNotice variant="error">{error}</FormNotice> : null}
 
-      <Field
-        label="Going forward after the divorce"
-        hint="Most petitions ask the court to order separate returns going forward."
-      >
-        <Select
-          name="going_forward_filing"
-          value={goingForward}
-          onChange={setGoingForward}
-          options={[
-            { value: "separate", label: "File separate federal and state returns" },
-            { value: "joint", label: "Continue filing jointly (unusual after divorce)" },
-          ]}
+      <FormSection title="Tax filing">
+        <Field
+          label="Going forward after the divorce"
+          htmlFor="going_forward_filing"
           required
-        />
-      </Field>
+          hint="Most petitions ask the court to order separate returns going forward."
+        >
+          <Select
+            name="going_forward_filing"
+            value={goingForward}
+            onChange={setGoingForward}
+            options={[
+              { value: "separate", label: "File separate federal and state returns" },
+              { value: "joint", label: "Continue filing jointly (unusual after divorce)" },
+            ]}
+            required
+          />
+        </Field>
 
-      <Field label="For previous tax years (still open / not yet filed)">
-        <Select
-          name="previous_years_filing"
-          value={previousYears}
-          onChange={setPreviousYears}
-          options={[
-            { value: "joint", label: "File joint federal and state returns" },
-            { value: "separate", label: "File separate federal and state returns" },
-            { value: "not_applicable", label: "Not applicable / already filed" },
-          ]}
-          required
-        />
-      </Field>
+        <Field label="For previous tax years (still open / not yet filed)" htmlFor="previous_years_filing" required>
+          <Select
+            name="previous_years_filing"
+            value={previousYears}
+            onChange={setPreviousYears}
+            options={[
+              { value: "joint", label: "File joint federal and state returns" },
+              { value: "separate", label: "File separate federal and state returns" },
+              { value: "not_applicable", label: "Not applicable / already filed" },
+            ]}
+            required
+          />
+        </Field>
+      </FormSection>
 
       {hasCommonChildren ? (
-        <>
-          <Field label="How often will dependents be claimed?">
+        <FormSection title="Dependent claims">
+          <Field label="How often will dependents be claimed?" htmlFor="claim_frequency" required>
             <Select
               name="claim_frequency"
               value={frequency}
@@ -196,43 +198,51 @@ export function TaxInformationForm({
           </Field>
 
           {frequency === "every_year" ? (
-            <Field label="Who will claim the dependents every year?">
-              <Select
-                name="dependents_claimed_by"
-                value={claimedBy}
-                onChange={setClaimedBy}
-                options={[
-                  { value: "client", label: "Me" },
-                  { value: "spouse", label: "Spouse" },
-                ]}
-                required
-              />
-            </Field>
+            <FormDependent>
+              <Field label="Who will claim the dependents every year?" htmlFor="dependents_claimed_by" required>
+                <Select
+                  name="dependents_claimed_by"
+                  value={claimedBy}
+                  onChange={setClaimedBy}
+                  options={[
+                    { value: "client", label: "Me" },
+                    { value: "spouse", label: "Spouse" },
+                  ]}
+                  required
+                />
+              </Field>
+            </FormDependent>
           ) : null}
 
           {frequency === "alternate_years" ? (
-            <Field
-              label="Who claims the children in even-numbered years?"
-              hint="The other parent claims them in odd-numbered years."
-            >
-              <Select
-                name="even_year_claimant"
-                value={evenYear}
-                onChange={setEvenYear}
-                options={[
-                  { value: "client", label: "Me (even years)" },
-                  { value: "spouse", label: "Spouse (even years)" },
-                ]}
+            <FormDependent>
+              <Field
+                label="Who claims the children in even-numbered years?"
+                htmlFor="even_year_claimant"
                 required
-              />
-            </Field>
+                hint="The other parent claims them in odd-numbered years."
+              >
+                <Select
+                  name="even_year_claimant"
+                  value={evenYear}
+                  onChange={setEvenYear}
+                  options={[
+                    { value: "client", label: "Me (even years)" },
+                    { value: "spouse", label: "Spouse (even years)" },
+                  ]}
+                  required
+                />
+              </Field>
+            </FormDependent>
           ) : null}
-        </>
+        </FormSection>
       ) : null}
 
-      <Field label="Additional notes">
-        <TextArea name="notes" defaultValue={initial?.notes} rows={3} />
-      </Field>
+      <FormSection title="Notes">
+        <Field label="Additional notes" htmlFor="notes" optional>
+          <TextArea name="notes" defaultValue={initial?.notes} rows={3} />
+        </Field>
+      </FormSection>
     </StepShell>
   );
 }

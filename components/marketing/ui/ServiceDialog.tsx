@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useMarketingSession } from "@/components/marketing/hooks/useMarketingSession";
 import { DIALOG_MESSAGES, packageForHelp } from "@/lib/marketing/content";
 import { Icon } from "./Icon";
 import { PrimaryButton } from "./PrimaryButton";
@@ -37,11 +38,13 @@ export function ServiceDialog({
   onClose: () => void;
 }) {
   const router = useRouter();
+  const { isAuthed, ready } = useMarketingSession();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const message = dialogKey ? DIALOG_MESSAGES[dialogKey] : null;
   const summary = summarizeQualification(qualification);
   const showPackage = dialogKey === "start" || dialogKey === "quote";
   const recommended = showPackage ? packageForHelp(qualification?.help) : null;
+  const showQualificationSummary = showPackage && summary !== null;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -85,7 +88,11 @@ export function ServiceDialog({
   };
 
   const continueLabel =
-    dialogKey === "portal" ? "Continue to sign in" : "Continue to sign up";
+    dialogKey === "portal"
+      ? "Continue to sign in"
+      : ready && isAuthed
+        ? "Continue to dashboard"
+        : "Continue to sign up";
 
   return (
     <dialog
@@ -137,7 +144,7 @@ export function ServiceDialog({
           </div>
         ) : null}
 
-        {summary ? (
+        {showQualificationSummary ? (
           <ul className="ldd-dialog__summary">
             {summary.map((item) => (
               <li key={item}>{item}</li>

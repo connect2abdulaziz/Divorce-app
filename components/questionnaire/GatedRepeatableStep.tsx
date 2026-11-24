@@ -8,7 +8,8 @@ import {
   REPEATABLE_VALIDATORS,
   type RepeatableSectionSlug,
 } from "@/lib/questionnaire/repeatable-configs";
-import { YesNo } from "./fields";
+import { FormDependent, YesNo } from "./fields";
+import { QuestionBlock } from "./QuestionBlock";
 import { RepeatableList, type FieldConfig, type SummaryConfig } from "./RepeatableList";
 import { StepFrame } from "./StepFrame";
 
@@ -81,20 +82,20 @@ export function GatedRepeatableStep({
       onContinue={handleContinue}
       continueDisabled={itemFormOpen}
       continueDisabledReason="Click Add (or Save) on the item form first, then Save & continue."
+      showRequiredLegend={false}
     >
-      <div>
-        <p className="field-label">{gateQuestion}</p>
-        <YesNo
-          name={gateColumn}
-          value={gate}
-          onChange={(next) => {
-            setGate(next);
-            if (next !== true) setItemFormOpen(false);
-          }}
-        />
-      </div>
+      <QuestionBlock required>{gateQuestion}</QuestionBlock>
+      <YesNo
+        name={gateColumn}
+        value={gate}
+        onChange={(next) => {
+          setGate(next);
+          if (next !== true) setItemFormOpen(false);
+        }}
+      />
 
-      {gate === true && (
+      {gate === true ? (
+        <FormDependent>
         <RepeatableList
           table={table}
           caseId={caseId}
@@ -106,7 +107,8 @@ export function GatedRepeatableStep({
           validate={validate}
           onDirtyChange={setItemFormOpen}
         />
-      )}
+        </FormDependent>
+      ) : null}
     </StepFrame>
   );
 }
