@@ -11,7 +11,9 @@ import {
   Select,
   TextInput,
 } from "@/components/questionnaire/fields";
+import { FormSection } from "@/components/questionnaire/FormSection";
 import { StepShell } from "@/components/questionnaire/StepShell";
+import { FormDependent } from "@/components/questionnaire/fields";
 
 export type Employment = {
   client_status: string | null;
@@ -134,9 +136,8 @@ export function EmploymentForm({
       onSubmit={handleSubmit}
       onAutoSave={handleAutoSave}
     >
-      <div className="space-y-5 border-b border-line/70 pb-7">
-        <p className="text-sm font-medium tracking-wide text-accent">Your employment</p>
-        <Field label="Are you currently employed?">
+      <FormSection title="Your employment">
+        <Field label="Are you currently employed?" htmlFor="client_status" required>
           <Select
             name="client_status"
             value={clientStatus}
@@ -150,44 +151,43 @@ export function EmploymentForm({
         </Field>
 
         {clientStatus === "employed" ? (
-          <>
-            <Field label="Employer name">
+          <FormDependent>
+            <Field label="Employer name" htmlFor="client_employer_name" required>
               <TextInput name="client_employer_name" defaultValue={initial.client_employer_name} required />
             </Field>
-            <Field label="Position / occupation">
+            <Field label="Position / occupation" htmlFor="client_position" required>
               <TextInput name="client_position" defaultValue={initial.client_position} required />
             </Field>
-            <Field label="Employer phone">
+            <Field label="Employer phone" htmlFor="client_employer_phone" required>
               <PhoneInput
                 name="client_employer_phone"
                 defaultValue={initial.client_employer_phone}
                 required
               />
             </Field>
-            <Field label="Monthly salary / income">
+            <Field label="Monthly salary / income" htmlFor="client_monthly_income" required>
               <CurrencyInput name="client_monthly_income" defaultValue={initial.client_monthly_income} required />
             </Field>
-            <Field label="Employer street address">
+            <Field label="Employer street address" htmlFor="client_employer_address" required>
               <TextInput name="client_employer_address" defaultValue={initial.client_employer_address} required />
             </Field>
-            <div className="grid gap-6 sm:grid-cols-3">
-              <Field label="City">
+            <div className="ldd-q-grid ldd-q-grid--3">
+              <Field label="City" htmlFor="client_employer_city" required>
                 <TextInput name="client_employer_city" defaultValue={initial.client_employer_city} required />
               </Field>
-              <Field label="State">
+              <Field label="State" htmlFor="client_employer_state" required>
                 <TextInput name="client_employer_state" defaultValue={initial.client_employer_state} required />
               </Field>
-              <Field label="ZIP">
+              <Field label="ZIP" htmlFor="client_employer_zip" required>
                 <TextInput name="client_employer_zip" defaultValue={initial.client_employer_zip} required />
               </Field>
             </div>
-          </>
+          </FormDependent>
         ) : null}
-      </div>
+      </FormSection>
 
-      <div className="space-y-5">
-        <p className="text-sm font-medium tracking-wide text-accent">Spouse&apos;s employment</p>
-        <Field label="Is your spouse currently employed?">
+      <FormSection title="Spouse's employment">
+        <Field label="Is your spouse currently employed?" htmlFor="spouse_status" required>
           <Select
             name="spouse_status"
             value={spouseStatus}
@@ -202,36 +202,36 @@ export function EmploymentForm({
         </Field>
 
         {spouseStatus === "employed" ? (
-          <>
-            <Field label="Employer name">
+          <FormDependent>
+            <Field label="Employer name" htmlFor="spouse_employer_name" optional>
               <TextInput name="spouse_employer_name" defaultValue={initial.spouse_employer_name} />
             </Field>
-            <Field label="Position / occupation">
+            <Field label="Position / occupation" htmlFor="spouse_position" optional>
               <TextInput name="spouse_position" defaultValue={initial.spouse_position} />
             </Field>
-            <Field label="Employer phone">
+            <Field label="Employer phone" htmlFor="spouse_employer_phone" optional>
               <PhoneInput name="spouse_employer_phone" defaultValue={initial.spouse_employer_phone} />
             </Field>
-            <Field label="Monthly salary / income" hint="Best estimate is fine.">
+            <Field label="Monthly salary / income" htmlFor="spouse_monthly_income" optional hint="Best estimate is fine.">
               <CurrencyInput name="spouse_monthly_income" defaultValue={initial.spouse_monthly_income} />
             </Field>
-            <Field label="Employer street address">
+            <Field label="Employer street address" htmlFor="spouse_employer_address" optional>
               <TextInput name="spouse_employer_address" defaultValue={initial.spouse_employer_address} />
             </Field>
-            <div className="grid gap-6 sm:grid-cols-3">
-              <Field label="City">
+            <div className="ldd-q-grid ldd-q-grid--3">
+              <Field label="City" htmlFor="spouse_employer_city" optional>
                 <TextInput name="spouse_employer_city" defaultValue={initial.spouse_employer_city} />
               </Field>
-              <Field label="State">
+              <Field label="State" htmlFor="spouse_employer_state" optional>
                 <TextInput name="spouse_employer_state" defaultValue={initial.spouse_employer_state} />
               </Field>
-              <Field label="ZIP">
+              <Field label="ZIP" htmlFor="spouse_employer_zip" optional>
                 <TextInput name="spouse_employer_zip" defaultValue={initial.spouse_employer_zip} />
               </Field>
             </div>
-          </>
+          </FormDependent>
         ) : null}
-      </div>
+      </FormSection>
     </StepShell>
   );
 }

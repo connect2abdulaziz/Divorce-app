@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Spinner } from "@/components/ui/SubmitButton";
 import { FormPanel } from "./FormPanel";
+import { RequiredFieldsLegend } from "./FormNotice";
 
 export function StepShell({
   title,
@@ -14,6 +15,7 @@ export function StepShell({
   onAutoSave,
   children,
   submitLabel = "Save & continue",
+  showRequiredLegend = true,
 }: {
   title: string;
   subtitle?: string;
@@ -24,6 +26,7 @@ export function StepShell({
   onAutoSave?: (formData: FormData) => Promise<void>;
   children: React.ReactNode;
   submitLabel?: string;
+  showRequiredLegend?: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
   const [autoStatus, setAutoStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -75,39 +78,49 @@ export function StepShell({
       onInput={scheduleAutoSave}
     >
       <FormPanel>
-        <div className="border-b border-line/70 px-6 py-7 md:px-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="font-serif text-[1.75rem] font-semibold leading-tight text-ink">{title}</h2>
-              {subtitle && <p className="mt-2 text-[15px] leading-relaxed text-muted">{subtitle}</p>}
-            </div>
-            {onAutoSave ? (
-              <p className="shrink-0 pt-1 text-xs text-muted" aria-live="polite">
-                {autoStatus === "saving"
-                  ? "Saving…"
-                  : autoStatus === "saved"
-                    ? "Saved"
-                    : autoStatus === "error"
-                      ? "Save failed"
-                      : null}
-              </p>
-            ) : null}
+        <div className="ldd-q-card-header">
+          <div className="ldd-q-card-header__main">
+            <h2 className="ldd-q-card-title">{title}</h2>
+            {subtitle ? <p className="ldd-q-card-subtitle">{subtitle}</p> : null}
           </div>
+          {onAutoSave ? (
+            <p className="ldd-q-autosave" aria-live="polite">
+              {autoStatus === "saving"
+                ? "Saving…"
+                : autoStatus === "saved"
+                  ? "Saved"
+                  : autoStatus === "error"
+                    ? "Save failed"
+                    : null}
+            </p>
+          ) : null}
         </div>
 
-        <div className="space-y-6 px-6 py-7 md:px-8">{children}</div>
+        <div className="ldd-q-card-body">
+          {showRequiredLegend ? (
+            <div className="ldd-q-card-body__legend">
+              <RequiredFieldsLegend />
+            </div>
+          ) : null}
+          {children}
+        </div>
 
-        <div className="flex items-center justify-between gap-4 border-t border-line/70 bg-[#F7F6F1] px-6 py-5 md:px-8">
+        <div className="ldd-q-card-footer">
           {backHref ? (
-            <Link href={backHref} className="btn-secondary">
+            <Link href={backHref} className="ldd-q-btn ldd-q-btn--secondary">
               {backLabel}
             </Link>
           ) : (
             <span />
           )}
-          <button type="submit" className="btn-primary" disabled={isPending} aria-busy={isPending}>
+          <button
+            type="submit"
+            className="ldd-q-btn ldd-q-btn--primary"
+            disabled={isPending}
+            aria-busy={isPending}
+          >
             {isPending ? (
-              <span className="inline-flex items-center gap-2">
+              <span className="ldd-q-btn__pending">
                 <Spinner />
                 Saving…
               </span>

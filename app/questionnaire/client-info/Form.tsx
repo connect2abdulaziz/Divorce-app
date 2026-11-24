@@ -11,7 +11,11 @@ import {
   Select,
   TextInput,
   YesNo,
+  FormDependent,
 } from "@/components/questionnaire/fields";
+import { FormNotice } from "@/components/questionnaire/FormNotice";
+import { FormSection } from "@/components/questionnaire/FormSection";
+import { QuestionBlock } from "@/components/questionnaire/QuestionBlock";
 import { StepShell } from "@/components/questionnaire/StepShell";
 
 export type PartyClient = {
@@ -160,114 +164,120 @@ export function ClientInfoForm({
       onSubmit={handleSubmit}
       onAutoSave={handleAutoSave}
     >
-      {error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {error}
-        </p>
-      ) : null}
-      <div className="grid gap-6 sm:grid-cols-3">
-        <Field label="First name">
-          <TextInput name="first_name" defaultValue={initial.first_name} required autoComplete="given-name" />
-        </Field>
-        <Field label="Middle name">
-          <TextInput name="middle_name" defaultValue={initial.middle_name} autoComplete="additional-name" />
-        </Field>
-        <Field label="Last name">
-          <TextInput name="last_name" defaultValue={initial.last_name} required autoComplete="family-name" />
-        </Field>
-      </div>
+      {error ? <FormNotice variant="error">{error}</FormNotice> : null}
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Date of birth">
-          <BirthDateInput name="date_of_birth" defaultValue={initial.date_of_birth} required />
-        </Field>
-        <Field label="Gender">
-          <Select
-            name="gender"
-            defaultValue={initial.gender}
-            required
-            options={[
-              { value: "male", label: "Male" },
-              { value: "female", label: "Female" },
-            ]}
-          />
-        </Field>
-      </div>
+      <FormSection title="Personal details">
+        <div className="ldd-q-grid ldd-q-grid--3">
+          <Field label="First name" htmlFor="first_name" required>
+            <TextInput name="first_name" defaultValue={initial.first_name} required autoComplete="given-name" />
+          </Field>
+          <Field label="Middle name" htmlFor="middle_name" optional>
+            <TextInput name="middle_name" defaultValue={initial.middle_name} autoComplete="additional-name" />
+          </Field>
+          <Field label="Last name" htmlFor="last_name" required>
+            <TextInput name="last_name" defaultValue={initial.last_name} required autoComplete="family-name" />
+          </Field>
+        </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Height" hint="Example: 5'8&quot; or 68 in.">
-          <TextInput name="height" defaultValue={initial.height} placeholder='e.g. 5&apos;8"' required />
-        </Field>
-        <Field label="Weight" hint="Pounds (lbs).">
-          <NumberInput name="weight_lbs" defaultValue={initial.weight_lbs} min={0} step="0.1" required />
-        </Field>
-      </div>
+        <div className="ldd-q-grid ldd-q-grid--2">
+          <Field label="Date of birth" htmlFor="date_of_birth" required>
+            <BirthDateInput name="date_of_birth" defaultValue={initial.date_of_birth} required />
+          </Field>
+          <Field label="Gender" htmlFor="gender" required>
+            <Select
+              name="gender"
+              defaultValue={initial.gender}
+              required
+              options={[
+                { value: "male", label: "Male" },
+                { value: "female", label: "Female" },
+              ]}
+            />
+          </Field>
+        </div>
 
-      <div>
-        <p className="field-label">How long have you lived in Arizona?</p>
-        <div className="mt-2 grid gap-6 sm:grid-cols-2">
-          <Field label="Years">
+        <div className="ldd-q-grid ldd-q-grid--2">
+          <Field label="Height" htmlFor="height" required hint="Example: 5'8&quot; or 68 in.">
+            <TextInput name="height" defaultValue={initial.height} placeholder='e.g. 5&apos;8"' required />
+          </Field>
+          <Field label="Weight" htmlFor="weight" required hint="Pounds (lbs).">
+            <NumberInput name="weight_lbs" defaultValue={initial.weight_lbs} min={0} step="0.1" required />
+          </Field>
+        </div>
+      </FormSection>
+
+      <FormSection title="Arizona residency">
+        <QuestionBlock required>How long have you lived in Arizona?</QuestionBlock>
+        <div className="ldd-q-grid ldd-q-grid--2">
+          <Field label="Years" htmlFor="az_years" required>
             <NumberInput name="az_years" defaultValue={initial.az_years} min={0} step="1" required />
           </Field>
-          <Field label="Months">
+          <Field label="Months" htmlFor="az_months" required>
             <NumberInput name="az_months" defaultValue={initial.az_months} min={0} step="1" required />
           </Field>
         </div>
-      </div>
+      </FormSection>
 
-      <Field label="Street address">
-        <TextInput name="address_line1" defaultValue={initial.address_line1} required autoComplete="street-address" />
-      </Field>
-      <Field label="Apartment / unit">
-        <TextInput name="address_line2" defaultValue={initial.address_line2} placeholder="Optional" />
-      </Field>
-      <div className="grid gap-6 sm:grid-cols-3">
-        <Field label="City">
-          <TextInput name="city" defaultValue={initial.city} required autoComplete="address-level2" />
+      <FormSection title="Address information">
+        <Field label="Street address" htmlFor="address_line1" required>
+          <TextInput name="address_line1" defaultValue={initial.address_line1} required autoComplete="street-address" />
         </Field>
-        <Field label="State">
-          <TextInput name="state" defaultValue={initial.state ?? "AZ"} required autoComplete="address-level1" />
+        <Field label="Apartment / unit" htmlFor="address_line2" optional>
+          <TextInput name="address_line2" defaultValue={initial.address_line2} placeholder="Optional" />
         </Field>
-        <Field label="ZIP">
-          <TextInput name="zip" defaultValue={initial.zip} required autoComplete="postal-code" />
-        </Field>
-      </div>
+        <div className="ldd-q-grid ldd-q-grid--3">
+          <Field label="City" htmlFor="city" required>
+            <TextInput name="city" defaultValue={initial.city} required autoComplete="address-level2" />
+          </Field>
+          <Field label="State" htmlFor="state" required>
+            <TextInput name="state" defaultValue={initial.state ?? "AZ"} required autoComplete="address-level1" />
+          </Field>
+          <Field label="ZIP" htmlFor="zip" required>
+            <TextInput name="zip" defaultValue={initial.zip} required autoComplete="postal-code" />
+          </Field>
+        </div>
+      </FormSection>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Home phone">
-          <TextInput
-            name="home_phone"
-            type="tel"
-            defaultValue={initial.home_phone}
-            autoComplete="tel"
-          />
+      <FormSection title="Contact information">
+        <div className="ldd-q-grid ldd-q-grid--2">
+          <Field label="Home phone" htmlFor="home_phone" optional>
+            <TextInput
+              name="home_phone"
+              type="tel"
+              defaultValue={initial.home_phone}
+              autoComplete="tel"
+            />
+          </Field>
+          <Field label="Cell phone" htmlFor="cell_phone" required>
+            <TextInput name="cell_phone" type="tel" defaultValue={initial.cell_phone} required />
+          </Field>
+        </div>
+
+        <div>
+          <QuestionBlock required>
+            Receive texts from the court at the contact phone number above?
+          </QuestionBlock>
+          <YesNo name="court_texts_opt_in" value={courtTexts} onChange={setCourtTexts} />
+        </div>
+
+        <Field label="Email" htmlFor="email" required>
+          <TextInput name="email" type="email" defaultValue={initial.email} required autoComplete="email" />
         </Field>
-        <Field label="Cell phone">
-          <TextInput name="cell_phone" type="tel" defaultValue={initial.cell_phone} required />
-        </Field>
-      </div>
+      </FormSection>
 
-      <div>
-        <p className="field-label">
-          Receive texts from the court at the contact phone number above?
-        </p>
-        <YesNo name="court_texts_opt_in" value={courtTexts} onChange={setCourtTexts} />
-      </div>
-
-      <Field label="Email">
-        <TextInput name="email" type="email" defaultValue={initial.email} required autoComplete="email" />
-      </Field>
-
-      <Checkbox
-        name="ssn_unknown"
-        label="I do not have / prefer not to provide my Social Security number last 4"
-        checked={ssnUnknown}
-        onChange={setSsnUnknown}
-      />
+      <FormSection title="Identification for court forms">
+        <Checkbox
+          name="ssn_unknown"
+          label="I do not have / prefer not to provide my Social Security number last 4"
+          checked={ssnUnknown}
+          onChange={setSsnUnknown}
+        />
 
       {!ssnUnknown ? (
         <Field
           label="Social Security number (last 4 digits)"
+          htmlFor="ssn_last4"
+          required
           hint="Used on the Sensitive Data Sheet (and related family-law forms). Exactly 4 digits."
         >
           <TextInput
@@ -282,10 +292,10 @@ export function ClientInfoForm({
           />
         </Field>
       ) : (
-        <p className="text-sm text-muted">
+        <FormNotice variant="info">
           Related SSN fields on court forms will be left blank. You can add this later if the court
           requires it.
-        </p>
+        </FormNotice>
       )}
 
       <Checkbox
@@ -298,6 +308,8 @@ export function ClientInfoForm({
       {!dlUnknown ? (
         <Field
           label="Driver's license (last 4 digits)"
+          htmlFor="driver_license_last4"
+          required
           hint="Used on the Preliminary Injunction (DR14) party description. Exactly 4 digits."
         >
           <TextInput
@@ -312,31 +324,34 @@ export function ClientInfoForm({
           />
         </Field>
       ) : (
-        <p className="text-sm text-muted">
+        <FormNotice variant="info">
           The Preliminary Injunction license field will be left blank. You can update this later if
           you obtain a license number.
-        </p>
+        </FormNotice>
       )}
+      </FormSection>
 
-      <div>
-        <p className="field-label">Do you need a court interpreter?</p>
+      <FormSection title="Court services">
+        <QuestionBlock required>Do you need a court interpreter?</QuestionBlock>
         <YesNo
           name="interpreter_needed"
           value={interpreterNeeded}
           onChange={setInterpreterNeeded}
         />
-      </div>
 
-      {interpreterNeeded === true ? (
-        <Field label="What language?">
-          <TextInput
-            name="interpreter_language"
-            defaultValue={initial.interpreter_language}
-            required
-            placeholder="e.g. Spanish"
-          />
-        </Field>
-      ) : null}
+        {interpreterNeeded === true ? (
+          <FormDependent>
+            <Field label="What language?" htmlFor="interpreter_language" required>
+              <TextInput
+                name="interpreter_language"
+                defaultValue={initial.interpreter_language}
+                required
+                placeholder="e.g. Spanish"
+              />
+            </Field>
+          </FormDependent>
+        ) : null}
+      </FormSection>
     </StepShell>
   );
 }

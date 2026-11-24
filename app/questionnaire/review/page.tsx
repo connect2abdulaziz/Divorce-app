@@ -15,17 +15,17 @@ export default async function ReviewPage() {
 
   return (
     <FormPanel>
-      <div className="border-b border-line/70 px-6 py-7 md:px-8">
-        <h2 className="font-serif text-[1.75rem] font-semibold leading-tight text-ink">
-          Review your answers
-        </h2>
-        <p className="mt-2 text-[15px] leading-relaxed text-muted">
-          Check everything below before submitting. You can jump back to any section to make a
-          correction. The information you provide will be used to prepare your divorce documents.
-        </p>
+      <div className="ldd-q-card-header">
+        <div className="ldd-q-card-header__main">
+          <h2 className="ldd-q-card-title">Review your answers</h2>
+          <p className="ldd-q-card-subtitle">
+            Check everything below before submitting. You can jump back to any section to make a
+            correction. The information you provide will be used to prepare your divorce documents.
+          </p>
+        </div>
       </div>
 
-      <div className="px-6 md:px-8">
+      <div className="ldd-q-card-body ldd-q-card-body--review">
         <CaseSummary caseId={caseId} editHrefFor={(slug) => `/questionnaire/${slug}?from=review`} />
       </div>
 

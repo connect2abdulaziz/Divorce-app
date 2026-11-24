@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useMarketingSession } from "@/components/marketing/hooks/useMarketingSession";
 import { DIALOG_MESSAGES, packageForHelp } from "@/lib/marketing/content";
 import { Icon } from "./Icon";
 import { PrimaryButton } from "./PrimaryButton";
@@ -37,6 +38,7 @@ export function ServiceDialog({
   onClose: () => void;
 }) {
   const router = useRouter();
+  const { isAuthed, ready } = useMarketingSession();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const message = dialogKey ? DIALOG_MESSAGES[dialogKey] : null;
   const summary = summarizeQualification(qualification);
@@ -49,15 +51,7 @@ export function ServiceDialog({
     if (!dialog) return;
 
     if (message && !dialog.open) {
-      if ("showModal" in dialog) {
-        try {
-          dialog.showModal({ preventScroll: true } as never);
-        } catch {
-          dialog.showModal();
-        }
-      } else {
-        dialog.showModal();
-      }
+      dialog.showModal();
     }
 
     if (!message && dialog.open) {
@@ -94,7 +88,11 @@ export function ServiceDialog({
   };
 
   const continueLabel =
-    dialogKey === "portal" ? "Continue to sign in" : "Continue to sign up";
+    dialogKey === "portal"
+      ? "Continue to sign in"
+      : ready && isAuthed
+        ? "Continue to dashboard"
+        : "Continue to sign up";
 
   return (
     <dialog

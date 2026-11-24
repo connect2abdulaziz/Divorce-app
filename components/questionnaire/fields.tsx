@@ -1,19 +1,48 @@
+const INPUT_CLASS = "ldd-q-input";
+const SELECT_CLASS = "ldd-q-select";
+
 export function Field({
   label,
   hint,
   children,
+  required,
+  optional,
+  htmlFor,
+  error,
 }: {
   label: string;
   hint?: string;
   children: React.ReactNode;
+  required?: boolean;
+  optional?: boolean;
+  htmlFor?: string;
+  error?: string;
 }) {
   return (
-    <div>
-      <label className="field-label">{label}</label>
-      {children}
-      {hint && <p className="field-hint">{hint}</p>}
+    <div className="ldd-q-field">
+      <label className="ldd-q-label" htmlFor={htmlFor}>
+        <span className="ldd-q-label__text">{label}</span>
+        {required ? (
+          <span className="ldd-q-required" aria-hidden="true">
+            {" "}
+            *
+          </span>
+        ) : null}
+        {optional && !required ? <span className="ldd-q-optional"> (optional)</span> : null}
+      </label>
+      <div className="ldd-q-field__control">{children}</div>
+      {hint ? <p className="ldd-q-hint">{hint}</p> : null}
+      {error ? (
+        <p className="ldd-q-error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
+}
+
+export function FormDependent({ children }: { children: React.ReactNode }) {
+  return <div className="ldd-q-dependent">{children}</div>;
 }
 
 export function TextInput({
@@ -30,6 +59,7 @@ export function TextInput({
   autoComplete,
   title,
   onInput,
+  "aria-invalid": ariaInvalid,
 }: {
   name: string;
   defaultValue?: string | null;
@@ -44,10 +74,12 @@ export function TextInput({
   autoComplete?: string;
   title?: string;
   onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
+  "aria-invalid"?: boolean;
 }) {
   return (
     <input
-      className="field-input"
+      className={INPUT_CLASS}
+      id={name}
       type={type}
       name={name}
       defaultValue={defaultValue ?? ""}
@@ -61,6 +93,7 @@ export function TextInput({
       autoComplete={autoComplete}
       title={title}
       onInput={onInput}
+      aria-invalid={ariaInvalid}
     />
   );
 }
@@ -102,7 +135,6 @@ export function BirthDateInput({
   );
 }
 
-/** Digits and common phone punctuation only — blocks letters. */
 const PHONE_CHARS = /[^0-9+()\-.\s]/g;
 
 export function sanitizePhone(value: string | null | undefined) {
@@ -157,7 +189,8 @@ export function NumberInput({
 }) {
   return (
     <input
-      className="field-input"
+      className={INPUT_CLASS}
+      id={name}
       type="number"
       inputMode="decimal"
       step={step}
@@ -171,10 +204,13 @@ export function NumberInput({
 
 export function CurrencyInput(props: Omit<Parameters<typeof NumberInput>[0], "step">) {
   return (
-    <div className="relative">
-      <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted">$</span>
+    <div className="ldd-q-currency">
+      <span className="ldd-q-currency__prefix" aria-hidden="true">
+        $
+      </span>
       <input
-        className="field-input pl-8"
+        className={`${INPUT_CLASS} ldd-q-currency__input`}
+        id={props.name}
         type="number"
         inputMode="decimal"
         step="0.01"
@@ -200,7 +236,8 @@ export function TextArea({
 }) {
   return (
     <textarea
-      className="field-input min-h-[6rem] resize-y"
+      className={`${INPUT_CLASS} ldd-q-textarea`}
+      id={name}
       name={name}
       defaultValue={defaultValue ?? ""}
       rows={rows}
@@ -232,7 +269,13 @@ export function Select({
       : { defaultValue: defaultValue ?? "" };
 
   return (
-    <select className="field-select" name={name} required={required} {...controlledProps}>
+    <select
+      className={SELECT_CLASS}
+      id={name}
+      name={name}
+      required={required}
+      {...controlledProps}
+    >
       <option value="" disabled>
         {placeholder}
       </option>
@@ -245,45 +288,44 @@ export function Select({
   );
 }
 
-// A yes/no toggle, styled as two large tappable buttons rather than a
-// dropdown, since this is the question that decides whether a whole section
-// of the form appears — it deserves to be unmistakable, not buried.
+function yesNoOptionClass(selected: boolean) {
+  return selected ? "ldd-q-yesno__option is-selected" : "ldd-q-yesno__option";
+}
+
 export function YesNo({
   name,
   value,
   onChange,
+  label,
 }: {
   name: string;
   value: boolean | null;
   onChange: (next: boolean) => void;
+  /** Accessible name when not wrapped in QuestionBlock */
+  label?: string;
 }) {
+  const groupLabel = label ?? name;
   return (
-    <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label={name}>
+    <div className="ldd-q-yesno" role="radiogroup" aria-label={groupLabel}>
       <button
         type="button"
         role="radio"
         aria-checked={value === true}
         onClick={() => onChange(true)}
-        className={
-          value === true
-            ? "rounded-xl border border-accent bg-accent-soft px-5 py-3 text-sm font-medium text-ink shadow-sm"
-            : "rounded-xl border border-line bg-white px-5 py-3 text-sm font-medium text-ink hover:border-accent hover:bg-accent-soft/50"
-        }
+        className={yesNoOptionClass(value === true)}
       >
-        Yes
+        <span className="ldd-q-yesno__indicator" aria-hidden="true" />
+        <span>Yes</span>
       </button>
       <button
         type="button"
         role="radio"
         aria-checked={value === false}
         onClick={() => onChange(false)}
-        className={
-          value === false
-            ? "rounded-xl border border-accent bg-accent-soft px-5 py-3 text-sm font-medium text-ink shadow-sm"
-            : "rounded-xl border border-line bg-white px-5 py-3 text-sm font-medium text-ink hover:border-accent hover:bg-accent-soft/50"
-        }
+        className={yesNoOptionClass(value === false)}
       >
-        No
+        <span className="ldd-q-yesno__indicator" aria-hidden="true" />
+        <span>No</span>
       </button>
     </div>
   );
@@ -324,15 +366,15 @@ export function Checkbox({
       : { defaultChecked: defaultChecked ?? false };
 
   return (
-    <label className="flex items-start gap-3 text-sm text-ink">
+    <label className="ldd-q-checkbox">
       <input
         type="checkbox"
         name={name}
         value="true"
-        className="mt-0.5 h-4 w-4 rounded border-line text-accent focus:ring-accent"
+        className="ldd-q-checkbox__input"
         {...controlled}
       />
-      <span>{label}</span>
+      <span className="ldd-q-checkbox__label">{label}</span>
     </label>
   );
 }

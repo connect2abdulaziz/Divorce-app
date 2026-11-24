@@ -1,11 +1,13 @@
-import Link from "next/link";
-import { SignOutButton } from "@/components/auth/SignOutButton";
+import { QuestionnaireHeaderBar } from "@/components/questionnaire/QuestionnaireHeaderBar";
+import { QuestionnaireSidebar } from "@/components/questionnaire/QuestionnaireSidebar";
 import { ProgressRailWithPath } from "@/components/questionnaire/ProgressRailWithPath";
 import { isStaffRole } from "@/lib/admin/current-staff";
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
 import { toStepInfo, visibleSteps } from "@/lib/questionnaire/steps";
 import { createClient } from "@/lib/supabase/server";
+import "../dashboard/dashboard.css";
+import "./questionnaire.css";
 
 function formatSavedAt(iso: string) {
   const d = new Date(iso);
@@ -27,34 +29,22 @@ export default async function QuestionnaireLayout({ children }: { children: Reac
   const steps = visibleSteps(gates).map(toStepInfo);
 
   return (
-    <div className="min-h-screen bg-paper">
-      <header className="sticky top-0 z-20 border-b border-line/70 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-5 py-3.5 md:px-8">
-          <Link href="/" className="text-[11px] font-medium uppercase tracking-[0.16em] text-navy hover:text-accent">
-            Legal Divorce Docs
-          </Link>
-          <div className="flex items-center gap-3 text-sm text-muted sm:gap-4">
-            <Link href="/dashboard" className="btn-text">
-              My case
-            </Link>
-            {showAdmin && (
-              <Link href="/admin" className="btn-text">
-                Admin
-              </Link>
-            )}
-            <span className="hidden max-w-[14rem] truncate sm:inline">{user.email}</span>
-            <span className="hidden md:inline">Saved {formatSavedAt(kase.last_saved_at)}</span>
-            <SignOutButton />
-          </div>
-        </div>
-
-        <ProgressRailWithPath
-          steps={steps}
-          lastCompletedSlug={kase.last_completed_section}
+    <div className="ldd-questionnaire">
+      <header className="ldd-dashboard-header ldd-questionnaire-header sticky top-0 z-30 print:hidden">
+        <QuestionnaireHeaderBar
+          userEmail={user.email ?? ""}
+          savedAtLabel={formatSavedAt(kase.last_saved_at)}
+          showAdmin={showAdmin}
         />
+        <ProgressRailWithPath steps={steps} lastCompletedSlug={kase.last_completed_section} />
       </header>
 
-      <main className="mx-auto max-w-3xl px-5 py-8 md:px-8 md:py-12">{children}</main>
+      <main className="ldd-questionnaire__main">
+        <div className="ldd-questionnaire__workspace">
+          <QuestionnaireSidebar steps={steps} lastCompletedSlug={kase.last_completed_section} />
+          <div className="ldd-questionnaire__form">{children}</div>
+        </div>
+      </main>
     </div>
   );
 }

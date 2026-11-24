@@ -181,6 +181,31 @@ export function stepLinks(
 }
 
 /** Progress bar from the current step so the % never jumps backward from gate changes. */
+export type SidebarStepState = "completed" | "current" | "upcoming";
+
+/** Sidebar progress: uses visible step order + persisted last_completed_section (never infers from URL alone). */
+export function sidebarStepState(
+  stepIndex: number,
+  currentIndex: number,
+  lastCompletedIndex: number
+): SidebarStepState {
+  if (currentIndex >= 0 && stepIndex === currentIndex) return "current";
+  if (lastCompletedIndex >= 0 && stepIndex <= lastCompletedIndex) return "completed";
+  return "upcoming";
+}
+
+export function resolveSidebarIndices(
+  steps: StepInfo[],
+  currentSlug: string,
+  lastCompletedSlug: string | null
+) {
+  const currentIndex = steps.findIndex((s) => s.slug === currentSlug);
+  const lastCompletedIndex = lastCompletedSlug
+    ? steps.findIndex((s) => s.slug === lastCompletedSlug)
+    : -1;
+  return { currentIndex, lastCompletedIndex };
+}
+
 export function percentComplete(
   gates: CaseGates,
   lastCompletedSlug: string | null,

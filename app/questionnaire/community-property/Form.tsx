@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { updateCaseGates } from "@/lib/questionnaire/actions";
 import { YesNo } from "@/components/questionnaire/fields";
+import { QuestionBlock } from "@/components/questionnaire/QuestionBlock";
 import { StepFrame } from "@/components/questionnaire/StepFrame";
 
 export function CommunityPropertyForm({
@@ -61,14 +62,14 @@ export function CommunityPropertyForm({
       continueLabel={submitLabel}
       onContinue={handleContinue}
     >
-      <div>
-        <p className="field-label">Do you have any community property acquired during the marriage?</p>
-        <YesNo
-          name="has_community_property"
-          value={hasCommunityProperty}
-          onChange={setHasCommunityProperty}
-        />
-      </div>
+      <QuestionBlock required>
+        Do you have any community property acquired during the marriage?
+      </QuestionBlock>
+      <YesNo
+        name="has_community_property"
+        value={hasCommunityProperty}
+        onChange={setHasCommunityProperty}
+      />
     </StepFrame>
   );
 }

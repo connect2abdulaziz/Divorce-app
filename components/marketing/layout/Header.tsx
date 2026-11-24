@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { NAV_LINKS } from "@/lib/marketing/content";
+import { useMarketingSession } from "@/components/marketing/hooks/useMarketingSession";
 import { Brand } from "../ui/Brand";
 import { PrimaryButton } from "../ui/PrimaryButton";
 
@@ -15,6 +17,8 @@ export function Header({
   onStart: () => void;
   onSignIn: () => void;
 }) {
+  const { isAuthed, ready } = useMarketingSession();
+
   return (
     <header className="header">
       <div className="header-inner">
@@ -25,9 +29,15 @@ export function Header({
               {link.label}
             </a>
           ))}
-          <button className="login-link" type="button" onClick={onSignIn}>
-            Sign In
-          </button>
+          {ready && isAuthed ? (
+            <Link href="/dashboard" className="login-link">
+              Dashboard
+            </Link>
+          ) : (
+            <button className="login-link" type="button" onClick={onSignIn}>
+              Sign In
+            </button>
+          )}
         </nav>
         <PrimaryButton className="header-cta marketing-cta-primary" onClick={onStart}>
           Start my divorce
