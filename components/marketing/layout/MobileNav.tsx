@@ -33,12 +33,13 @@ export function MobileNav({
           Sign In
         </button>
         <PrimaryButton
+          className="marketing-cta-primary"
           onClick={() => {
             onClose();
             onStart();
           }}
         >
-          Start My Divorce
+          Start my divorce
         </PrimaryButton>
       </nav>
     </>

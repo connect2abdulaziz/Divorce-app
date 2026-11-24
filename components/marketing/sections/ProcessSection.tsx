@@ -1,37 +1,37 @@
 ﻿"use client";
-// @ts-nocheck
 
-import { PROCESS_STEPS } from '@/lib/marketing/content';
-import { PrimaryButton } from '../ui/PrimaryButton';
+import { PROCESS_STEPS } from "@/lib/marketing/content";
+import { PrimaryButton } from "../ui/PrimaryButton";
 
 export function ProcessSection({ onStart }: { onStart: () => void }) {
   return (
-    <section className="section process" id="how-it-works" aria-labelledby="process-heading">
-      <div className="section-intro reveal">
-        <h2 id="process-heading">From Starting Your Case to Completing Your Divorce</h2>
-      </div>
+    <section className="ldd-process" id="how-it-works" aria-labelledby="process-heading">
+      <div className="ldd-process__container">
+        <header className="ldd-process__header reveal">
+          <div className="ldd-process__intro">
+            <p className="ldd-process__eyebrow">How it works</p>
+            <h2 id="process-heading" className="ldd-process__heading">
+              From starting your case to <em>completing your divorce.</em>
+            </h2>
+          </div>
+          <PrimaryButton className="ldd-process__cta" icon="chevronDown" onClick={onStart}>
+            Get started
+          </PrimaryButton>
+        </header>
 
-      <ol className="process-track">
-        {PROCESS_STEPS.map((step, index) => (
-          <li className="process-step reveal" key={step.number}>
-            <span className="process-number">{step.number}</span>
-            <div>
-              <h3>{step.title}</h3>
-              <p>{step.body}</p>
-            </div>
-            {index < PROCESS_STEPS.length - 1 ? (
-              <span className="process-arrow" aria-hidden="true">
-                {"\u2192"}
+        <ol className="ldd-process__timeline">
+          {PROCESS_STEPS.map((step, index) => (
+            <li className="ldd-process__step" key={step.number}>
+              <span className="ldd-process__marker" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
               </span>
-            ) : null}
-          </li>
-        ))}
-      </ol>
-
-      <div className="section-cta reveal">
-        <PrimaryButton className="cta-strong" onClick={onStart}>
-          Get Started
-        </PrimaryButton>
+              <div className="ldd-process__step-content">
+                <h3 className="ldd-process__step-title">{step.title}</h3>
+                <p className="ldd-process__step-description">{step.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
