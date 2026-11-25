@@ -122,7 +122,7 @@ export function ContactPage() {
                   </li>
                 </ul>
 
-                <motionDivider />
+                <MotionDivider />
 
                 <div className="ldd-contact-block__assist">
                   <h3 className="ldd-contact-block__assist-title">We can assist you with</h3>
