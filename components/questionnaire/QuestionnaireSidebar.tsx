@@ -7,6 +7,8 @@ import {
   sidebarStepState,
   type StepInfo,
 } from "@/lib/questionnaire/steps";
+import { QuestionnaireProgressIndicator } from "./QuestionnaireProgressIndicator";
+import { useQuestionnaireProgress } from "./useQuestionnaireProgress";
 
 function CheckIcon() {
   return (
@@ -31,6 +33,7 @@ export function QuestionnaireSidebar({
 }) {
   const pathname = usePathname();
   const currentSlug = pathname.split("/").filter(Boolean).pop() ?? "client-info";
+  const { percent, stepLabel, stepLabelCompact } = useQuestionnaireProgress(steps);
   const { currentIndex, lastCompletedIndex } = resolveSidebarIndices(
     steps,
     currentSlug,
@@ -62,6 +65,12 @@ export function QuestionnaireSidebar({
       aria-label="Questionnaire sections"
     >
       <p className="ldd-questionnaire-sidebar__eyebrow">Your questionnaire</p>
+      <QuestionnaireProgressIndicator
+        percent={percent}
+        stepLabel={stepLabel}
+        stepLabelCompact={stepLabelCompact}
+        variant="sidebar"
+      />
       <ol className="ldd-questionnaire-sidebar__list">
         {steps.map((step, index) => {
           const state = sidebarStepState(index, currentIndex, lastCompletedIndex);

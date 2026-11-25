@@ -40,6 +40,11 @@ export function StepShell({
     };
   }, []);
 
+  useEffect(() => {
+    if (!onAutoSave) return;
+    window.dispatchEvent(new CustomEvent("ldd-q-autosave-status", { detail: autoStatus }));
+  }, [autoStatus, onAutoSave]);
+
   function scheduleAutoSave() {
     if (!onAutoSave || skipAutoSaveRef.current) return;
     if (timerRef.current) clearTimeout(timerRef.current);
