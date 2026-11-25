@@ -67,6 +67,24 @@ const ICONS = {
   ),
   chevronDown: <path d="m6 9 6 6 6-6" />,
   chevronUp: <path d="m18 15-6-6-6 6" />,
+  mail: (
+    <>
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <path d="m22 6-10 7L2 6" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </>
+  ),
+  send: (
+    <>
+      <path d="m22 2-7 20-4-9-9-4 20-7z" />
+      <path d="M22 2 11 13" />
+    </>
+  ),
   user: (
     <>
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
