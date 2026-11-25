@@ -1,6 +1,6 @@
 import { QuestionnaireHeaderBar } from "@/components/questionnaire/QuestionnaireHeaderBar";
 import { QuestionnaireSidebar } from "@/components/questionnaire/QuestionnaireSidebar";
-import { ProgressRailWithPath } from "@/components/questionnaire/ProgressRailWithPath";
+import { QuestionnaireMobileProgress } from "@/components/questionnaire/QuestionnaireMobileProgress";
 import { isStaffRole } from "@/lib/admin/current-staff";
 import { getCurrentUserAndCase } from "@/lib/questionnaire/current-case";
 import { loadCaseBundle } from "@/lib/questionnaire/data";
@@ -33,10 +33,11 @@ export default async function QuestionnaireLayout({ children }: { children: Reac
       <header className="ldd-dashboard-header ldd-questionnaire-header sticky top-0 z-30 print:hidden">
         <QuestionnaireHeaderBar
           userEmail={user.email ?? ""}
-          savedAtLabel={formatSavedAt(kase.last_saved_at)}
+          savedAtLabel={kase.last_saved_at ? formatSavedAt(kase.last_saved_at) : ""}
+          hasSavedTimestamp={Boolean(kase.last_saved_at)}
           showAdmin={showAdmin}
         />
-        <ProgressRailWithPath steps={steps} lastCompletedSlug={kase.last_completed_section} />
+        <QuestionnaireMobileProgress steps={steps} />
       </header>
 
       <main className="ldd-questionnaire__main">
