@@ -1,8 +1,35 @@
+export type PolicySlug = "privacy" | "terms" | "refund" | "disclaimer";
+
 export type PolicyDoc = {
-  slug: "privacy" | "terms" | "refund" | "disclaimer";
+  slug: PolicySlug;
   title: string;
   summary: string;
   sections: { heading: string; paragraphs: string[] }[];
+};
+
+export const POLICY_NAV: {
+  slug: PolicySlug;
+  href: string;
+  label: string;
+  icon: "shield" | "document" | "refund" | "info";
+}[] = [
+  { slug: "privacy", href: "/privacy", label: "Privacy Policy", icon: "shield" },
+  { slug: "terms", href: "/terms", label: "Terms of Service", icon: "document" },
+  { slug: "refund", href: "/refund", label: "Refund Policy", icon: "refund" },
+  { slug: "disclaimer", href: "/disclaimer", label: "Disclaimer", icon: "info" },
+];
+
+/** Stable anchor IDs for in-page navigation (derived from section headings). */
+export function policySectionId(heading: string) {
+  return heading
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** First section id to show in a warm notice panel (existing copy only). */
+export const POLICY_CALLOUT_SECTION_ID: Partial<Record<PolicySlug, string>> = {
+  terms: policySectionId("Not a law firm"),
 };
 
 export const POLICY_DOCS: PolicyDoc[] = [
