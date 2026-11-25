@@ -113,7 +113,7 @@ export function AboutUsPage() {
       <section className="ldd-about-final-cta" aria-labelledby="about-cta-heading">
         <div className="ldd-about-final-cta__inner">
           <div className="ldd-about-final-cta__banner reveal">
-            <div className="ldd-about-final-cta__content">
+            <div className="ldd-about-final-cta__copy">
               <p className="ldd-about-final-cta__eyebrow">Take the next step</p>
               <h2 id="about-cta-heading" className="ldd-about-final-cta__heading">
                 Ready to see if this <em>fits your case?</em>
@@ -121,6 +121,8 @@ export function AboutUsPage() {
               <p className="ldd-about-final-cta__description">
                 Answer a few questions and start your Arizona divorce document questionnaire.
               </p>
+            </div>
+            <div className="ldd-about-final-cta__action">
               <PrimaryButton
                 className="ldd-about-final-cta__button"
                 icon="chevronDown"

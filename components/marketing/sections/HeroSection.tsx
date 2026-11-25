@@ -1,11 +1,8 @@
 ﻿"use client";
 
-import Image from "next/image";
 import { PrimaryButton } from "../ui/PrimaryButton";
 import { TextLink } from "../ui/TextLink";
 import { Icon } from "../ui/Icon";
-
-const HERO_IMAGE = "/assets/campaign-justice.webp";
 
 const HERO_FEATURES = [
   {
@@ -22,6 +19,25 @@ const HERO_FEATURES = [
     icon: "compass",
     title: "Guided process",
     description: "Step-by-step preparation",
+  },
+] as const;
+
+const HERO_PANEL_STEPS = [
+  {
+    number: "01",
+    title: "Check your eligibility",
+    description:
+      "Understand whether our document preparation service is suitable for your situation.",
+  },
+  {
+    number: "02",
+    title: "Complete your questionnaire",
+    description: "Provide your information through our guided, step-by-step process.",
+  },
+  {
+    number: "03",
+    title: "Get your documents prepared",
+    description: "Your information is used to prepare your Arizona divorce documents.",
   },
 ] as const;
 
@@ -52,16 +68,49 @@ export function HeroSection({ onStart }: { onStart: () => void }) {
         </div>
 
         <div className="ldd-hero__visual-slot">
-          <div className="ldd-hero__visual">
-            <Image
-              src={HERO_IMAGE}
-              alt="Representative editorial photograph for the homepage; not a depiction of a specific consultation."
-              fill
-              priority
-              sizes="(min-width: 1024px) min(46vw, 560px), 100vw"
-              className="ldd-hero__visual-img"
-            />
-          </div>
+          <aside
+            className="ldd-hero__visual ldd-hero__service-panel"
+            aria-labelledby="ldd-hero-panel-heading"
+          >
+            <div className="ldd-hero__panel-head">
+              <p className="ldd-hero__panel-eyebrow">A clear path forward</p>
+              <h2 id="ldd-hero-panel-heading" className="ldd-hero__panel-title">
+                <span className="ldd-hero__panel-title-line ldd-hero__panel-title-line--primary">
+                  Divorce paperwork.
+                </span>
+                <span className="ldd-hero__panel-title-line ldd-hero__panel-title-line--accent">
+                  <em>Without the complexity.</em>
+                </span>
+              </h2>
+              <div className="ldd-hero__panel-head-rule" role="presentation" />
+            </div>
+
+            <ol className="ldd-hero__panel-steps">
+              {HERO_PANEL_STEPS.map((step, index) => (
+                <li key={step.number} className="ldd-hero__panel-step">
+                  <span className="ldd-hero__panel-step-num" aria-hidden="true">
+                    {step.number}
+                  </span>
+                  <div
+                    className={`ldd-hero__panel-step-body${index > 0 ? " ldd-hero__panel-step-body--divided" : ""}`}
+                  >
+                    <h3 className="ldd-hero__panel-step-title">{step.title}</h3>
+                    <p className="ldd-hero__panel-step-desc">{step.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+
+            <div className="ldd-hero__panel-cred">
+              <span className="ldd-hero__panel-cred-icon" aria-hidden="true">
+                <Icon name="shield" size={22} />
+              </span>
+              <div className="ldd-hero__panel-cred-copy">
+                <p className="ldd-hero__panel-cred-title">Arizona Certified Legal Document Preparer</p>
+                <p className="ldd-hero__panel-cred-sub">Professional document preparation support</p>
+              </div>
+            </div>
+          </aside>
         </div>
 
         <div className="ldd-hero__notch">

@@ -185,8 +185,8 @@ export function ServicesPage() {
 
       <section className="ldd-services-final-cta" aria-labelledby="services-cta-heading">
         <div className="ldd-services-final-cta__inner">
-          <div className="ldd-services-final-cta__banner reveal">
-            <div className="ldd-services-final-cta__content">
+          <div className="ldd-services-final-cta__card reveal">
+            <div className="ldd-services-final-cta__copy">
               <p className="ldd-services-final-cta__eyebrow">Take the next step</p>
               <h2 id="services-cta-heading" className="ldd-services-final-cta__heading">
                 Not sure which package <em>is right for you?</em>
@@ -194,6 +194,8 @@ export function ServicesPage() {
               <p className="ldd-services-final-cta__description">
                 Answer a few questions about your situation and find the service that fits your needs.
               </p>
+            </div>
+            <div className="ldd-services-final-cta__action">
               <PrimaryButton
                 className="ldd-services-final-cta__button"
                 icon="chevronDown"
