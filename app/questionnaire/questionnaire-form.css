@@ -13,10 +13,12 @@
   --q-accent-soft: #e6f5f0;
   --q-error: #9b3b3b;
   --q-error-bg: #fdf5f5;
-  --q-warm: #f7f4ef;
-  --q-warm-border: #e8e0d6;
+  /* Cool neutrals — aligned with marketing --paper / hero canvas */
+  --q-panel: #e7eef2;
+  --q-subtle: #f5f8fb;
   --q-warning: #9b6b3b;
-  --q-warning-bg: #faf6f0;
+  --q-warning-bg: #eef3f7;
+  --q-warning-border: #d9c4a8;
   --q-surface: #ffffff;
   --q-input-h: 48px;
   --q-radius: 10px;
@@ -115,7 +117,7 @@
   gap: 16px;
   padding: 18px 20px;
   border-top: 1px solid var(--q-line);
-  background: var(--q-warm);
+  background: var(--q-subtle);
 }
 
 @media (min-width: 768px) {
@@ -445,8 +447,8 @@
 }
 
 .ldd-questionnaire .ldd-q-notice--info {
-  background: var(--q-warm);
-  border: 1px solid var(--q-warm-border);
+  background: var(--q-panel);
+  border: 1px solid var(--q-line);
   color: var(--q-label);
 }
 
@@ -458,7 +460,7 @@
 
 .ldd-questionnaire .ldd-q-notice--warning {
   background: var(--q-warning-bg);
-  border: 1px solid #e8d9c8;
+  border: 1px solid var(--q-warning-border);
   color: var(--q-warning);
 }
 
@@ -567,7 +569,7 @@
   padding: 14px 16px;
   border: 1px solid var(--q-line);
   border-radius: 12px;
-  background: var(--q-warm);
+  background: var(--q-subtle);
 }
 
 .ldd-questionnaire .ldd-q-repeat__item--column {
