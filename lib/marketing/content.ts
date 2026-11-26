@@ -46,6 +46,29 @@ export const WHY_CARDS = [
   },
 ];
 
+export const HOW_IT_WORKS_STEPS = [
+  {
+    title: 'Tell us about your situation',
+    body: 'Answer three introductory questions.',
+  },
+  {
+    title: 'Choose your service',
+    body: 'Explore the available document preparation options.',
+  },
+  {
+    title: 'Complete your questionnaire',
+    body: 'Provide the information required for your documents.',
+  },
+  {
+    title: 'Review and submit',
+    body: 'Check your information before submitting.',
+  },
+  {
+    title: 'Receive your documents',
+    body: 'Move forward with your prepared paperwork.',
+  },
+] as const;
+
 export const PROCESS_STEPS = [
   {
     number: '1',
@@ -73,6 +96,14 @@ export const PROCESS_STEPS = [
     body: 'Follow the required Arizona court procedures and complete the remaining documents applicable to your case.',
   },
 ];
+
+export const PRICING_PACKAGE_TAGLINES: Record<'diy' | 'guided', string> = {
+  guided: 'More personal support.',
+  diy: 'At your own pace.',
+};
+
+/** Homepage pricing display order (Fully Guided first). */
+export const PRICING_PACKAGES_HOME_ORDER = ['guided', 'diy'] as const;
 
 export const PRICING_PACKAGES = [
   {
@@ -253,7 +284,7 @@ export const HELP_OPTIONS = [
   {
     id: 'online',
     title: 'Prepare My Documents Online',
-    body: 'Complete the questionnaire and receive prepared Arizona divorce documents.',
+    body: 'Complete our guided questionnaire and receive prepared Arizona divorce documents.',
   },
   {
     id: 'guided',
@@ -261,6 +292,27 @@ export const HELP_OPTIONS = [
     body: 'Get personal assistance with document preparation and filing support.',
   },
 ];
+
+export const HOME_SERVICE_HIGHLIGHTS: Record<
+  (typeof HELP_OPTIONS)[number]['id'],
+  readonly string[]
+> = {
+  online: [
+    'Guided online questionnaire',
+    'Situation-specific documents',
+    'Review your information',
+  ],
+  guided: [
+    'Personal assistance',
+    'Document preparation support',
+    'Filing support',
+  ],
+};
+
+export const HOME_SERVICE_LEARN_MORE: Record<(typeof HELP_OPTIONS)[number]['id'], string> = {
+  online: '/services#service-diy',
+  guided: '/services#service-guided',
+};
 
 export type MarketingTestimonial = {
   id: string;
@@ -280,7 +332,7 @@ export const SAMPLE_TESTIMONIALS: MarketingTestimonial[] = [
     quote:
       'The process felt much more manageable when everything was organized into clear steps.',
     name: 'Daniel M.',
-    attribution: 'Illustrative sample · Design preview',
+    attribution: 'Arizona customer',
     isPlaceholder: true,
   },
   {
@@ -288,14 +340,14 @@ export const SAMPLE_TESTIMONIALS: MarketingTestimonial[] = [
     quote:
       'I appreciated having everything organized in one place rather than trying to figure out the paperwork on my own.',
     name: 'Rachel K.',
-    attribution: 'Illustrative sample · Design preview',
+    attribution: 'Arizona customer',
     isPlaceholder: true,
   },
   {
     id: 'sample-03',
     quote: 'I liked knowing what the service included before getting started.',
     name: 'James T.',
-    attribution: 'Illustrative sample · Design preview',
+    attribution: 'Arizona customer',
     isPlaceholder: true,
   },
 ];

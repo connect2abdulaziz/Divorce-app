@@ -1,125 +1,111 @@
 ﻿"use client";
 
-import { COMPARISON_ROWS } from "@/lib/marketing/content";
+import { Fragment } from "react";
 import { Icon } from "../ui/Icon";
-import { PrimaryButton } from "../ui/PrimaryButton";
 
-function ComparisonValue({
-  value,
-  variant,
+const COMPARISON_POINTS = [
+  {
+    brand: "Guided online questionnaire",
+    alternative: "Identify the appropriate forms independently",
+  },
+  {
+    brand: "Document preparation support",
+    alternative: "Complete your paperwork manually",
+  },
+  {
+    brand: "Options based on your circumstances",
+    alternative: "Determine which documents apply to your situation",
+  },
+  {
+    brand: "Complete information at your own pace",
+    alternative: "Research document requirements independently",
+  },
+] as const;
+
+function ComparisonRow({
+  text,
+  icon,
+  isLast,
 }: {
-  value: boolean | string;
-  variant: "brand" | "light";
+  text: string;
+  icon: "check" | "cross";
+  isLast: boolean;
 }) {
-  if (value === true) {
-    return (
-      <span className="ldd-comparison__value">
-        <Icon name="check" size={18} />
-        <span>Yes</span>
+  return (
+    <div
+      className={[
+        "ldd-comparison__row",
+        isLast ? "ldd-comparison__row--last" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <span className="ldd-comparison__row-icon" aria-hidden="true">
+        {icon === "check" ? (
+          <Icon name="check" size={18} />
+        ) : (
+          <Icon name="close" size={16} />
+        )}
       </span>
-    );
-  }
-
-  if (value === false) {
-    return (
-      <span
-        className={
-          variant === "brand"
-            ? "ldd-comparison__negative"
-            : "ldd-comparison__negative ldd-comparison__negative--light"
-        }
-      >
-        No
-      </span>
-    );
-  }
-
-  if (value === "$450") {
-    return <span className="ldd-comparison__price">$450</span>;
-  }
-
-  return <span>{value}</span>;
+      <span className="ldd-comparison__row-text">{text}</span>
+    </div>
+  );
 }
 
-export function ComparisonSection({ onStart }: { onStart: () => void }) {
+export function ComparisonSection() {
   return (
     <section className="ldd-comparison" id="comparison" aria-labelledby="comparison-heading">
       <div className="ldd-comparison__inner">
-        <div className="ldd-comparison__intro reveal">
+        <header className="ldd-comparison__intro">
           <p className="ldd-comparison__eyebrow">Compare your options</p>
           <h2 id="comparison-heading" className="ldd-comparison__heading">
-            <span>Different services.</span>
-            <em>Different kinds of support.</em>
+            A simpler way to prepare your divorce paperwork.
           </h2>
-        </div>
+        </header>
 
-        <div
-          className="ldd-comparison__table-scroll reveal"
-          role="region"
-          aria-label="Service comparison"
-          tabIndex={0}
-        >
-          <p className="ldd-comparison__table-scroll-hint">Scroll to compare</p>
-          <div className="ldd-comparison__table-frame">
-            <table className="ldd-comparison__table" aria-labelledby="comparison-heading">
-              <colgroup>
-                <col className="ldd-comparison__col-criteria" />
-                <col className="ldd-comparison__col-brand" />
-                <col className="ldd-comparison__col-attorney" />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th scope="col">
-                    <span className="ldd-comparison__criteria-label">What to expect</span>
-                  </th>
-                  <th scope="col" className="ldd-comparison__brand-cell">
-                    <div className="ldd-comparison__service-heading ldd-comparison__service-heading--brand">
-                      <Icon name="document" size={22} className="ldd-comparison__service-icon" />
-                      <strong>Legal Divorce Docs</strong>
-                      <span>Document preparation</span>
-                    </div>
-                  </th>
-                  <th scope="col">
-                    <div className="ldd-comparison__service-heading">
-                      <Icon name="scale" size={22} className="ldd-comparison__service-icon ldd-comparison__service-icon--muted" />
-                      <strong>Traditional Attorney</strong>
-                      <span>Legal representation</span>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {COMPARISON_ROWS.map((row) => (
-                  <tr
-                    key={row.feature}
-                    className={
-                      row.feature === "Starting service price" ? "ldd-comparison__price-row" : undefined
-                    }
-                  >
-                    <th scope="row">{row.feature}</th>
-                    <td className="ldd-comparison__brand-cell">
-                      <ComparisonValue value={row.us} variant="brand" />
-                    </td>
-                    <td>
-                      <ComparisonValue value={row.attorney} variant="light" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <div className="ldd-comparison__board" role="region" aria-label="Service comparison">
+          <span className="ldd-comparison__rule" aria-hidden="true" />
 
-        <div className="ldd-comparison__footer reveal">
-          <p className="ldd-comparison__disclaimer">
-            Legal Divorce Docs is designed for self-represented Arizona customers who need document
-            preparation assistance. If you need legal advice, legal strategy or representation,
-            consult a licensed Arizona attorney.
-          </p>
+          <h3 className="ldd-comparison__col-heading ldd-comparison__col-heading--brand">
+            Legal Divorce Docs
+          </h3>
+          <h3 className="ldd-comparison__col-heading ldd-comparison__col-heading--alt">
+            Preparing on your own
+          </h3>
 
-          <PrimaryButton className="ldd-comparison__cta" icon="chevronDown" onClick={onStart}>
-            See which option fits my case
-          </PrimaryButton>
+          {COMPARISON_POINTS.map((point, index) => {
+            const isLast = index === COMPARISON_POINTS.length - 1;
+            const gridRow = index + 2;
+
+            return (
+              <Fragment key={point.brand}>
+                <div
+                  className={[
+                    "ldd-comparison__row-slot",
+                    "ldd-comparison__row-slot--brand",
+                    index === 0 ? "ldd-comparison__row-slot--first" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  style={{ gridRow }}
+                >
+                  <ComparisonRow text={point.brand} icon="check" isLast={isLast} />
+                </div>
+                <div
+                  className={[
+                    "ldd-comparison__row-slot",
+                    "ldd-comparison__row-slot--alt",
+                    index === 0 ? "ldd-comparison__row-slot--first" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  style={{ gridRow }}
+                >
+                  <ComparisonRow text={point.alternative} icon="cross" isLast={isLast} />
+                </div>
+              </Fragment>
+            );
+          })}
         </div>
       </div>
     </section>

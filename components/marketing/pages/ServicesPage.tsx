@@ -88,6 +88,7 @@ export function ServicesPage() {
               return (
                 <article
                   key={service.id}
+                  id={`service-${service.id}`}
                   className={[
                     "ldd-services-packages__package",
                     isGuided
