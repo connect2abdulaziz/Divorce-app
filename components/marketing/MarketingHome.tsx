@@ -6,11 +6,15 @@ import { Footer } from "@/components/marketing/layout/Footer";
 import { Header } from "@/components/marketing/layout/Header";
 import { MobileNav } from "@/components/marketing/layout/MobileNav";
 import { SkipLink } from "@/components/marketing/layout/SkipLink";
-import { ArizonaSection } from "@/components/marketing/sections/ArizonaSection";
 import { ClosingSection } from "@/components/marketing/sections/ClosingSection";
 import { ComparisonSection } from "@/components/marketing/sections/ComparisonSection";
+import { MissionStatementSection } from "@/components/marketing/sections/MissionStatementSection";
+import { HomeServicesSection } from "@/components/marketing/sections/HomeServicesSection";
 import { FaqSection } from "@/components/marketing/sections/FaqSection";
 import { HeroSection } from "@/components/marketing/sections/HeroSection";
+import { TrustStripSection } from "@/components/marketing/sections/TrustStripSection";
+import { WhatWeDoSection } from "@/components/marketing/sections/WhatWeDoSection";
+import { QuickCtaSection } from "@/components/marketing/sections/QuickCtaSection";
 import { PricingSection } from "@/components/marketing/sections/PricingSection";
 import { ProcessSection } from "@/components/marketing/sections/ProcessSection";
 import { QualificationSection } from "@/components/marketing/sections/QualificationSection";
@@ -104,12 +108,16 @@ export function MarketingHome() {
       />
       <main id="main">
         <HeroSection onStart={startDivorce} />
+        <TrustStripSection />
+        <WhatWeDoSection />
+        <QuickCtaSection onStart={startDivorce} />
+        <WhySection />
+        <ComparisonSection />
+        <MissionStatementSection onContinue={() => startDivorce()} />
+        <HomeServicesSection />
+        <ProcessSection />
         <QualificationSection presetHelp={presetHelp} onComplete={handleQualificationComplete} />
-        <WhySection onStart={() => startDivorce()} />
-        <ProcessSection onStart={() => startDivorce()} />
         <PricingSection onStart={startDivorce} />
-        <ArizonaSection onStart={() => startDivorce()} />
-        <ComparisonSection onStart={() => startDivorce()} />
         <ReviewsSection />
         <FaqSection />
         <ClosingSection onStart={startDivorce} />

@@ -1,37 +1,44 @@
-﻿"use client";
+﻿const WHY_CHOOSE_ROWS = [
+  {
+    title: "Transparent, upfront pricing",
+    description:
+      "Know what your selected document preparation service costs before proceeding.",
+  },
+  {
+    title: "Arizona-focused document preparation",
+    description: "Documents prepared for your specific Arizona divorce circumstances.",
+  },
+  {
+    title: "A simple, guided online process",
+    description: "Complete your information through a straightforward, step-by-step questionnaire.",
+  },
+  {
+    title: "Options for different family situations",
+    description: "Find suitable document preparation options based on children, property and debt.",
+  },
+  {
+    title: "Professional document preparation",
+    description: "Receive support from an Arizona Certified Legal Document Preparer.",
+  },
+] as const;
 
-import { WHY_CARDS } from "@/lib/marketing/content";
-import { Icon } from "../ui/Icon";
-
-export function WhySection({ onStart }: { onStart: () => void }) {
+export function WhySection() {
   return (
-    <section className="ldd-benefits" id="why" aria-labelledby="why-heading">
-      <div className="ldd-benefits__layout reveal">
-        <div className="ldd-benefits__intro">
-          <p className="ldd-benefits__eyebrow">Why Legal Divorce Docs?</p>
-          <h2 id="why-heading" className="ldd-benefits__heading">
-            <span>Divorce documents.</span>
-            <span>Less complexity.</span>
-            <em>More clarity.</em>
-          </h2>
-          <p className="ldd-benefits__description">
-            Arizona-focused document preparation with a straightforward online process.
-          </p>
-          <button type="button" className="ldd-benefits__cta" onClick={onStart}>
-            Start my divorce
-            <Icon name="chevronDown" size={16} className="ldd-benefits__cta-icon" />
-          </button>
-        </div>
+    <section className="ldd-why-choose" id="why" aria-labelledby="why-choose-heading">
+      <div className="ldd-why-choose__panel">
+        <h2 id="why-choose-heading" className="ldd-why-choose__kicker">
+          Why choose Legal Divorce Docs
+        </h2>
 
-        <div className="ldd-benefits__grid">
-          {WHY_CARDS.map((card) => (
-            <article className="ldd-benefits__item" key={card.title}>
-              <span className="ldd-benefits__icon" aria-hidden="true">
-                <Icon name={card.icon} size={25} />
-              </span>
-              <h3 className="ldd-benefits__title">{card.title}</h3>
-              <p className="ldd-benefits__text">{card.body}</p>
-            </article>
+        <div className="ldd-why-choose__rows">
+          {WHY_CHOOSE_ROWS.map((row) => (
+            <div className="ldd-why-choose__row" key={row.title}>
+              <div className="ldd-why-choose__title-col">
+                <span className="ldd-why-choose__bullet" aria-hidden="true" />
+                <p className="ldd-why-choose__benefit-title">{row.title}</p>
+              </div>
+              <p className="ldd-why-choose__detail">{row.description}</p>
+            </div>
           ))}
         </div>
       </div>

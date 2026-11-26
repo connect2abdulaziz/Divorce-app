@@ -1,89 +1,91 @@
 ﻿"use client";
 
-import { PRICING_PACKAGES } from "@/lib/marketing/content";
-import { Icon } from "../ui/Icon";
-import { PrimaryButton } from "../ui/PrimaryButton";
+import {
+  PRICING_PACKAGES,
+  PRICING_PACKAGES_HOME_ORDER,
+  PRICING_PACKAGE_TAGLINES,
+} from "@/lib/marketing/content";
+
+const FEES_FOOTNOTE =
+  "Arizona court filing fees, service-of-process fees, notary fees and other court or third-party charges are separate unless specifically stated otherwise.";
 
 export function PricingSection({
   onStart,
 }: {
   onStart: (helpPreference?: string | null) => void;
 }) {
+  const packages = PRICING_PACKAGES_HOME_ORDER.map(
+    (id) => PRICING_PACKAGES.find((pkg) => pkg.id === id)!
+  );
+
   return (
     <section className="ldd-pricing" id="pricing" aria-labelledby="pricing-heading">
-      <div className="ldd-pricing__inner">
-        <div className="ldd-pricing__layout reveal">
-          <div className="ldd-pricing__intro">
-            <p className="ldd-pricing__eyebrow">Simple, upfront pricing</p>
-            <h2 id="pricing-heading" className="ldd-pricing__heading">
-              <span>Choose the level of help</span>
-              <em>that&apos;s right for you.</em>
-            </h2>
-          </div>
+      <header className="ldd-pricing__intro-block">
+        <div className="ldd-pricing__intro-inner">
+          <p className="ldd-pricing__eyebrow">Simple, upfront pricing</p>
+          <h2 id="pricing-heading" className="ldd-pricing__heading">
+            Choose the level of help that&apos;s right for you.
+          </h2>
+        </div>
+      </header>
 
-          <div className="ldd-pricing__grid">
-          {PRICING_PACKAGES.map((pkg) => {
-            const isGuided = pkg.id === "guided";
-            return (
-              <article
-                className={
-                  isGuided
-                    ? "ldd-pricing__card ldd-pricing__card--guided reveal"
-                    : "ldd-pricing__card ldd-pricing__card--online reveal"
-                }
-                key={pkg.id}
-              >
-                <header className="ldd-pricing__card-header">
-                  <p className="ldd-pricing__plan">{pkg.name}</p>
-                  {pkg.popular ? (
-                    <span className="ldd-pricing__badge">Most popular</span>
-                  ) : null}
-                </header>
+      {packages.map((pkg) => {
+        const isGuided = pkg.id === "guided";
+        const helpKey = isGuided ? "guided" : "online";
 
-                <p className="ldd-pricing__price">{pkg.price}</p>
-                <p className="ldd-pricing__description">{pkg.blurb}</p>
+        return (
+          <article
+            key={pkg.id}
+            className={
+              isGuided
+                ? "ldd-pricing__offer ldd-pricing__offer--guided"
+                : "ldd-pricing__offer ldd-pricing__offer--diy"
+            }
+          >
+            <div className="ldd-pricing__offer-inner">
+              <span className="ldd-pricing__col-rule" aria-hidden="true" />
 
-                <hr className="ldd-pricing__divider" aria-hidden="true" />
+              <div className="ldd-pricing__summary">
+                <p className="ldd-pricing__label">{pkg.name}</p>
+                <h3 className="ldd-pricing__tagline">
+                  {PRICING_PACKAGE_TAGLINES[pkg.id as keyof typeof PRICING_PACKAGE_TAGLINES]}
+                </h3>
+                <p className="ldd-pricing__price" aria-label={`Price ${pkg.price}`}>
+                  {pkg.price}
+                </p>
+                <p className="ldd-pricing__blurb">{pkg.blurb}</p>
+                <button
+                  type="button"
+                  className={
+                    isGuided
+                      ? "ldd-pricing__cta ldd-pricing__cta--solid"
+                      : "ldd-pricing__cta ldd-pricing__cta--outline"
+                  }
+                  onClick={() => onStart(helpKey)}
+                >
+                  {pkg.cta}
+                </button>
+              </div>
 
-                <ul className="ldd-pricing__features">
+              <div className="ldd-pricing__includes" aria-labelledby={`includes-${pkg.id}`}>
+                <p id={`includes-${pkg.id}`} className="ldd-pricing__includes-label">
+                  What&apos;s included
+                </p>
+                <ul className="ldd-pricing__feature-list">
                   {pkg.features.map((feature) => (
-                    <li className="ldd-pricing__feature" key={feature}>
-                      <Icon name="check" size={18} className="ldd-pricing__check" />
-                      <span>{feature}</span>
+                    <li key={feature} className="ldd-pricing__feature-item">
+                      {feature}
                     </li>
                   ))}
                 </ul>
+              </div>
+            </div>
+          </article>
+        );
+      })}
 
-                <div className="ldd-pricing__card-footer">
-                  {isGuided ? (
-                    <PrimaryButton
-                      className="ldd-pricing__cta ldd-pricing__cta--solid"
-                      icon="chevronDown"
-                      onClick={() => onStart("guided")}
-                    >
-                      {pkg.cta}
-                    </PrimaryButton>
-                  ) : (
-                    <button
-                      type="button"
-                      className="ldd-pricing__cta ldd-pricing__cta--outline"
-                      onClick={() => onStart("online")}
-                    >
-                      {pkg.cta}
-                      <Icon name="chevronDown" size={18} className="ldd-pricing__cta-icon" />
-                    </button>
-                  )}
-                </div>
-              </article>
-            );
-          })}
-          </div>
-        </div>
-
-        <p className="ldd-pricing__footnote reveal">
-          Arizona court filing fees, service-of-process fees, notary fees and other court or
-          third-party charges are separate unless specifically stated otherwise.
-        </p>
+      <div className="ldd-pricing__footnote-block">
+        <p className="ldd-pricing__footnote">{FEES_FOOTNOTE}</p>
       </div>
     </section>
   );
