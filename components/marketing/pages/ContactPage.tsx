@@ -1,9 +1,11 @@
 "use client";
 
 import { FormEvent, useState, useTransition, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { CONTACT_INFO } from "@/lib/marketing/content";
 import { submitContactMessage } from "@/lib/contact/actions";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { ServiceQualifyCta } from "@/components/marketing/service/ServiceQualifyCta";
 import { Icon } from "@/components/marketing/ui/Icon";
 import { PrimaryButton } from "@/components/marketing/ui/PrimaryButton";
 
@@ -27,6 +29,7 @@ function splitBusinessHours(hours: string) {
 }
 
 export function ContactPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -35,6 +38,7 @@ export function ContactPage() {
   const [pending, startTransition] = useTransition();
 
   const hours = splitBusinessHours(CONTACT_INFO.hours);
+  const startQualify = () => router.push("/#qualify");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -56,60 +60,70 @@ export function ContactPage() {
 
   return (
     <MarketingShell>
-      <section className="ldd-contact-hero" aria-labelledby="contact-heading">
-        <div className="ldd-contact-hero__inner">
-          <div className="ldd-contact-hero__canvas reveal">
-            <div className="ldd-contact-hero__grid">
-              <div className="ldd-contact-hero__heading">
-                <p className="ldd-contact-hero__eyebrow">Contact us</p>
-                <h1 id="contact-heading">
-                  Questions about <em>your divorce paperwork?</em>
-                </h1>
-              </div>
-              <div className="ldd-contact-hero__support">
-                <p className="ldd-contact-hero__support-lead">We are here to help with the process.</p>
-                <p className="ldd-contact-hero__description">{CONTACT_INFO.blurb}</p>
-              </div>
+      <div className="ldd-contact-page">
+        <section className="ldd-contact-intro" aria-labelledby="contact-heading">
+          <div className="ldd-contact-intro__inner">
+            <div className="ldd-contact-intro__col ldd-contact-intro__col--main">
+              <p className="ldd-contact-intro__eyebrow">CONTACT US</p>
+              <h1 id="contact-heading" className="ldd-contact-intro__title">
+                Questions about
+                <span className="ldd-contact-intro__title-line">your divorce paperwork?</span>
+              </h1>
+              <p className="ldd-contact-intro__lead">We are here to help with the process.</p>
+            </div>
+
+            <div className="ldd-contact-intro__divider" role="presentation" aria-hidden="true" />
+
+            <div className="ldd-contact-intro__col ldd-contact-intro__col--support">
+              <p className="ldd-contact-intro__description">{CONTACT_INFO.blurb}</p>
+              <p className="ldd-contact-intro__description ldd-contact-intro__description--muted">
+                {DISCLAIMER}
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="ldd-contact-block" aria-label="Contact options and message form">
-        <div className="ldd-contact-block__inner">
-          <div className="ldd-contact-block__shell reveal">
-            <aside className="ldd-contact-block__info">
-              <div className="ldd-contact-block__info-body">
-                <header className="ldd-contact-block__info-head">
-                  <p className="ldd-contact-block__eyebrow">Get in touch</p>
-                  <h2 className="ldd-contact-block__info-title">How can we help?</h2>
-                  <p className="ldd-contact-block__info-lede">
-                    Reach our team for questions about packages, your questionnaire, or the document
-                    preparation process.
-                  </p>
-                </header>
+        <section className="ldd-contact-main" aria-label="Contact options and message form">
+          <div className="ldd-contact-main__outer">
+            <div className="ldd-contact-main__panel">
+              <aside className="ldd-contact-main__aside">
+                <p className="ldd-contact-main__eyebrow">GET IN TOUCH</p>
+                <h2 className="ldd-contact-main__aside-title">How can we help?</h2>
+                <p className="ldd-contact-main__aside-lede">
+                  Reach our team for questions about packages, your questionnaire, or the document
+                  preparation process.
+                </p>
 
-                <ul className="ldd-contact-block__channels">
-                  <li className="ldd-contact-block__channel">
-                    <span className="ldd-contact-block__icon-well" aria-hidden="true">
-                      <Icon name="mail" size={20} />
-                    </span>
+                <ul className="ldd-contact-main__channels">
+                  <li className="ldd-contact-main__channel">
+                    <Icon name="mail" size={20} className="ldd-contact-main__channel-icon" />
                     <ChannelText
                       label="Email"
                       value={
-                        <a href={`mailto:${CONTACT_INFO.email}`} className="ldd-contact-block__link">
+                        <a href={`mailto:${CONTACT_INFO.email}`} className="ldd-contact-main__link">
                           {CONTACT_INFO.email}
                         </a>
                       }
                     />
                   </li>
-                  <li className="ldd-contact-block__channel">
-                    <span className="ldd-contact-block__icon-well" aria-hidden="true">
-                      <Icon name="clock" size={20} />
-                    </span>
-                    <div className="ldd-contact-block__channel-text">
-                      <span className="ldd-contact-block__channel-label">Business hours</span>
-                      <span className="ldd-contact-block__channel-value">
+                  {CONTACT_INFO.phone ? (
+                    <li className="ldd-contact-main__channel">
+                      <Icon name="message" size={20} className="ldd-contact-main__channel-icon" />
+                      <ChannelText
+                        label="Phone"
+                        value={
+                          <a href={`tel:${CONTACT_INFO.phone}`} className="ldd-contact-main__link">
+                            {CONTACT_INFO.phone}
+                          </a>
+                        }
+                      />
+                    </li>
+                  ) : null}
+                  <li className="ldd-contact-main__channel">
+                    <Icon name="clock" size={20} className="ldd-contact-main__channel-icon" />
+                    <div className="ldd-contact-main__channel-text">
+                      <span className="ldd-contact-main__channel-label">Business hours</span>
+                      <span className="ldd-contact-main__channel-value">
                         {hours.days}
                         {hours.times ? (
                           <>
@@ -122,137 +136,125 @@ export function ContactPage() {
                   </li>
                 </ul>
 
-                <MotionDivider />
+                <hr className="ldd-contact-main__rule" aria-hidden="true" />
 
-                <div className="ldd-contact-block__assist">
-                  <h3 className="ldd-contact-block__assist-title">We can assist you with</h3>
-                  <ul className="ldd-contact-block__assist-list">
-                    {CONTACT_TOPICS.map((topic) => (
-                      <li key={topic}>
-                        <Icon name="check" size={16} className="ldd-contact-block__assist-check" aria-hidden="true" />
-                        <span>{topic}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+                <h3 className="ldd-contact-main__topics-title">We can assist you with</h3>
+                <ul className="ldd-contact-main__topics">
+                  {CONTACT_TOPICS.map((topic) => (
+                    <li key={topic}>
+                      <Icon name="check" size={18} className="ldd-contact-main__topics-check" aria-hidden="true" />
+                      <span>{topic}</span>
+                    </li>
+                  ))}
+                </ul>
+              </aside>
 
-              <p className="ldd-contact-block__disclaimer">{DISCLAIMER}</p>
-            </aside>
+              <div className="ldd-contact-main__divider" role="presentation" aria-hidden="true" />
 
-            <div className="ldd-contact-block__form-panel">
-              {sent ? (
-                <div className="ldd-contact-block__form ldd-contact-block__form--success" role="status">
-                  <span className="ldd-contact-block__success-icon" aria-hidden="true">
-                    <Icon name="check" size={28} />
-                  </span>
-                  <h2 className="ldd-contact-block__form-title">Message sent</h2>
-                  <p className="ldd-contact-block__form-lede">
-                    Thanks — we received your message. Our team will review it and follow up by email
-                    during business hours.
-                  </p>
-                  <PrimaryButton
-                    type="button"
-                    className="ldd-contact-block__submit marketing-cta-primary"
-                    icon="send"
-                    onClick={() => setSent(false)}
-                  >
-                    Send another message
-                  </PrimaryButton>
-                </div>
-              ) : (
-                <form className="ldd-contact-block__form" onSubmit={handleSubmit} noValidate>
-                  <header className="ldd-contact-block__form-head">
-                    <h2 className="ldd-contact-block__form-title">Send us a message</h2>
-                    <p className="ldd-contact-block__form-lede">
+              <div className="ldd-contact-main__form-wrap">
+                {sent ? (
+                  <div className="ldd-contact-main__form ldd-contact-main__form--success" role="status">
+                    <span className="ldd-contact-main__success-icon" aria-hidden="true">
+                      <Icon name="check" size={24} />
+                    </span>
+                    <h2 className="ldd-contact-main__form-title">Message sent</h2>
+                    <p className="ldd-contact-main__form-lede">
+                      Thanks — we received your message. Our team will review it and follow up by email during
+                      business hours.
+                    </p>
+                    <PrimaryButton
+                      type="button"
+                      className="ldd-contact-main__submit"
+                      onClick={() => setSent(false)}
+                    >
+                      Send another message
+                    </PrimaryButton>
+                  </div>
+                ) : (
+                  <form className="ldd-contact-main__form" onSubmit={handleSubmit} noValidate>
+                    <h2 className="ldd-contact-main__form-title">Send us a message</h2>
+                    <p className="ldd-contact-main__form-lede">
                       Include your name, the email we should reply to, and a short description of your
                       question.
                     </p>
-                  </header>
 
-                  <div className="ldd-contact-block__fields">
-                    <p className="ldd-contact-block__field">
-                      <label className="ldd-contact-block__label" htmlFor="contact-name">
-                        Full name <span className="ldd-contact-block__required" aria-hidden="true">*</span>
-                      </label>
-                      <input
-                        className="ldd-contact-block__input"
-                        id="contact-name"
-                        name="name"
-                        type="text"
-                        autoComplete="name"
-                        required
-                        placeholder="Enter your full name"
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                      />
-                    </p>
-                    <p className="ldd-contact-block__field">
-                      <label className="ldd-contact-block__label" htmlFor="contact-email">
-                        Email address <span className="ldd-contact-block__required" aria-hidden="true">*</span>
-                      </label>
-                      <input
-                        className="ldd-contact-block__input"
-                        id="contact-email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        required
-                        placeholder="you@example.com"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
-                      />
-                    </p>
-                    <p className="ldd-contact-block__field">
-                      <label className="ldd-contact-block__label" htmlFor="contact-message">
-                        Message <span className="ldd-contact-block__required" aria-hidden="true">*</span>
-                      </label>
-                      <textarea
-                        className="ldd-contact-block__input ldd-contact-block__input--area"
-                        id="contact-message"
-                        name="message"
-                        rows={5}
-                        required
-                        placeholder="How can we help you?"
-                        value={message}
-                        onChange={(event) => setMessage(event.target.value)}
-                      />
-                    </p>
-                  </div>
+                    <div className="ldd-contact-main__fields">
+                      <p className="ldd-contact-main__field">
+                        <label className="ldd-contact-main__label" htmlFor="contact-name">
+                          Full name <span className="ldd-contact-main__required" aria-hidden="true">*</span>
+                        </label>
+                        <input
+                          className="ldd-contact-main__input"
+                          id="contact-name"
+                          name="name"
+                          type="text"
+                          autoComplete="name"
+                          required
+                          placeholder="Enter your full name"
+                          value={name}
+                          onChange={(event) => setName(event.target.value)}
+                        />
+                      </p>
+                      <p className="ldd-contact-main__field">
+                        <label className="ldd-contact-main__label" htmlFor="contact-email">
+                          Email address <span className="ldd-contact-main__required" aria-hidden="true">*</span>
+                        </label>
+                        <input
+                          className="ldd-contact-main__input"
+                          id="contact-email"
+                          name="email"
+                          type="email"
+                          autoComplete="email"
+                          required
+                          placeholder="you@example.com"
+                          value={email}
+                          onChange={(event) => setEmail(event.target.value)}
+                        />
+                      </p>
+                      <p className="ldd-contact-main__field">
+                        <label className="ldd-contact-main__label" htmlFor="contact-message">
+                          Message <span className="ldd-contact-main__required" aria-hidden="true">*</span>
+                        </label>
+                        <textarea
+                          className="ldd-contact-main__input ldd-contact-main__input--area"
+                          id="contact-message"
+                          name="message"
+                          rows={5}
+                          required
+                          placeholder="How can we help you?"
+                          value={message}
+                          onChange={(event) => setMessage(event.target.value)}
+                        />
+                      </p>
+                    </div>
 
-                  {error ? (
-                    <p className="ldd-contact-block__error" role="alert">
-                      {error}
-                    </p>
-                  ) : null}
+                    {error ? (
+                      <p className="ldd-contact-main__error" role="alert">
+                        {error}
+                      </p>
+                    ) : null}
 
-                  <PrimaryButton
-                    type="submit"
-                    className="ldd-contact-block__submit marketing-cta-primary"
-                    icon="send"
-                    disabled={pending}
-                  >
-                    {pending ? "Sending…" : "Send message"}
-                  </PrimaryButton>
-                </form>
-              )}
+                    <PrimaryButton type="submit" className="ldd-contact-main__submit" disabled={pending}>
+                      {pending ? "Sending…" : "Send message"}
+                    </PrimaryButton>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <ServiceQualifyCta onStart={startQualify} />
+      </div>
     </MarketingShell>
   );
 }
 
-function MotionDivider() {
-  return <hr className="ldd-contact-block__divider" aria-hidden="true" />;
-}
-
 function ChannelText({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="ldd-contact-block__channel-text">
-      <span className="ldd-contact-block__channel-label">{label}</span>
-      <div className="ldd-contact-block__channel-value">{value}</div>
+    <div className="ldd-contact-main__channel-text">
+      <span className="ldd-contact-main__channel-label">{label}</span>
+      <div className="ldd-contact-main__channel-value">{value}</div>
     </div>
   );
 }

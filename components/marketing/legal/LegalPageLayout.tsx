@@ -1,27 +1,34 @@
-import type { PolicyDoc } from "@/lib/marketing/policies";
-import { LegalContactCard } from "./LegalContactCard";
+import {
+  POLICY_SHOW_INLINE_TOC,
+  type PolicyDoc,
+} from "@/lib/marketing/policies";
 import { LegalDocument } from "./LegalDocument";
-import { LegalMobileNav } from "./LegalMobileNav";
-import { LegalPageHero } from "./LegalPageHero";
-import { LegalSidebar } from "./LegalSidebar";
+import { LegalInlineToc } from "./LegalInlineToc";
+import { LegalRelatedLinks } from "./LegalRelatedLinks";
 
 export function LegalPageLayout({ doc }: { doc: PolicyDoc }) {
-  return (
-    <div className="ldd-legal">
-      <LegalPageHero doc={doc} />
+  const showInlineToc = POLICY_SHOW_INLINE_TOC.includes(doc.slug);
 
-      <section className="ldd-legal__main" aria-label={doc.title}>
-        <div className="ldd-legal__inner">
-          <LegalMobileNav doc={doc} />
-          <div className="ldd-legal__workspace reveal">
-            <LegalSidebar doc={doc} />
-            <div className="ldd-legal__panel">
-              <LegalDocument doc={doc} />
-            </div>
-          </div>
-          <LegalContactCard className="ldd-legal-contact--mobile" />
-        </div>
-      </section>
+  return (
+    <div className="ldd-legal-doc">
+      <article className="ldd-legal-doc__article" aria-labelledby="legal-doc-title">
+        <header className="ldd-legal-doc__header">
+          <h1 id="legal-doc-title" className="ldd-legal-doc__title">
+            {doc.title}
+          </h1>
+          <p className="ldd-legal-doc__summary">{doc.summary}</p>
+          <hr className="ldd-legal-doc__rule ldd-legal-doc__rule--intro" />
+        </header>
+
+        {showInlineToc ? <LegalInlineToc doc={doc} /> : null}
+
+        <LegalDocument doc={doc} />
+
+        <footer className="ldd-legal-doc__footer">
+          <hr className="ldd-legal-doc__rule ldd-legal-doc__rule--footer" />
+          <LegalRelatedLinks currentSlug={doc.slug} />
+        </footer>
+      </article>
     </div>
   );
 }

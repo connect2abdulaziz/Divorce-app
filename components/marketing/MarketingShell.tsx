@@ -27,9 +27,13 @@ export function MarketingShell({ children }: { children: ReactNode }) {
     setDialogKey(key);
   }, []);
 
-  const startDivorce = useCallback(() => {
+  const startDivorce = useCallback((helpPreference: string | null = null) => {
     setNavOpen(false);
-    router.push("/#qualify");
+    const query =
+      typeof helpPreference === "string" && helpPreference.length > 0
+        ? `?help=${encodeURIComponent(helpPreference)}`
+        : "";
+    router.push(`/${query}#qualify`);
   }, [router]);
 
   const goSignIn = useCallback(() => {

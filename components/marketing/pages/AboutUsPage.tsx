@@ -1,139 +1,140 @@
 "use client";
 
-import { ABOUT_VALUES } from "@/lib/marketing/content";
-import { MarketingShell } from "@/components/marketing/MarketingShell";
-import { Icon } from "@/components/marketing/ui/Icon";
-import { PrimaryButton } from "@/components/marketing/ui/PrimaryButton";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ABOUT_VALUES, CLDP_INFO, SERVICE_ROUTES } from "@/lib/marketing/content";
+import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { ServiceBenefitsPanel } from "@/components/marketing/service/ServiceBenefitsPanel";
+import { ServiceQualifyCta } from "@/components/marketing/service/ServiceQualifyCta";
 
-const VALUE_ICONS: Record<string, "pin" | "check" | "document" | "users"> = {
+const VALUE_ICON_MAP = {
   "Arizona focused": "pin",
   "Clear and upfront": "check",
   "Document preparation only": "document",
   "Human support available": "users",
-};
+} as const;
+
+const ABOUT_BENEFITS = ABOUT_VALUES.map((item, index) => ({
+  id: `about-value-${index}`,
+  icon: VALUE_ICON_MAP[item.title as keyof typeof VALUE_ICON_MAP] ?? "check",
+  title: item.title.toUpperCase(),
+  body: item.body,
+}));
 
 export function AboutUsPage() {
   const router = useRouter();
-  const start = () => router.push("/#qualify");
+  const startQualify = () => router.push("/#qualify");
 
   return (
     <MarketingShell>
-      <section className="ldd-about-hero" aria-labelledby="about-heading">
-        <div className="ldd-about-hero__inner">
-          <div className="ldd-about-hero__canvas reveal">
-            <div className="ldd-about-hero__grid">
-              <div className="ldd-about-hero__heading">
-                <p className="ldd-about-hero__eyebrow">About us</p>
-                <h1 id="about-heading">
-                  Arizona divorce document preparation. <em>Done clearly.</em>
-                </h1>
-              </div>
-
-              <div className="ldd-about-hero__support">
-                <p className="ldd-about-hero__support-lead">
-                  A clearer path through divorce paperwork.
-                </p>
-                <p className="ldd-about-hero__description">
-                  Legal Divorce Docs helps self-represented Arizonans prepare divorce documents online
-                  with a structured questionnaire and support from an Arizona Certified Legal Document
-                  Preparer.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="ldd-about-story" aria-labelledby="about-story-heading">
-        <div className="ldd-about-story__inner">
-          <div className="ldd-about-story__layout reveal">
-            <div className="ldd-about-story__intro">
-              <p className="ldd-about-story__eyebrow">Who we are</p>
-              <h2 id="about-story-heading" className="ldd-about-story__heading">
-                Making paperwork <em>more manageable.</em>
-              </h2>
-              <p className="ldd-about-story__text">
-                We are a legal document preparation service focused on Arizona divorce cases. Our goal
-                is to make the paperwork path easier to understand — with upfront pricing, a secure
-                online questionnaire, and documents prepared from the information you provide.
+      <div className="ldd-about-page">
+        <section className="ldd-about-intro" aria-labelledby="about-heading">
+          <div className="ldd-about-intro__inner">
+            <div className="ldd-about-intro__col ldd-about-intro__col--main">
+              <p className="ldd-about-intro__eyebrow">ABOUT US</p>
+              <h1 id="about-heading" className="ldd-about-intro__title">
+                Arizona divorce documents,
+                <span className="ldd-about-intro__title-line">prepared clearly.</span>
+              </h1>
+              <p className="ldd-about-intro__lead">
+                A clearer path through divorce paperwork for self-represented Arizonans.
               </p>
             </div>
 
-            <aside className="ldd-about-story__panel">
-              <Icon name="scale" size={32} className="ldd-about-story__panel-icon" />
-              <p className="ldd-about-story__panel-eyebrow">Our role</p>
-              <h3 className="ldd-about-story__panel-heading">Clear about what we do.</h3>
-              <p className="ldd-about-story__panel-text">
-                Legal Divorce Docs is not a law firm. We do not provide legal advice, legal strategy, or
-                representation in court.
-              </p>
-              <div className="ldd-about-story__panel-divider" role="presentation" />
-              <p className="ldd-about-story__panel-text">
-                If you need an attorney, you should consult a licensed Arizona lawyer.
-              </p>
-            </aside>
-          </div>
-        </div>
-      </section>
+            <div className="ldd-about-intro__divider" role="presentation" aria-hidden="true" />
 
-      <section className="ldd-about-values" aria-labelledby="about-values-heading">
-        <div className="ldd-about-values__container">
-          <header className="ldd-about-values__intro reveal">
-            <p className="ldd-about-values__eyebrow">Our values</p>
-            <h2 id="about-values-heading" className="ldd-about-values__heading">
-              What guides <em>our work.</em>
+            <div className="ldd-about-intro__col ldd-about-intro__col--support">
+              <p className="ldd-about-intro__description">
+                Legal Divorce Docs helps you prepare Arizona divorce documents online through a structured
+                questionnaire. Your information is used to generate documents that reflect your
+                circumstances — with upfront package pricing and a secure client account.
+              </p>
+              <p className="ldd-about-intro__description">
+                {CLDP_INFO.certification
+                  ? `Support is available from an ${CLDP_INFO.certification}.`
+                  : "Assistance is available from an Arizona Certified Legal Document Preparer where applicable."}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="ldd-about-story" aria-labelledby="about-story-heading">
+          <div className="ldd-about-story__inner">
+            <p className="ldd-about-story__eyebrow">WHO WE ARE</p>
+            <h2 id="about-story-heading" className="ldd-about-story__title">
+              Making paperwork more manageable.
             </h2>
-            <p className="ldd-about-values__lede">
-              Clear process. Arizona focus. Honest limits on what document preparation can do.
+            <p className="ldd-about-story__text">
+              We are a legal document preparation service focused on Arizona divorce cases. Our goal is to
+              make the paperwork path easier to understand — with a guided online questionnaire, documents
+              prepared from the information you provide, and clear limits on what we can and cannot do.
             </p>
-          </header>
-
-          <ul className="ldd-about-values__grid">
-            {ABOUT_VALUES.map((item, index) => (
-              <li className="ldd-about-values__item reveal" key={item.title}>
-                <div className="ldd-about-values__item-meta">
-                  <Icon
-                    name={VALUE_ICONS[item.title] ?? "check"}
-                    size={28}
-                    className="ldd-about-values__icon"
-                  />
-                  <span className="ldd-about-values__index" aria-hidden="true">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3 className="ldd-about-values__title">{item.title}</h3>
-                <p className="ldd-about-values__body">{item.body}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="ldd-about-final-cta" aria-labelledby="about-cta-heading">
-        <div className="ldd-about-final-cta__inner">
-          <div className="ldd-about-final-cta__banner reveal">
-            <div className="ldd-about-final-cta__copy">
-              <p className="ldd-about-final-cta__eyebrow">Take the next step</p>
-              <h2 id="about-cta-heading" className="ldd-about-final-cta__heading">
-                Ready to see if this <em>fits your case?</em>
-              </h2>
-              <p className="ldd-about-final-cta__description">
-                Answer a few questions and start your Arizona divorce document questionnaire.
-              </p>
-            </div>
-            <div className="ldd-about-final-cta__action">
-              <PrimaryButton
-                className="ldd-about-final-cta__button"
-                icon="chevronDown"
-                onClick={start}
-              >
-                Start my divorce
-              </PrimaryButton>
+            <hr className="ldd-about-story__rule" aria-hidden="true" />
+            <div className="ldd-about-story__links">
+              <Link href={SERVICE_ROUTES.diyOnline} className="ldd-about-story__link">
+                DIY Online
+              </Link>
+              <span className="ldd-about-story__link-sep" aria-hidden="true" />
+              <Link href={SERVICE_ROUTES.fullyGuided} className="ldd-about-story__link">
+                Fully Guided
+              </Link>
+              <span className="ldd-about-story__link-sep" aria-hidden="true" />
+              <Link href="/contact" className="ldd-about-story__link">
+                Contact us
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <ServiceBenefitsPanel
+          heading="What guides our work."
+          benefits={ABOUT_BENEFITS}
+        />
+
+        <section className="ldd-about-role" aria-labelledby="about-role-heading">
+          <div className="ldd-about-role__inner">
+            <h2 id="about-role-heading" className="ldd-about-role__title">
+              Clear about what we do.
+            </h2>
+            <p className="ldd-about-role__lede">
+              Legal Divorce Docs is a document preparation service — not a law firm.
+            </p>
+            <hr className="ldd-about-role__rule" aria-hidden="true" />
+            <div className="ldd-about-role__grid">
+              <div className="ldd-about-role__cell">
+                <h3 className="ldd-about-role__cell-title">Document preparation</h3>
+                <p className="ldd-about-role__cell-body">
+                  We prepare Arizona divorce documents and share general procedural information based on the
+                  details you provide through our questionnaire.
+                </p>
+              </div>
+              <div className="ldd-about-role__cell">
+                <h3 className="ldd-about-role__cell-title">Not legal advice</h3>
+                <p className="ldd-about-role__cell-body">
+                  We do not provide legal advice, legal strategy, or representation in court. An Arizona
+                  Certified Legal Document Preparer cannot act as your attorney.
+                </p>
+              </div>
+              <div className="ldd-about-role__cell">
+                <h3 className="ldd-about-role__cell-title">When to consult a lawyer</h3>
+                <p className="ldd-about-role__cell-body">
+                  If you need legal advice or representation — including many contested or complex cases — you
+                  should consult a licensed Arizona attorney.
+                </p>
+              </div>
+              <div className="ldd-about-role__cell">
+                <h3 className="ldd-about-role__cell-title">Arizona focused</h3>
+                <p className="ldd-about-role__cell-body">
+                  Our process is built for Arizona divorce document preparation, not a generic national forms
+                  service.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <ServiceQualifyCta onStart={startQualify} />
+      </div>
     </MarketingShell>
   );
 }
