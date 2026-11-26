@@ -1,28 +1,25 @@
 /* Questionnaire form UI — scoped to .ldd-questionnaire only */
 
 .ldd-questionnaire {
-  --q-navy: #07263d;
-  --q-navy-ui: #0b3a5c;
-  --q-ink: #020609;
-  --q-label: #16324a;
-  --q-muted: #5b6f7f;
-  --q-placeholder: #8a9aab;
-  --q-line: #d7e1ea;
+  --q-ink: #111111;
+  --q-label: #111111;
+  --q-muted: rgba(17, 17, 17, 0.58);
+  --q-placeholder: rgba(17, 17, 17, 0.42);
+  --q-line: rgba(17, 17, 17, 0.14);
   --q-accent: #0f8a6b;
   --q-accent-hover: #0c7359;
-  --q-accent-soft: #e6f5f0;
+  --q-accent-soft: #e4f4ef;
   --q-error: #9b3b3b;
   --q-error-bg: #fdf5f5;
-  /* Cool neutrals — aligned with marketing --paper / hero canvas */
-  --q-panel: #e7eef2;
-  --q-subtle: #f5f8fb;
+  --q-panel: #fdf9f4;
+  --q-subtle: #fdf9f4;
   --q-warning: #9b6b3b;
-  --q-warning-bg: #eef3f7;
-  --q-warning-border: #d9c4a8;
+  --q-warning-bg: #f3ebe3;
+  --q-warning-border: rgba(155, 107, 59, 0.35);
   --q-surface: #ffffff;
-  --q-input-h: 48px;
+  --q-input-h: 44px;
   --q-radius: 10px;
-  --q-radius-card: 16px;
+  --q-radius-card: 14px;
 }
 
 /* Card */
@@ -32,7 +29,6 @@
   border-radius: var(--q-radius-card);
   border: 1px solid var(--q-line);
   background: var(--q-surface);
-  box-shadow: 0 1px 2px rgba(7, 38, 61, 0.05), 0 8px 24px rgba(7, 38, 61, 0.06);
 }
 
 .ldd-questionnaire .ldd-q-card-header {
@@ -40,63 +36,64 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 22px 24px;
-  background: var(--q-navy);
-  color: #fff;
+  padding: 18px 20px;
+  background: var(--q-surface);
+  color: var(--q-ink);
+  border-bottom: 1px solid var(--q-line);
 }
 
 @media (min-width: 768px) {
   .ldd-questionnaire .ldd-q-card-header {
-    padding: 24px 28px;
+    padding: 20px 24px;
   }
 }
 
 .ldd-questionnaire .ldd-q-card-title {
   margin: 0;
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-  font-weight: 700;
-  line-height: 1.25;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.3;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--q-ink);
 }
 
 .ldd-questionnaire .ldd-q-card-subtitle {
-  margin: 8px 0 0;
-  font-size: 14px;
+  margin: 6px 0 0;
+  font-size: 13px;
   font-weight: 400;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--q-muted);
   max-width: 40rem;
 }
 
 .ldd-questionnaire .ldd-q-autosave {
   flex-shrink: 0;
   margin: 0;
-  padding-top: 4px;
+  padding-top: 2px;
   font-size: 12px;
   font-weight: 500;
-  color: var(--q-accent-soft);
+  color: var(--q-muted);
 }
 
 .ldd-questionnaire .ldd-q-autosave:not(:empty) {
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--q-panel);
 }
 
 .ldd-questionnaire .ldd-q-card-body {
-  padding: 22px 20px 28px;
+  padding: 20px 18px 24px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 22px;
   background: var(--q-surface);
 }
 
 @media (min-width: 768px) {
   .ldd-questionnaire .ldd-q-card-body {
-    padding: 28px 28px 32px;
-    gap: 32px;
+    padding: 22px 24px 28px;
+    gap: 24px;
   }
 }
 
@@ -115,14 +112,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 20px;
+  padding: 16px 18px;
   border-top: 1px solid var(--q-line);
-  background: var(--q-subtle);
+  background: var(--q-panel);
 }
 
 @media (min-width: 768px) {
   .ldd-questionnaire .ldd-q-card-footer {
-    padding: 20px 28px;
+    padding: 18px 24px;
   }
 }
 
@@ -153,16 +150,18 @@
 }
 
 .ldd-questionnaire .ldd-q-section + .ldd-q-section {
-  padding-top: 28px;
-  border-top: 1px solid #e8eef2;
+  padding-top: 22px;
+  border-top: 1px solid var(--q-line);
 }
 
 .ldd-questionnaire .ldd-q-section__title {
   margin: 0;
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--q-ink);
-  line-height: 1.3;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .ldd-questionnaire .ldd-q-section__desc {
@@ -211,7 +210,7 @@
 
 .ldd-questionnaire .ldd-q-label {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--q-label);
   line-height: 1.35;
@@ -251,13 +250,13 @@
   padding: 0 14px;
   border: 1px solid var(--q-line);
   border-radius: var(--q-radius);
-  background: var(--q-surface);
+  background: var(--q-panel);
   color: var(--q-ink);
   font-family: inherit;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
-  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  transition: border-color 0.15s, background 0.15s;
 }
 
 .ldd-questionnaire .ldd-q-select {
@@ -275,19 +274,19 @@
 
 .ldd-questionnaire .ldd-q-input:hover:not(:disabled),
 .ldd-questionnaire .ldd-q-select:hover:not(:disabled) {
-  border-color: #bcc9d4;
+  border-color: rgba(17, 17, 17, 0.28);
 }
 
 .ldd-questionnaire .ldd-q-input:focus,
 .ldd-questionnaire .ldd-q-select:focus {
   outline: none;
-  border-color: var(--q-accent);
-  box-shadow: 0 0 0 3px rgba(15, 138, 107, 0.18);
+  border-color: var(--q-ink);
+  background: var(--q-surface);
 }
 
 .ldd-questionnaire .ldd-q-input:disabled,
 .ldd-questionnaire .ldd-q-select:disabled {
-  background: #f5f8fb;
+  background: var(--q-panel);
   color: var(--q-muted);
   cursor: not-allowed;
 }
@@ -321,8 +320,8 @@
 /* Questions & Yes/No */
 
 .ldd-questionnaire .ldd-q-question__label {
-  margin: 0 0 12px;
-  font-size: 15px;
+  margin: 0 0 10px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--q-ink);
   line-height: 1.45;
@@ -358,14 +357,13 @@
 }
 
 .ldd-questionnaire .ldd-q-yesno__option:hover {
-  border-color: #bcc9d4;
-  background: #fafcfd;
+  border-color: rgba(17, 17, 17, 0.28);
+  background: var(--q-panel);
 }
 
 .ldd-questionnaire .ldd-q-yesno__option:focus-visible {
   outline: none;
-  border-color: var(--q-accent);
-  box-shadow: 0 0 0 3px rgba(15, 138, 107, 0.18);
+  border-color: var(--q-ink);
 }
 
 .ldd-questionnaire .ldd-q-yesno__indicator {
@@ -373,7 +371,7 @@
   width: 18px;
   height: 18px;
   border-radius: 999px;
-  border: 2px solid #c5d3de;
+  border: 2px solid rgba(17, 17, 17, 0.22);
   background: #fff;
   box-sizing: border-box;
 }
@@ -381,7 +379,7 @@
 .ldd-questionnaire .ldd-q-yesno__option.is-selected {
   border-color: var(--q-accent);
   background: var(--q-accent-soft);
-  color: #064a3a;
+  color: var(--q-ink);
 }
 
 .ldd-questionnaire .ldd-q-yesno__option.is-selected .ldd-q-yesno__indicator {
@@ -416,13 +414,13 @@
 
 .ldd-questionnaire .ldd-q-dependent {
   margin-top: 4px;
-  padding: 18px 16px 20px;
+  padding: 16px 14px 18px;
   border-radius: 12px;
-  border: 1px solid rgba(15, 138, 107, 0.2);
-  background: linear-gradient(180deg, #f4faf8 0%, var(--q-accent-soft) 100%);
+  border: 1px solid var(--q-line);
+  background: var(--q-panel);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 /* Notices */
@@ -455,7 +453,7 @@
 .ldd-questionnaire .ldd-q-notice--success {
   background: var(--q-accent-soft);
   border: 1px solid rgba(15, 138, 107, 0.25);
-  color: #064a3a;
+  color: var(--q-ink);
 }
 
 .ldd-questionnaire .ldd-q-notice--warning {
@@ -476,10 +474,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: var(--q-radius);
-  font-size: 14px;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
   text-decoration: none;
@@ -511,8 +509,8 @@
 }
 
 .ldd-questionnaire .ldd-q-btn--secondary:hover:not(:disabled) {
-  border-color: #bcc9d4;
-  background: #fafcfd;
+  border-color: rgba(17, 17, 17, 0.35);
+  background: var(--q-panel);
 }
 
 .ldd-questionnaire .ldd-q-btn--text {
@@ -536,8 +534,8 @@
 }
 
 .ldd-questionnaire .ldd-q-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(15, 138, 107, 0.22);
+  outline: 2px solid var(--q-accent);
+  outline-offset: 2px;
 }
 
 .ldd-questionnaire .ldd-q-btn__pending {
@@ -599,8 +597,8 @@
 .ldd-questionnaire .ldd-q-record-form {
   padding: 18px 16px;
   border-radius: 12px;
-  border: 1px dashed #c5d3de;
-  background: #fafcfd;
+  border: 1px dashed rgba(17, 17, 17, 0.22);
+  background: var(--q-panel);
 }
 
 .ldd-questionnaire .ldd-q-record-form__title {
@@ -624,8 +622,8 @@
 /* Review */
 
 .ldd-questionnaire .ldd-q-review-section {
-  border-bottom: 1px solid #e8eef2;
-  padding: 22px 0;
+  border-bottom: 1px solid var(--q-line);
+  padding: 18px 0;
 }
 
 .ldd-questionnaire .ldd-q-review-section:last-child {
@@ -642,8 +640,8 @@
 
 .ldd-questionnaire .ldd-q-review-section__title {
   margin: 0;
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--q-ink);
 }
 
@@ -702,9 +700,9 @@
 /* Legacy class bridges (singleton steps not yet migrated) */
 
 .ldd-questionnaire .field-label {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   display: block;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--q-ink);
   line-height: 1.45;
@@ -727,10 +725,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: var(--q-radius);
-  font-size: 14px;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 13px;
   font-weight: 600;
   background: var(--q-accent);
   color: #fff;
@@ -741,10 +739,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: var(--q-radius);
-  font-size: 14px;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 13px;
   font-weight: 600;
   background: var(--q-surface);
   color: var(--q-ink);

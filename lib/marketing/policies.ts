@@ -27,10 +27,8 @@ export function policySectionId(heading: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-/** First section id to show in a warm notice panel (existing copy only). */
-export const POLICY_CALLOUT_SECTION_ID: Partial<Record<PolicySlug, string>> = {
-  terms: policySectionId("Not a law firm"),
-};
+/** Policies that show a simple inline “On this page” list (no sidebar or dropdown). */
+export const POLICY_SHOW_INLINE_TOC: PolicySlug[] = ["privacy", "terms"];
 
 export const POLICY_DOCS: PolicyDoc[] = [
   {

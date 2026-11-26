@@ -3,14 +3,15 @@
 /* Questionnaire app shell — matches client dashboard tokens */
 
 .ldd-questionnaire {
-  --ddb-bg: #f5f8fb;
+  --ddb-bg: #fdf9f4;
   --ddb-surface: #ffffff;
-  --ddb-ink: #020609;
-  --ddb-muted: #5b6f7f;
-  --ddb-line: #d7e1ea;
+  --ddb-ink: #111111;
+  --ddb-muted: rgba(17, 17, 17, 0.58);
+  --ddb-line: rgba(17, 17, 17, 0.14);
   --ddb-accent: #0f8a6b;
   --ddb-accent-hover: #0c7359;
-  --ddb-icon-bg: #e7eef2;
+  --ddb-icon-bg: #fdf9f4;
+  --ddb-track: rgba(17, 17, 17, 0.08);
   /* Unified content rail: header, progress, sidebar + form */
   --ldd-q-rail-max: 1040px;
   --ldd-q-rail-pad: 24px;
@@ -22,7 +23,7 @@
   background: var(--ddb-bg);
   color: var(--ddb-ink);
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.5;
 }
 
@@ -39,20 +40,20 @@
 }
 
 .ldd-questionnaire-header__shell {
-  background: var(--ddb-surface);
+  background: var(--ddb-bg);
 }
 
 .ldd-questionnaire-header__row {
-  min-height: 64px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  min-height: 56px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 @media (min-width: 768px) {
   .ldd-questionnaire-header__row {
-    min-height: 68px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    min-height: 60px;
+    padding-top: 8px;
+    padding-bottom: 8px;
   }
 }
 
@@ -100,7 +101,7 @@
 }
 
 .ldd-questionnaire-header__account-trigger:hover {
-  background: #f0f6f4;
+  background: rgba(17, 17, 17, 0.05);
 }
 
 .ldd-questionnaire-header__account-trigger:focus-visible {
@@ -139,7 +140,9 @@
   border: 1px solid var(--ddb-line);
   border-radius: 10px;
   background: var(--ddb-surface);
-  box-shadow: 0 8px 24px rgba(2, 6, 9, 0.08);
+  box-shadow:
+    0 12px 40px rgba(17, 17, 17, 0.08),
+    0 2px 8px rgba(17, 17, 17, 0.04);
 }
 
 .ldd-questionnaire-header__account-email {
@@ -159,7 +162,7 @@
 .ldd-questionnaire-header__mobile-progress {
   display: block;
   border-top: 1px solid var(--ddb-line);
-  background: var(--ddb-surface);
+  background: var(--ddb-bg);
   padding: 10px var(--ldd-q-rail-pad) 12px;
 }
 
@@ -188,8 +191,8 @@
 
 .ldd-q-progress-strip__percent {
   margin: 0;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--ddb-accent);
   line-height: 1;
@@ -200,7 +203,7 @@
   margin: 8px auto 0;
   height: 7px;
   border-radius: 999px;
-  background: #e8eef2;
+  background: var(--ddb-track);
   overflow: hidden;
 }
 
@@ -245,7 +248,7 @@
 
 .ldd-questionnaire-header__nav-link:hover {
   color: var(--ddb-accent-hover);
-  background: #f0f6f4;
+  background: rgba(17, 17, 17, 0.05);
 }
 
 .ldd-questionnaire-header__nav-link:focus-visible {
@@ -348,8 +351,8 @@
 
 .ldd-q-progress-card__percent {
   margin: 0;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--ddb-accent);
   line-height: 1;
@@ -359,7 +362,7 @@
   height: 7px;
   width: 100%;
   border-radius: 999px;
-  background: #e8eef2;
+  background: var(--ddb-track);
   overflow: hidden;
 }
 
@@ -399,7 +402,7 @@
 }
 
 .ldd-questionnaire-sidebar__row--current {
-  background: #e6f5f0;
+  background: rgba(15, 138, 107, 0.08);
 }
 
 .ldd-questionnaire-sidebar__indicator {
@@ -426,7 +429,7 @@
 }
 
 .ldd-questionnaire-sidebar__indicator--upcoming {
-  border: 1.5px solid #c5d3de;
+  border: 1.5px solid rgba(17, 17, 17, 0.22);
   color: var(--ddb-muted);
   background: transparent;
 }
@@ -447,7 +450,7 @@
 
 .ldd-questionnaire-sidebar__row--current .ldd-questionnaire-sidebar__label {
   font-weight: 600;
-  color: var(--ddb-accent);
+  color: var(--ddb-ink);
 }
 
 /* Legacy full-width progress rail (portal variant) — not used in questionnaire header */
@@ -455,7 +458,7 @@
 .ldd-q-progress__track {
   height: 6px;
   width: 100%;
-  background: #e8eef2;
+  background: var(--ddb-track);
 }
 
 .ldd-q-progress__fill {

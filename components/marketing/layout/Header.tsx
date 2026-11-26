@@ -5,6 +5,7 @@ import { NAV_LINKS } from "@/lib/marketing/content";
 import { useMarketingSession } from "@/components/marketing/hooks/useMarketingSession";
 import { Brand } from "../ui/Brand";
 import { PrimaryButton } from "../ui/PrimaryButton";
+import { ServicesNavDropdown } from "./ServicesNavDropdown";
 
 export function Header({
   navOpen,
@@ -14,7 +15,7 @@ export function Header({
 }: {
   navOpen: boolean;
   onToggleNav: () => void;
-  onStart: () => void;
+  onStart: (helpPreference?: string | null) => void;
   onSignIn: () => void;
 }) {
   const { isAuthed, ready } = useMarketingSession();
@@ -24,6 +25,7 @@ export function Header({
       <div className="header-inner">
         <Brand />
         <nav className="header-nav" aria-label="Main navigation">
+          <ServicesNavDropdown />
           {NAV_LINKS.map((link) => (
             <a key={link.href} href={link.href}>
               {link.label}

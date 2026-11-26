@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { NAV_LINKS } from "@/lib/marketing/content";
+import { useState } from "react";
+import { NAV_LINKS, SERVICES_DROPDOWN_ITEMS } from "@/lib/marketing/content";
 import { useMarketingSession } from "@/components/marketing/hooks/useMarketingSession";
 import { PrimaryButton } from "../ui/PrimaryButton";
+import { Icon } from "../ui/Icon";
 
 export function MobileNav({
   open,
@@ -13,10 +15,11 @@ export function MobileNav({
 }: {
   open: boolean;
   onClose: () => void;
-  onStart: () => void;
+  onStart: (helpPreference?: string | null) => void;
   onSignIn: () => void;
 }) {
   const { isAuthed, ready } = useMarketingSession();
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   return (
     <>
@@ -28,6 +31,32 @@ export function MobileNav({
         onClick={onClose}
       />
       <nav id="mobile-nav" aria-label="Mobile navigation" hidden={!open}>
+        <div className="mobile-nav-services">
+          <button
+            type="button"
+            className="mobile-nav-services__trigger"
+            aria-expanded={servicesOpen}
+            onClick={() => setServicesOpen((current) => !current)}
+          >
+            <span>Services</span>
+            <Icon name={servicesOpen ? "chevronUp" : "chevronDown"} size={16} />
+          </button>
+          <div className="mobile-nav-services__panel" hidden={!servicesOpen}>
+            {SERVICES_DROPDOWN_ITEMS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="mobile-nav-services__link"
+                onClick={() => {
+                  setServicesOpen(false);
+                  onClose();
+                }}
+              >
+                {item.title}
+              </Link>
+            ))}
+          </div>
+        </div>
         {NAV_LINKS.map((link) => (
           <a key={link.href} href={link.href} onClick={onClose}>
             {link.label}

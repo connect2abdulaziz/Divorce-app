@@ -311,7 +311,7 @@ export function ClientDashboard({ items }: { items: DashboardCaseItem[] }) {
               <div className="ldd-dashboard-featured__actions">
                 <form action={openCase.bind(null, featured.id)}>
                   <SubmitButton
-                    className="ldd-dashboard__btn ldd-dashboard__btn--outline-light"
+                    className="ldd-dashboard__btn ldd-dashboard__btn--outline"
                     pendingLabel="Opening…"
                   >
                     View answers
@@ -319,7 +319,7 @@ export function ClientDashboard({ items }: { items: DashboardCaseItem[] }) {
                 </form>
                 <form action={continueCase.bind(null, featured.id)}>
                   <SubmitButton
-                    className="ldd-dashboard__btn ldd-dashboard__btn--primary-light"
+                    className="ldd-dashboard__btn ldd-dashboard__btn--primary"
                     pendingLabel="Loading…"
                   >
                     <span className="ldd-dashboard__btn-inner">
