@@ -41,7 +41,10 @@ export function Header({
             </button>
           )}
         </nav>
-        <PrimaryButton className="header-cta marketing-cta-primary" onClick={onStart}>
+        <PrimaryButton
+          className="header-cta marketing-cta-primary"
+          onClick={() => onStart()}
+        >
           Start my divorce
         </PrimaryButton>
         <button

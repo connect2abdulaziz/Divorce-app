@@ -38,6 +38,7 @@ body:has(.marketing-site) {
 }
 
 .marketing-site {
+  --header-pad-block: clamp(14px, 1.35vw, 22px);
   --ldd-section-gutter: clamp(16px, 3vw, 48px);
   --ldd-content-inset: clamp(28px, 3.5vw, 64px);
   --ldd-subpage-hero-title: clamp(30px, 2.75vw, 46px);
@@ -150,8 +151,8 @@ html.marketing-scroll-locked body {
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  min-height: 60px;
-  padding: 4px 0;
+  min-height: calc(44px + var(--header-pad-block, 14px) * 2);
+  padding-block: var(--header-pad-block, clamp(14px, 1.35vw, 22px));
   box-sizing: border-box;
   background: var(--ldd-cream);
   border-bottom: 1px solid rgba(2, 6, 9, 0.1);
@@ -161,7 +162,7 @@ html.marketing-scroll-locked body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: clamp(24px, 3vw, 44px);
   width: 100%;
   max-width: 1520px;
   margin-inline: auto;
@@ -188,10 +189,19 @@ html.marketing-scroll-locked body {
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 20px;
-  font-size: 13px;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  gap: clamp(14px, 1.8vw, 28px);
+  margin-inline-end: clamp(8px, 1.5vw, 20px);
+  font-size: 14px;
   font-weight: 500;
+  line-height: 1.45;
   color: var(--ink);
+}
+
+.header-nav > a,
+.header-nav .login-link {
+  padding: 6px 4px;
 }
 
 .header-nav a:hover,
@@ -304,7 +314,7 @@ html.marketing-scroll-locked body {
 
 #mobile-nav {
   position: sticky;
-  top: 60px;
+  top: calc(44px + var(--header-pad-block, 14px) * 2);
   z-index: 35;
   display: grid;
   gap: 8px;
@@ -3420,8 +3430,7 @@ dialog.service-dialog.ldd-dialog::backdrop {
 
 @media (max-width: 640px) {
   .header {
-    min-height: 56px;
-    padding: 6px 0;
+    min-height: calc(40px + var(--header-pad-block, 12px) * 2);
   }
 
   .header-inner {
@@ -3433,7 +3442,7 @@ dialog.service-dialog.ldd-dialog::backdrop {
   }
 
   #mobile-nav {
-    top: 56px;
+    top: calc(36px + var(--header-pad-block, 12px) * 2);
   }
 
   .section-cta .primary-button,
@@ -3606,10 +3615,18 @@ dialog.service-dialog.ldd-dialog::backdrop {
 
 .marketing-site .header-inner {
   align-items: center;
+  min-height: 44px;
 }
 
 .marketing-site .header-nav {
   align-items: center;
+  gap: clamp(16px, 2vw, 32px);
+}
+
+.marketing-site .header-cta.marketing-cta-primary.primary-button {
+  flex-shrink: 0;
+  padding: 11px 26px;
+  margin-inline-start: clamp(4px, 1vw, 12px);
 }
 
 .marketing-site .login-link {
@@ -5450,6 +5467,10 @@ dialog.service-dialog.ldd-dialog::backdrop {
 
 /* These follow the button resets above so the phone header actually collapses. */
 @media (max-width: 1100px) {
+  .marketing-site {
+    --header-pad-block: 12px;
+  }
+
   .marketing-site .header-nav,
   .marketing-site .header-cta {
     display: none;
@@ -5461,8 +5482,7 @@ dialog.service-dialog.ldd-dialog::backdrop {
   }
 
   .marketing-site .header {
-    min-height: 56px;
-    padding: 6px 0;
+    min-height: calc(40px + var(--header-pad-block) * 2);
   }
 
   .marketing-site .header-inner {
@@ -5482,7 +5502,7 @@ dialog.service-dialog.ldd-dialog::backdrop {
 
   .marketing-site #mobile-nav {
     position: fixed;
-    top: 56px;
+    top: calc(36px + var(--header-pad-block, 12px) * 2);
     left: 0;
     right: 0;
     z-index: 35;
@@ -5574,7 +5594,7 @@ dialog.service-dialog.ldd-dialog::backdrop {
   align-items: center;
   gap: 5px;
   margin: 0;
-  padding: 0;
+  padding: 6px 4px;
   border: 0;
   background: none;
   font-family: inherit;
