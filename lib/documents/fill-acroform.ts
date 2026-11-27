@@ -21,6 +21,28 @@ function trySetCheck(form: PDFForm, name: string, checked: boolean) {
 }
 
 /**
+ * Maricopa templates often ship with Attorney/Respondent (and spouse 90-day)
+ * already checked. Clear those defaults before applying our map so false
+ * values are not skipped when a field name variant is missing from the map.
+ */
+function clearTemplateCaptionDefaults(form: PDFForm) {
+  for (const field of form.getFields()) {
+    const name = field.getName();
+    const clear =
+      /^Attorney for(_\d+)?$/i.test(name) ||
+      /^Respondent(_\d+)?$/i.test(name) ||
+      /^My spouse lived in AZ for 90 days/i.test(name) ||
+      /^my spouse have lived in Arizona or have been stationed/i.test(name);
+    if (!clear) continue;
+    try {
+      form.getCheckBox(name).uncheck();
+    } catch {
+      // Not a checkbox (e.g. "Respondent Party B" text) — ignore.
+    }
+  }
+}
+
+/**
  * Fill an AcroForm PDF. Unknown field names are skipped.
  * Returns counts for logging / UI.
  */
@@ -32,6 +54,8 @@ export async function fillAcroFormPdf(
   const form = pdf.getForm();
   let filled = 0;
   let skipped = 0;
+
+  clearTemplateCaptionDefaults(form);
 
   for (const [name, value] of Object.entries(fields)) {
     if (typeof value === "boolean") {

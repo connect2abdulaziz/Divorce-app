@@ -2,6 +2,15 @@ import type { CaseFillValues } from "./case-values";
 import { commonCaptionFields } from "./case-values";
 import { hasListedCommunityAssets } from "./validate-packet";
 
+/** Court forms ask for Month/Day/Year; intake stores ISO (YYYY-MM-DD). */
+export function usDate(iso: string | null | undefined): string {
+  const raw = String(iso ?? "").trim();
+  if (!raw) return "";
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(raw);
+  if (!m) return raw;
+  return `${m[2]}/${m[3]}/${m[1]}`;
+}
+
 function partyA(assigned: unknown) {
   return assigned === "client";
 }
@@ -113,31 +122,32 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
     ...commonCaptionFields(v),
     "Name DRDA10f": v.clientName,
     "Address DRDA10f": [v.clientAddress, v.clientCsz].filter(Boolean).join(", "),
-    "Date of Birth DRDA10f": v.clientDob,
+    "Date of Birth DRDA10f": usDate(v.clientDob),
     "Job Title DRDA10f": v.clientJobTitle || (v.clientEmployed ? v.clientEmployer : "Not employed"),
     "Starting with today number of monthsyears in a row you have lived in Arizona DRDA10f":
       v.clientAzResidency,
     "Name_2 DRDA10f": v.spouseName,
     "Address_2 DRDA10f": [v.spouseAddress, v.spouseCsz].filter(Boolean).join(", "),
-    "Date of Birth_2 DRDA10f": v.spouseDob,
+    "Date of Birth_2 DRDA10f": usDate(v.spouseDob),
     "Job Title_2 DRDA10f":
       v.spouseJobTitle || (v.spouseEmployed ? v.spouseEmployer : "Unknown / not employed"),
     "Starting with today number of monthsyears in a row your spouse has lived in Arizona DRDA10f":
       v.spouseAzResidency,
-    "INFORMATION ABOUT MY MARRIAGE DRDA10f": v.marriageDate,
+    "INFORMATION ABOUT MY MARRIAGE DRDA10f": usDate(v.marriageDate),
     "City and state or country where we were married DRDA10f": v.marriagePlace,
     "Our marriage is broken DRDA10f": true,
     "This is the proper court DRDA10f": true,
+    // Petitioner only — clear spouse box (templates often ship it pre-checked).
     "I have lived in AZ for 90 days DRDA10f": true,
+    "My spouse lived in AZ for 90 days DRDA10f": false,
     "Dissolve our marriage DRDA10f": true,
     "Make fair division DRDA10f": true,
+    // Form text is "tried OR would not work" — always mark for filing packets.
+    "Conciliation Services would not work DRDA10f": true,
   };
 
   if (v.isCovenantMarriage === false) {
     out["We do not have a covenant marriage DRDA10f"] = true;
-  }
-  if (v.conciliationAttempted === true) {
-    out["Conciliation Services would not work DRDA10f"] = true;
   }
 
   if (v.spousalMaintenanceRequested === false) {
@@ -381,7 +391,7 @@ export function petitionDrda10Fields(v: CaseFillValues): Record<string, string |
   if (v.pregnant) {
     if (wifeIsPartyA) out["Party A is pregnant DRDA10f"] = true;
     else out["Party B IS pregnant DRDA10f"] = true;
-    out["The baby is due on DRDA10f"] = v.dueDate;
+    out["The baby is due on DRDA10f"] = usDate(v.dueDate);
     if (v.spouseIsFather) {
       out["Party A and Party B ARE the parents of the child OR DRDA10f"] = true;
     } else if (wifeIsPartyB) {
@@ -423,23 +433,26 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
     ...commonCaptionFields(v),
     "Name DRDC15f": v.clientName,
     "Address DRDC15f": [v.clientAddress, v.clientCsz].filter(Boolean).join(", "),
-    "Date of Birth DRDC15f": v.clientDob,
+    "Date of Birth DRDC15f": usDate(v.clientDob),
     "Job Title DRDC15f": v.clientJobTitle || (v.clientEmployed ? v.clientEmployer : "Not employed"),
     "I have lived in Arizona for DRDC15f": v.clientAzYears,
     "years andor DRDC15f": v.clientAzMonths,
     "Name_2 DRDC15f": v.spouseName,
     "Address_2 DRDC15f": [v.spouseAddress, v.spouseCsz].filter(Boolean).join(", "),
-    "Date of Birth_2 DRDC15f": v.spouseDob,
+    "Date of Birth_2 DRDC15f": usDate(v.spouseDob),
     "Job Title_2 DRDC15f":
       v.spouseJobTitle || (v.spouseEmployed ? v.spouseEmployer : "Unknown / not employed"),
     "My spouse has lived in Arizona for DRDC15f": v.spouseAzYears,
     "years andor_2 DRDC15f": v.spouseAzMonths,
-    "Date of Marriage DRDC15f": v.marriageDate,
+    "Date of Marriage DRDC15f": usDate(v.marriageDate),
     "City and state or country where we were married DRDC15f": v.marriagePlace,
     "Our marriage is broken DRDC15f": true,
     "This Court has jurisdiction to determine DRDC15f": true,
     "This is the proper court to bring DRDC15f": true,
     "90 day requirement I have lived in AZ DRDC15f": true,
+    "my spouse have lived in Arizona or have been stationed in Arizona while a DRDC15f": false,
+    // Form text is "tried OR would not work" — always mark for filing packets.
+    "We have tried to resolve our problems DRDC15f": true,
     "Dissolve our marriage and return to single DRDC15f": true,
     "Does not apply DRDC15f": true,
     "Reasonable parenting time as set forth DRDC15f": true,
@@ -448,9 +461,6 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
 
   if (v.isCovenantMarriage === false) {
     out["We do not have covenant marriage DRDC15f"] = true;
-  }
-  if (v.conciliationAttempted === true) {
-    out["We have tried to resolve our problems DRDC15f"] = true;
   }
   if (v.dvAnswered) {
     out["has not occurred during this marriage DRDC15f"] = !v.hasDv;
@@ -521,7 +531,7 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
     ];
     v.children.slice(0, 5).forEach((ch, i) => {
       out[childNameKeys[i]] = ch.fullName;
-      out[birthKeys[i]] = ch.dob;
+      out[birthKeys[i]] = usDate(ch.dob);
       if (ch.bornPriorToMarriage) out[priorKeys[i]] = true;
       out[addrKeys[i]] = [ch.primaryAddress, ch.primaryCsz].filter(Boolean).join(", ");
       out[lengthKeys[i]] = ch.lengthAtAddress;
@@ -537,7 +547,7 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
   if (v.pregnant) {
     if (wifeIsPartyAWc) out["Party A is pregnant or DRDC15f"] = true;
     else out["Party B IS pregnant DRDC15f"] = true;
-    out["The baby is due on DRDC15f"] = v.dueDate;
+    out["The baby is due on DRDC15f"] = usDate(v.dueDate);
     if (v.spouseIsFather) {
       out["Party A and Party B ARE the parents of the child OR DRDC15f"] = true;
     } else if (wifeIsPartyBWc) {
@@ -799,7 +809,9 @@ export function petitionDrdc15Fields(v: CaseFillValues): Record<string, string |
   // Debt cutoff uses the separation date. The date blank is misnamed as the service date.
   if (v.separationDate) {
     out["Hold harmless from debts since parties separation DRDC15f"] = true;
-    out["the date my spouse was served with the Petition for Dissolution DRDC15f"] = v.separationDate;
+    out["the date my spouse was served with the Petition for Dissolution DRDC15f"] = usDate(
+      v.separationDate
+    );
   }
 
   const clientHasSeparate = v.separateProperty.some((item) => item.owner_party === "client");
@@ -858,7 +870,7 @@ export function affidavitMinorChildrenFields(v: CaseFillValues): Record<string, 
   const ageKeys = ["Age", "Age_2", "Age_3", "Age_4"];
   v.children.slice(0, 4).forEach((ch, i) => {
     out[nameKeys[i]] = ch.fullName;
-    out[birthKeys[i]] = ch.dob;
+    out[birthKeys[i]] = usDate(ch.dob);
     out[ageKeys[i]] = ch.age;
   });
 
@@ -1056,8 +1068,8 @@ export function sensitiveDataCoverSheetWocFields(
   const out: Record<string, string | boolean> = {
     ...commonCaptionFields(v),
     // Date of Birth
-    "Date of Birth MonthDayYear 1 DRSDS10f_An": v.clientDob,
-    "undefined_2 DRSDS10f_An": v.spouseDob,
+    "Date of Birth MonthDayYear 1 DRSDS10f_An": usDate(v.clientDob),
+    "undefined_2 DRSDS10f_An": usDate(v.spouseDob),
     // Social Security Number (single wide field on this template)
     "Date of Birth MonthDayYear 2 DRSDS10f_An": ssnLine,
     // Mailing Address / City State Zip / Contact Phone
@@ -1119,8 +1131,8 @@ export function sensitiveDataCoverSheetWcFields(
   const out: Record<string, string | boolean> = {
     ...commonCaptionFields(v),
     // Date of Birth
-    "or_2 DRSDS10f-c": v.clientDob,
-    "or_3 DRSDS10f-c": v.spouseDob,
+    "or_2 DRSDS10f-c": usDate(v.clientDob),
+    "or_3 DRSDS10f-c": usDate(v.spouseDob),
     // Social Security Number (last-4 masked for confidential cover sheet)
     "Pet Social DRSDS10f-c1 DRSDS10f-c": v.clientSsnLast4 ? `XXX-XX-${v.clientSsnLast4}` : "",
     "Respondent SSN DRSDS10f-c": v.spouseSsnLast4 ? `XXX-XX-${v.spouseSsnLast4}` : "",
@@ -1184,7 +1196,7 @@ export function sensitiveDataCoverSheetWcFields(
   const genderKeys = ["GenderRow1 DRSDS10f-c", "GenderRow2 DRSDS10f-c", "GenderRow3 DRSDS10f-c"];
   v.children.slice(0, 3).forEach((ch, i) => {
     out[nameKeys[i]] = ch.fullName;
-    out[dobKeys[i]] = ch.dob;
+    out[dobKeys[i]] = usDate(ch.dob);
     out[ssnKeys[i]] = ch.ssnLast4 ? `XXX-XX-${ch.ssnLast4}` : "";
     if (ch.gender) out[genderKeys[i]] = ch.gender === "male" ? "M" : "F";
   });
@@ -1198,12 +1210,12 @@ export function preliminaryInjunctionFields(
   const out: Record<string, string | boolean> = {
     ...commonCaptionFields(v),
     "Name DR14f": v.clientName,
-    "Date of Birth DR14f": v.clientDob,
+    "Date of Birth DR14f": usDate(v.clientDob),
     "Height DR14f": v.clientHeight,
     "Weight DR14f": v.clientWeight,
     "Drivers License last 4 nos DR14f": v.clientDriverLicenseLast4,
     "Name_2 DR14f": v.spouseName,
-    "Date of Birth_2 DR14f": v.spouseDob,
+    "Date of Birth_2 DR14f": usDate(v.spouseDob),
     "Height_2 DR14f": v.spouseHeight,
     "Weight_2 DR14f": v.spouseWeight,
     "Drivers License last 4 nos_2 DR14f": v.spouseDriverLicenseLast4,
