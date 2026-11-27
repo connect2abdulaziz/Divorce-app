@@ -9,9 +9,39 @@ export function ServicesNavDropdown() {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelId = useId();
 
   const close = useCallback(() => setOpen(false), []);
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimerRef.current !== null) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    clearCloseTimer();
+    setOpen(true);
+  }, [clearCloseTimer]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => setOpen(false), 140);
+  }, [clearCloseTimer]);
+
+  const handleTriggerClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    if (canHover && event.detail > 0) return;
+    setOpen((current) => !current);
+  }, []);
+
+  useEffect(() => {
+    return () => clearCloseTimer();
+  }, [clearCloseTimer]);
 
   useEffect(() => {
     if (!open) return;
@@ -40,7 +70,12 @@ export function ServicesNavDropdown() {
   }, [open, close]);
 
   return (
-    <div className="header-services" ref={rootRef}>
+    <div
+      className="header-services"
+      ref={rootRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <button
         ref={buttonRef}
         type="button"
@@ -48,7 +83,7 @@ export function ServicesNavDropdown() {
         aria-expanded={open}
         aria-controls={panelId}
         aria-haspopup="true"
-        onClick={() => setOpen((current) => !current)}
+        onClick={handleTriggerClick}
       >
         <span>Services</span>
         <Icon name="chevronDown" size={14} className={open ? "header-services__chevron is-open" : "header-services__chevron"} />
