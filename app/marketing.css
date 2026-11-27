@@ -171,6 +171,43 @@ html.marketing-scroll-locked body {
   min-width: 0;
 }
 
+@media (min-width: 1101px) {
+  .header-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: clamp(20px, 2.5vw, 36px);
+  }
+
+  .header-inner .brand {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .header-inner .header-nav {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    flex: none;
+    margin-inline: 0;
+    justify-content: center;
+  }
+
+  .header-inner .header-cta {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    margin-inline-start: 0;
+  }
+
+  .header-inner .mobile-toggle {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+}
+
 .brand {
   display: block;
   flex-shrink: 0;
@@ -189,10 +226,8 @@ html.marketing-scroll-locked body {
 .header-nav {
   display: flex;
   align-items: center;
-  flex: 1 1 auto;
-  justify-content: flex-end;
+  justify-content: center;
   gap: clamp(14px, 1.8vw, 28px);
-  margin-inline-end: clamp(8px, 1.5vw, 20px);
   font-size: 14px;
   font-weight: 500;
   line-height: 1.45;
@@ -3626,7 +3661,6 @@ dialog.service-dialog.ldd-dialog::backdrop {
 .marketing-site .header-cta.marketing-cta-primary.primary-button {
   flex-shrink: 0;
   padding: 11px 26px;
-  margin-inline-start: clamp(4px, 1vw, 12px);
 }
 
 .marketing-site .login-link {
@@ -5592,13 +5626,13 @@ dialog.service-dialog.ldd-dialog::backdrop {
 .header-services__trigger {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   margin: 0;
   padding: 6px 4px;
   border: 0;
   background: none;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--ink);
   cursor: pointer;
@@ -5625,22 +5659,33 @@ dialog.service-dialog.ldd-dialog::backdrop {
 
 .header-services__panel {
   position: absolute;
-  top: calc(100% + 14px);
-  left: 0;
+  top: calc(100% + 8px);
+  left: 50%;
   z-index: 50;
+  transform: translateX(-50%);
+}
+
+.header-services__panel::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 8px;
+}
+
+.header-services__panel:not([hidden]) {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-width: min(17.5rem, calc(100vw - 32px));
+  gap: 2px;
+  min-width: 11.5rem;
   width: max-content;
-  max-width: min(22rem, calc(100vw - 32px));
-  padding: 14px 0 16px;
-  border: 0;
-  border-radius: 16px;
-  background: #fffefb;
-  box-shadow:
-    0 16px 48px rgba(17, 17, 17, 0.1),
-    0 4px 14px rgba(17, 17, 17, 0.06);
+  max-width: min(14.5rem, calc(100vw - 32px));
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  box-shadow: 0 6px 20px rgba(7, 38, 61, 0.07);
   box-sizing: border-box;
 }
 
@@ -5650,24 +5695,25 @@ dialog.service-dialog.ldd-dialog::backdrop {
 
 .header-services__item {
   display: block;
-  padding: 12px 28px 12px 26px;
+  padding: 7px 10px;
+  border-radius: 6px;
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 1.4;
-  color: var(--ink, #111);
+  line-height: 1.35;
+  color: var(--ink);
   text-decoration: none;
   white-space: nowrap;
 }
 
 .header-services__item:hover,
 .header-services__item:focus-visible {
-  background: rgba(17, 17, 17, 0.04);
+  background: rgba(2, 6, 9, 0.04);
   outline: none;
 }
 
 .header-services__item:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--cta);
+  box-shadow: inset 0 0 0 1px var(--cta);
 }
 
 .mobile-nav-services__trigger {
